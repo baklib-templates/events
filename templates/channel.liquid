@@ -1,0 +1,57 @@
+{%- assign lessons = page.children_in_list -%}
+
+{%- capture nav_breadcrumbs -%}
+<nav class="flex flex-wrap items-center gap-2 text-sm text-base-content/70" aria-label="Breadcrumb">
+  <a href="{{ site.index_path }}" class="hover:text-primary">Home</a>
+  <span class="text-base-content/30">/</span>
+  <span class="font-medium text-base-content">{{ page.link_text | default: page.name }}</span>
+</nav>
+{%- endcapture -%}
+
+{% render 'navbar', breadcrumbs: nav_breadcrumbs %}
+
+<main class="grow px-4 sm:px-6">
+  <div class="mx-auto max-w-6xl py-10 md:py-12">
+    <div class="mb-6">
+      <h1 class="text-2xl font-extrabold tracking-tight text-base-content md:text-3xl">{{ page.link_text | default: page.name }}</h1>
+      {%- if page.settings.description != blank -%}
+        <p class="mt-2 text-base-content/70">{{ page.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="divide-y divide-base-300/20 rounded-xl border border-base-300/20 bg-base-100">
+      {%- for lesson in lessons -%}
+        {%- assign ds = lesson.settings.duration_seconds | default: 0 | plus: 0 -%}
+        {%- capture dlab -%}{% render 'duration_label', seconds: ds %}{%- endcapture -%}
+        {%- assign vtype = 'article' -%}
+        {%- if lesson.settings.video_url != blank -%}
+          {%- assign vtype = 'video' -%}
+        {%- endif -%}
+        <div class="p-4">
+          {% render 'content_link',
+            title: lesson.link_text,
+            description: lesson.settings.description,
+            href: lesson.path,
+            link_type: vtype,
+            duration_label: dlab | strip
+          %}
+        </div>
+      {%- else -%}
+        <div class="p-6 text-sm text-base-content/60">No lessons yet.</div>
+      {%- endfor -%}
+    </div>
+  </div>
+</main>
+
+{% schema %}
+  {
+    "name": "Course module",
+    "description": "Lesson list for one module",
+    "thumb_url": "images/theme/preview-index.png",
+    "preview_image_urls": ["images/theme/preview-index.png"],
+    "sub_page_templates": ["page"],
+    "settings": [
+      { "id": "description", "type": "textarea", "label": "Description", "to_markdown": true }
+    ]
+  }
+{% endschema %}

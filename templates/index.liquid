@@ -1,0 +1,143 @@
+{%- assign root = site.pages['/'] -%}
+{%- assign mod_count = 0 -%}
+{%- assign lesson_count = 0 -%}
+{%- assign total_dur = 0 -%}
+{%- assign first_lesson_path = '' -%}
+{%- if root -%}
+  {%- for mod in root.children_in_list -%}
+    {%- if mod.template_name == 'channel' -%}
+      {%- assign mod_count = mod_count | plus: 1 -%}
+      {%- assign ch_size = mod.children_in_list | size -%}
+      {%- assign lesson_count = lesson_count | plus: ch_size -%}
+      {%- for lesson in mod.children_in_list -%}
+        {%- assign d = lesson.settings.duration_seconds | default: 0 | plus: 0 -%}
+        {%- assign total_dur = total_dur | plus: d -%}
+        {%- if first_lesson_path == '' -%}
+          {%- assign first_lesson_path = lesson.path -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- capture nav_breadcrumbs -%}
+<nav class="flex flex-wrap items-center gap-2 text-sm text-base-content/70" aria-label="Breadcrumb">
+  <a href="{{ site.index_path }}" class="hover:text-primary">Home</a>
+  <span class="text-base-content/30">/</span>
+  <span class="font-medium text-base-content">Overview</span>
+</nav>
+{%- endcapture -%}
+
+{% render 'navbar', breadcrumbs: nav_breadcrumbs %}
+
+<main class="grow px-4 sm:px-6">
+  <div class="relative mx-auto max-w-7xl">
+    {%- assign default_hero_rel = 'images/theme/hero-illustration.svg' | asset_url -%}
+    <div class="absolute -inset-x-2 top-0 -z-10 h-80 overflow-hidden rounded-t-2xl sm:h-[22rem] md:h-[28rem] lg:-inset-x-4 lg:h-[32rem]">
+      <img
+        src="{{ site.settings.hero_background_image | default: default_hero_rel }}"
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover object-center opacity-40"
+        width="1200"
+        height="675"
+        loading="eager"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-base-100/90 via-base-100/40 to-transparent"
+        aria-hidden="true"
+      ></div>
+      <div class="absolute inset-0 rounded-t-2xl outline outline-1 -outline-offset-1 outline-base-300/30"></div>
+    </div>
+
+    <div class="mx-auto max-w-6xl">
+      <div class="relative px-4 pb-10 pt-48 lg:py-24">
+        <div class="h-8 text-base-content">{% render 'logo', svg_class: 'h-8 w-auto text-base-content' %}</div>
+        <h1 class="sr-only">Course overview</h1>
+        <p class="mt-7 max-w-lg text-pretty text-base/7 text-base-content/70">
+          {{ site.settings.brand_slogan }}
+        </p>
+        <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm/7 font-semibold text-base-content sm:gap-3">
+          <div class="flex items-center gap-1.5">
+            <svg class="h-5 w-5 stroke-base-content/40" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            {{ mod_count }} modules
+          </div>
+          <span class="hidden text-base-content/30 sm:inline">·</span>
+          <div class="flex items-center gap-1.5">
+            <svg class="h-5 w-5 stroke-base-content/40" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M12 6v6l4 2"/></svg>
+            {{ lesson_count }} lessons
+          </div>
+          <span class="hidden text-base-content/30 sm:inline">·</span>
+          <div class="flex items-center gap-1.5">
+            <svg class="h-5 w-5 stroke-base-content/40" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            {% render 'duration_label', seconds: total_dur %}
+          </div>
+        </div>
+        {%- if first_lesson_path != blank -%}
+          <div class="mt-10">
+            <a
+              href="{{ first_lesson_path }}"
+              class="inline-flex items-center gap-x-2 rounded-full bg-primary px-3 py-1 text-sm/7 font-semibold text-primary-content hover:bg-primary/90"
+              data-turbo-frame="main-content-frame"
+              data-turbo-action="advance"
+            >
+              <svg class="h-4 w-4 fill-primary-content" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              Start the course
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="grid grid-cols-1 gap-y-16 pb-10 sm:px-4">
+        {%- assign part_idx = 0 -%}
+        {%- if root -%}
+          {%- for mod in root.children_in_list -%}
+            {%- if mod.template_name == 'channel' -%}
+              {%- assign part_idx = part_idx | plus: 1 -%}
+              {%- assign part_label_str = 'Part ' | append: part_idx -%}
+              {%- capture part_inner -%}
+                <div class="max-w-2xl">
+                  <h2 class="text-pretty text-2xl/7 font-medium tracking-tight text-base-content">
+                    {{ mod.link_text | default: mod.name }}
+                  </h2>
+                  {%- if mod.settings.description != blank -%}
+                    <p class="mt-4 text-base/7 text-base-content/70 sm:text-sm/7">{{ mod.settings.description }}</p>
+                  {%- endif -%}
+                  <ol class="mt-6 space-y-4">
+                    {%- for lesson in mod.children_in_list -%}
+                      <li>
+                        {%- assign ds = lesson.settings.duration_seconds | default: 0 | plus: 0 -%}
+                        {%- capture dlab -%}{% render 'duration_label', seconds: ds %}{%- endcapture -%}
+                        {%- assign vtype = 'article' -%}
+                        {%- if lesson.settings.video_url != blank -%}
+                          {%- assign vtype = 'video' -%}
+                        {%- endif -%}
+                        {% render 'content_link',
+                          title: lesson.link_text,
+                          description: lesson.settings.description,
+                          href: lesson.path,
+                          link_type: vtype,
+                          duration_label: dlab | strip
+                        %}
+                      </li>
+                    {%- endfor -%}
+                  </ol>
+                </div>
+              {%- endcapture -%}
+              {% render 'page_section', anchor: mod.slug, part_label: part_label_str, inner: part_inner %}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</main>
+
+{% schema %}
+  {
+    "name": "Course index",
+    "description": "Course overview with modules",
+    "thumb_url": "images/theme/preview-index.png",
+    "preview_image_urls": ["images/theme/preview-index.png"],
+    "sub_page_templates": ["channel", "channel.grid"]
+  }
+{% endschema %}

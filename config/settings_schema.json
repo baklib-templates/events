@@ -1,0 +1,172 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "events",
+    "theme_label": "Events",
+    "theme_description": "活动（Events）站点主题。",
+    "theme_version": "0.1.0",
+    "theme_syntax_version": "v2",
+    "theme_scope": "cms",
+    "theme_author": "Baklib",
+    "theme_documentation_url": "https://help.baklib.cn/",
+    "theme_support_url": "https://help.baklib.cn/",
+    "theme_thumb_url": "images/theme/thumb.png",
+    "theme_preview_images": [
+      "images/theme/preview-index.png",
+      "images/theme/preview-page.png"
+    ],
+    "theme_languages": [
+      { "name": "中文简体", "value": "zh-CN" },
+      { "name": "English", "value": "en" }
+    ],
+    "recommendations": {
+      "color_schemas": {
+        "default": {
+          "name": "Gray / Dark",
+          "colors": {
+            "--theme-color-base-100": "0 0% 100%",
+            "--theme-color-base-200": "0 0% 96%",
+            "--theme-color-base-300": "0 0% 90%",
+            "--theme-color-base-content": "222 47% 11%",
+            "--theme-color-primary": "222 47% 11%",
+            "--theme-color-primary-content": "0 0% 100%",
+            "--theme-color-secondary": "215 16% 47%",
+            "--theme-color-secondary-content": "0 0% 100%",
+            "--theme-color-accent": "215 16% 47%",
+            "--theme-color-accent-content": "0 0% 100%",
+            "--theme-color-neutral": "222 47% 11%",
+            "--theme-color-neutral-content": "0 0% 100%",
+            "--theme-color-info": "199 89% 48%",
+            "--theme-color-info-content": "0 0% 100%",
+            "--theme-color-success": "142 71% 45%",
+            "--theme-color-success-content": "0 0% 100%",
+            "--theme-color-warning": "38 92% 50%",
+            "--theme-color-warning-content": "222 47% 11%",
+            "--theme-color-error": "0 84% 60%",
+            "--theme-color-error-content": "0 0% 100%",
+            "--theme-color-base-100-dark": "222 47% 11%",
+            "--theme-color-base-200-dark": "222 47% 9%",
+            "--theme-color-base-300-dark": "222 47% 7%",
+            "--theme-color-base-content-dark": "210 40% 98%",
+            "--theme-color-primary-dark": "210 40% 98%",
+            "--theme-color-primary-content-dark": "222 47% 11%",
+            "--theme-color-secondary-dark": "215 16% 72%",
+            "--theme-color-secondary-content-dark": "222 47% 11%",
+            "--theme-color-accent-dark": "215 16% 72%",
+            "--theme-color-accent-content-dark": "222 47% 11%",
+            "--theme-color-neutral-dark": "210 40% 98%",
+            "--theme-color-neutral-content-dark": "222 47% 11%",
+            "--theme-color-info-dark": "199 89% 48%",
+            "--theme-color-info-content-dark": "222 47% 11%",
+            "--theme-color-success-dark": "142 71% 45%",
+            "--theme-color-success-content-dark": "222 47% 11%",
+            "--theme-color-warning-dark": "38 92% 50%",
+            "--theme-color-warning-content-dark": "222 47% 11%",
+            "--theme-color-error-dark": "0 84% 60%",
+            "--theme-color-error-content-dark": "222 47% 11%"
+          }
+        },
+        "fashion": {
+          "name": "时尚",
+          "colors": {
+            "--theme-color-base-100": "0 0% 100%",
+            "--theme-color-base-200": "0 0% 96%",
+            "--theme-color-base-300": "0 0% 90%",
+            "--theme-color-base-content": "222 47% 11%",
+            "--theme-color-primary": "232 71% 56%",
+            "--theme-color-primary-content": "0 0% 100%",
+            "--theme-color-secondary": "330 81% 60%",
+            "--theme-color-secondary-content": "0 0% 100%",
+            "--theme-color-accent": "215 16% 47%",
+            "--theme-color-accent-content": "0 0% 100%",
+            "--theme-color-neutral": "222 47% 11%",
+            "--theme-color-neutral-content": "0 0% 100%",
+            "--theme-color-info": "207 90% 54%",
+            "--theme-color-info-content": "0 0% 100%",
+            "--theme-color-success": "122 39% 49%",
+            "--theme-color-success-content": "0 0% 100%",
+            "--theme-color-warning": "45 100% 51%",
+            "--theme-color-warning-content": "222 47% 11%",
+            "--theme-color-error": "0 84% 60%",
+            "--theme-color-error-content": "0 0% 100%",
+            "--theme-color-base-100-dark": "222 47% 11%",
+            "--theme-color-base-200-dark": "222 47% 9%",
+            "--theme-color-base-300-dark": "222 47% 7%",
+            "--theme-color-base-content-dark": "210 40% 98%",
+            "--theme-color-primary-dark": "232 71% 70%",
+            "--theme-color-primary-content-dark": "222 47% 11%",
+            "--theme-color-secondary-dark": "330 81% 72%",
+            "--theme-color-secondary-content-dark": "222 47% 11%",
+            "--theme-color-accent-dark": "215 16% 72%",
+            "--theme-color-accent-content-dark": "222 47% 11%",
+            "--theme-color-neutral-dark": "210 40% 98%",
+            "--theme-color-neutral-content-dark": "222 47% 11%",
+            "--theme-color-info-dark": "207 90% 60%",
+            "--theme-color-info-content-dark": "222 47% 11%",
+            "--theme-color-success-dark": "122 39% 55%",
+            "--theme-color-success-content-dark": "222 47% 11%",
+            "--theme-color-warning-dark": "45 100% 55%",
+            "--theme-color-warning-content-dark": "222 47% 11%",
+            "--theme-color-error-dark": "0 84% 60%",
+            "--theme-color-error-content-dark": "222 47% 11%"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "站点设置",
+    "settings": [
+      {
+        "id": "brand_name",
+        "type": "text",
+        "label": "品牌名称",
+        "default": "Compass"
+      },
+      {
+        "id": "brand_slogan",
+        "type": "textarea",
+        "label": "课程简介（首页展示）",
+        "default": "A comprehensive journey that helps you navigate uncertainty and make choices aligned with your values and goals.",
+        "rows": 3
+      },
+      {
+        "id": "hero_background_image",
+        "type": "image_picker",
+        "ratio": "16:9",
+        "width": 240,
+        "label": "首页 Hero 背景图",
+        "default": "images/theme/hero-background.png"
+      }
+    ]
+  },
+  {
+    "name": "t:schema.custom_html.name",
+    "settings": [
+      {
+        "id": "head_html",
+        "type": "html",
+        "label": "t:schema.custom_html.settings.head_html.label",
+        "info": "t:schema.custom_html.settings.head_html.info",
+        "rows": 10,
+        "placeholder": "t:schema.custom_html.settings.head_html.placeholder"
+      },
+      {
+        "id": "header_menu_html",
+        "type": "html",
+        "label": "t:schema.custom_html.settings.header_menu_html.label",
+        "info": "t:schema.custom_html.settings.header_menu_html.info",
+        "rows": 6,
+        "placeholder": "t:schema.custom_html.settings.header_menu_html.placeholder"
+      },
+      {
+        "id": "footer_menu_html",
+        "type": "html",
+        "label": "t:schema.custom_html.settings.footer_menu_html.label",
+        "info": "t:schema.custom_html.settings.footer_menu_html.info",
+        "rows": 6,
+        "placeholder": "t:schema.custom_html.settings.footer_menu_html.placeholder"
+      }
+    ]
+  }
+]
