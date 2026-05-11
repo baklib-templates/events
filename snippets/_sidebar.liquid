@@ -1,31 +1,164 @@
+{%- comment -%}
+  Channel / hub sidebar.
+  Inputs (optional):
+    current_page: PageDrop
+    event: PageDrop — when set, sidebar switches to event-hub navigation (back link + siblings)
+    siblings: array of channel PageDrops under the same event
+    tags: array of TagDrop (subset to render as tag cloud / filter buttons)
+    sync_filter: boolean — when true, tag clicks set Alpine `tag` value (use inside x-data scope)
+{%- endcomment -%}
+
 {%- assign root = site.pages['/'] -%}
-{%- if root == blank -%}
-  <p class="text-sm text-base-content/60">No pages.</p>
-{%- else -%}
-  <div class="space-y-8">
-    {%- for mod in root.children_in_list -%}
-      {%- if mod.template_name == 'channel' -%}
-        <div>
-          <h2 class="text-base/7 font-semibold text-pretty text-base-content sm:text-sm/6">
-            {{ mod.link_text | default: mod.name }}
-          </h2>
-          <ul class="mt-4 flex flex-col gap-4 border-l border-base-300/30 text-base/7 text-base-content/70 sm:mt-3 sm:gap-3 sm:text-sm/6">
-            {%- for lesson in mod.children_in_list -%}
-              <li class="-ml-px flex border-l border-transparent pl-4 hover:border-base-300 hover:text-base-content has-[a[aria-current=page]]:border-base-content">
-                <a
-                  href="{{ lesson.path }}"
-                  data-turbo-frame="main-content-frame"
-                  data-turbo-action="advance"
-                  class="aria-[current=page]:font-medium aria-[current=page]:text-base-content"
-                  {% if current_page and lesson.id == current_page.id %}aria-current="page"{% endif %}
-                >
-                  {{ lesson.link_text | default: lesson.name }}
-                </a>
-              </li>
-            {%- endfor -%}
-          </ul>
-        </div>
-      {%- endif -%}
-    {%- endfor -%}
-  </div>
+{%- assign siblings_sz = siblings | size -%}
+
+{%- assign nav_channels = '' | split: '' -%}
+{%- assign latest_events = '' | split: '' -%}
+{%- if root -%}
+  {%- for child in root.children_in_list -%}
+    {%- if child.template_name == 'channel' or child.template_name == 'team' -%}
+      {%- assign nav_channels = nav_channels | concat: (child | split: '') -%}
+    {%- elsif child.template_name == 'event' -%}
+      {%- assign latest_events = latest_events | concat: (child | split: '') -%}
+    {%- endif -%}
+  {%- endfor -%}
 {%- endif -%}
+{%- assign latest_events = latest_events | sort: 'published_at' | reverse -%}
+
+<aside class="space-y-8">
+  {%- if event != blank -%}
+    <div class="rounded-2xl border border-base-300/50 bg-base-100 p-5">
+      <a
+        href="{{ event.path }}"
+        class="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+        data-turbo-frame="main-content-frame"
+        data-turbo-action="advance"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        Back to event
+      </a>
+      <div class="mt-4 border-t border-base-300/40 pt-4">
+        <div class="flex flex-wrap items-center gap-2">
+          {% render 'event_status', event: event %}
+        </div>
+        <h3 class="mt-2 text-base font-bold leading-snug text-base-content">
+          <a href="{{ event.path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ event.link_text | default: event.name }}</a>
+        </h3>
+        {%- assign ev_start = event.settings.start_datetime | presence -%}
+        {%- if ev_start -%}
+          <p class="mt-2 text-xs text-base-content/60">{{ ev_start | date: '%b %d, %Y · %H:%M' }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if siblings_sz > 0 -%}
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Other channels in this event</h3>
+        <ul class="mt-3 space-y-1 text-sm">
+          {%- for ch in siblings -%}
+            {%- assign is_current = false -%}
+            {%- if current_page and ch.id == current_page.id -%}{%- assign is_current = true -%}{%- endif -%}
+            <li>
+              <a
+                href="{{ ch.path }}"
+                class="flex items-center justify-between rounded-md px-3 py-2 transition {% if is_current %}bg-primary/10 text-primary font-semibold{% else %}text-base-content/80 hover:bg-base-200 hover:text-base-content{% endif %}"
+                data-turbo-frame="main-content-frame"
+                data-turbo-action="advance"
+                {% if is_current %}aria-current="page"{% endif %}
+              >
+                <span>{{ ch.link_text | default: ch.name }}</span>
+                {%- assign ch_count = ch.children_in_list | size -%}
+                <span class="text-xs text-base-content/40">{{ ch_count }}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Categories</h3>
+      <ul class="mt-3 space-y-1 text-sm">
+        {%- for ch in nav_channels -%}
+          {%- assign is_current = false -%}
+          {%- if current_page and ch.id == current_page.id -%}{%- assign is_current = true -%}{%- endif -%}
+          <li>
+            <a
+              href="{{ ch.path }}"
+              class="flex items-center justify-between rounded-md px-3 py-2 transition {% if is_current %}bg-primary/10 text-primary font-semibold{% else %}text-base-content/80 hover:bg-base-200 hover:text-base-content{% endif %}"
+              data-turbo-frame="main-content-frame"
+              data-turbo-action="advance"
+              {% if is_current %}aria-current="page"{% endif %}
+            >
+              <span>{{ ch.link_text | default: ch.name }}</span>
+              {%- assign ch_count = ch.children_in_list | size -%}
+              <span class="text-xs text-base-content/40">{{ ch_count }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+
+  {%- assign tags_size = tags | size -%}
+  {%- if tags_size > 0 -%}
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Tags</h3>
+      <div class="mt-3 flex flex-wrap gap-2">
+        {%- if sync_filter -%}
+          <button
+            type="button"
+            class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition"
+            :class="tag === '' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
+            @click="tag = ''"
+          >All</button>
+        {%- endif -%}
+        {%- for t in tags -%}
+          {%- if sync_filter -%}
+            <button
+              type="button"
+              class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition"
+              :class="tag === '{{ t.slug }}' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
+              @click="tag = '{{ t.slug }}'"
+            >{{ t.name }}</button>
+          {%- else -%}
+            <a
+              href="{{ t.path }}"
+              class="inline-flex items-center rounded-full border border-base-300/50 px-3 py-1 text-xs font-medium text-base-content/80 transition hover:border-primary/50 hover:text-primary"
+              data-turbo-frame="main-content-frame"
+              data-turbo-action="advance"
+            >{{ t.name }}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- if event == blank -%}
+    {%- assign latest_size = latest_events | size -%}
+    {%- if latest_size > 0 -%}
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Recent webinars</h3>
+        <ul class="mt-3 space-y-3">
+          {%- for ev in latest_events limit: 5 -%}
+            <li>
+              <a
+                href="{{ ev.path }}"
+                class="group block"
+                data-turbo-frame="main-content-frame"
+                data-turbo-action="advance"
+              >
+                <div class="text-sm font-semibold leading-snug text-base-content group-hover:text-primary line-clamp-2">
+                  {{ ev.link_text | default: ev.name }}
+                </div>
+                {%- assign ev_start = ev.settings.start_datetime | presence -%}
+                {%- if ev_start -%}
+                  <div class="mt-1 text-xs text-base-content/60">{{ ev_start | date: '%b %d, %Y' }}</div>
+                {%- endif -%}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</aside>

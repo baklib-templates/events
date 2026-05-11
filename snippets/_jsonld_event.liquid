@@ -1,0 +1,93 @@
+{%- comment -%}
+  JSON-LD structured data for a single event page.
+  Inputs:
+    event: PageDrop
+    speakers: array of team_member PageDrops (resolved by caller)
+    status: 'upcoming' | 'live' | 'ended'
+{%- endcomment -%}
+
+{%- assign ev_title = event.link_text | default: event.name -%}
+{%- assign ev_desc = event.settings.description | strip_html | default: '' -%}
+{%- assign ev_loc = event.settings.location | default: 'Online' -%}
+{%- assign is_online = event.settings.is_online -%}
+{%- assign cover = event.settings.cover_image | presence -%}
+{%- assign video_url = event.settings.video_asset | default: event.settings.video_url | presence -%}
+{%- assign start_iso = event.settings.start_datetime -%}
+{%- assign end_iso = event.settings.end_datetime -%}
+{%- assign start_ts = start_iso | date: '%s' | plus: 0 -%}
+{%- assign end_ts = end_iso | date: '%s' | plus: 0 -%}
+{%- if end_ts == 0 and start_ts > 0 -%}
+  {%- assign end_iso = start_ts | plus: 3600 | date: '%Y-%m-%dT%H:%M:%S' -%}
+{%- endif -%}
+
+{%- assign event_status_iri = 'https://schema.org/EventScheduled' -%}
+{%- assign attendance_iri = 'https://schema.org/OnlineEventAttendanceMode' -%}
+{%- if is_online == false and ev_loc != 'Online' -%}
+  {%- assign attendance_iri = 'https://schema.org/OfflineEventAttendanceMode' -%}
+{%- endif -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": {{ ev_title | json }},
+  "description": {{ ev_desc | json }},
+  "startDate": {{ start_iso | json }},
+  "endDate": {{ end_iso | json }},
+  "eventStatus": {{ event_status_iri | json }},
+  "eventAttendanceMode": {{ attendance_iri | json }},
+  {%- if cover %}
+  "image": [{{ cover | json }}],
+  {% endif -%}
+  "url": {{ site.host | append: event.path | json }},
+  "location": {
+    {%- if attendance_iri == 'https://schema.org/OnlineEventAttendanceMode' %}
+    "@type": "VirtualLocation",
+    "url": {{ site.host | append: event.path | json }}
+    {%- else %}
+    "@type": "Place",
+    "name": {{ ev_loc | json }},
+    "address": {{ ev_loc | json }}
+    {%- endif %}
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": {{ site.settings.brand_name | default: site.name | json }},
+    "url": {{ site.host | json }}
+  }
+  {%- assign sp_size = speakers | size -%}
+  {%- if sp_size > 0 %},
+  "performer": [
+    {%- for sp in speakers -%}
+      {
+        "@type": "Person",
+        "name": {{ sp.link_text | default: sp.name | json }}
+        {%- assign sp_url = sp.settings.homepage_url | default: (site.host | append: sp.path) -%}
+        ,"url": {{ sp_url | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+  {%- endif %}
+}
+</script>
+
+{%- if status == 'ended' and video_url -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": {{ ev_title | json }},
+    "description": {{ ev_desc | json }},
+    "uploadDate": {{ end_iso | json }},
+    {%- if cover %}
+    "thumbnailUrl": [{{ cover | json }}],
+    {% endif -%}
+    "contentUrl": {{ video_url | json }},
+    "embedUrl": {{ video_url | json }},
+    "publisher": {
+      "@type": "Organization",
+      "name": {{ site.settings.brand_name | default: site.name | json }}
+    }
+  }
+  </script>
+{%- endif -%}

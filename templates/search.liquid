@@ -1,0 +1,80 @@
+{% set_meta_title 'Search' %}
+
+<main class="grow bg-base-100">
+  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <div class="mb-10 border-b border-base-300/40 pb-8">
+      <h1 class="text-2xl font-bold tracking-tight text-base-content sm:text-3xl">Search</h1>
+      <p class="mt-2 text-sm text-base-content/70">Find webinars, replays, speakers, and articles.</p>
+      {% form_tag 'search' %}
+        <label class="relative mt-6 flex items-center rounded-xl border border-base-300/50 bg-base-100 transition focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
+          <span class="pointer-events-none absolute left-4 text-base-content/40">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+          </span>
+          <input
+            type="search"
+            name="{{ form.keywords_field_name }}"
+            value="{{ search.keywords | escape_once }}"
+            class="w-full rounded-xl border-0 bg-transparent py-3.5 pl-12 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:outline-none focus:ring-0 md:text-base"
+            placeholder="Search webinars, speakers, articles…"
+            autocomplete="off"
+            x-init="$nextTick(() => { $el.focus(); $el.setSelectionRange($el.value.length, $el.value.length); })"
+          />
+        </label>
+      {% endform_tag %}
+
+      {% if search.keywords or search.tag %}
+        <p class="mt-4 text-sm text-base-content/60">
+          {% if search.tag %}<span class="font-medium text-base-content">{{ search.tag.name }}</span>{% endif %}
+          {% if search.keywords %}
+            {% if search.tag %}<span class="text-base-content/30"> · </span>{% endif %}
+            <span>{{ search.keywords }}</span>
+          {% endif %}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if search.keywords or search.tag %}
+      <div class="min-h-[40vh]">
+        {% if search.page_number == 1 %}
+          {% for link in search.extends %}
+            <a class="mb-4 block rounded-xl border border-base-300/40 bg-base-200/60 p-5 transition hover:border-primary/40 hover:bg-base-200" href="{{ link.url }}">
+              <div class="text-base font-semibold text-base-content">{{ link.link_text }}</div>
+              <div class="mt-1 line-clamp-1 text-xs text-base-content/50">{{ link.url }}</div>
+            </a>
+          {% endfor %}
+        {% endif %}
+
+        {% paginate_tag search.pages, as: 'items' %}
+          <ul class="divide-y divide-base-300/40 border-t border-base-300/40">
+            {% for result in items %}
+              <li class="py-6 first:pt-6">
+                <a href="{{ result.path }}" class="group block" data-turbo-frame="main-content-frame" data-turbo-action="advance">
+                  <h2 class="text-lg font-semibold tracking-tight text-base-content group-hover:text-primary md:text-xl">
+                    {{ result.highlighted_search_title }}
+                  </h2>
+                  <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-base-content/70">
+                    {{ result.highlighted_search_content }}
+                  </p>
+                  <p class="mt-3 font-mono text-xs text-base-content/40">{{ result.path }}</p>
+                </a>
+              </li>
+            {% else %}
+              <li class="py-24 text-center text-sm text-base-content/60">No results.</li>
+            {% endfor %}
+          </ul>
+
+          {% if paginate.total_count > 0 %}
+            <div class="mt-12 flex justify-center border-t border-base-300/40 pt-8">
+              {% render 'paginate', paginate: paginate %}
+            </div>
+          {% endif %}
+        {% endpaginate_tag %}
+      </div>
+    {% else %}
+      <p class="py-16 text-center text-sm text-base-content/60">Enter a keyword to start searching.</p>
+    {% endif %}
+  </section>
+</main>

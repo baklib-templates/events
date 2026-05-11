@@ -1,0 +1,76 @@
+{%- comment -%}
+  Event card.
+  Inputs:
+    event: PageDrop (template_name == 'event')
+    variant: 'default' | 'compact' | 'feature'
+{%- endcomment -%}
+
+{%- assign cover = event.settings.cover_image | presence -%}
+{%- assign location = event.settings.location | presence -%}
+{%- assign is_online = event.settings.is_online -%}
+{%- assign start_ts = event.settings.start_datetime | date: '%s' | plus: 0 -%}
+{%- assign now_ts = 'now' | date: '%s' | plus: 0 -%}
+{%- assign date_label = event.settings.start_datetime | date: '%b %d, %Y' -%}
+{%- assign time_label = event.settings.start_datetime | date: '%H:%M' -%}
+{%- assign place_label = location | default: 'Online' -%}
+{%- if is_online -%}
+  {%- assign place_label = 'Online' -%}
+{%- endif -%}
+
+<a
+  href="{{ event.path }}"
+  data-turbo-frame="main-content-frame"
+  data-turbo-action="advance"
+  class="group flex flex-col overflow-hidden rounded-xl border border-base-300/50 bg-base-100 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+>
+  <div class="relative aspect-[16/9] w-full overflow-hidden bg-base-200">
+    {%- if cover -%}
+      <img
+        src="{{ cover }}"
+        alt=""
+        class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+        loading="lazy"
+        width="640"
+        height="360"
+      />
+    {%- else -%}
+      <div class="flex h-full w-full items-center justify-center text-base-content/30">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" class="h-12 w-12" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+          <path d="m10 9 6 4-6 4z" fill="currentColor"/>
+        </svg>
+      </div>
+    {%- endif -%}
+    <div class="absolute left-3 top-3">
+      {% render 'event_status', event: event %}
+    </div>
+  </div>
+
+  <div class="flex flex-1 flex-col p-5">
+    <div class="flex items-center gap-x-3 text-xs font-medium text-base-content/60">
+      {%- if start_ts > 0 -%}
+        <time datetime="{{ event.settings.start_datetime }}">{{ date_label }}{% if time_label != blank %} · {{ time_label }}{% endif %}</time>
+      {%- else -%}
+        <span>Date TBA</span>
+      {%- endif -%}
+      <span aria-hidden="true">·</span>
+      <span>{{ place_label }}</span>
+    </div>
+    <h3 class="mt-2 line-clamp-2 text-lg font-semibold leading-snug tracking-tight text-base-content group-hover:text-primary">
+      {{ event.link_text | default: event.name }}
+    </h3>
+    {%- if event.settings.description != blank -%}
+      <p class="mt-2 line-clamp-2 text-sm text-base-content/70">{{ event.settings.description }}</p>
+    {%- endif -%}
+    <div class="mt-4 inline-flex items-center text-sm font-semibold text-primary">
+      {%- if start_ts > 0 and now_ts < start_ts -%}
+        Reserve seat
+      {%- elsif start_ts > 0 and now_ts >= start_ts -%}
+        Watch now
+      {%- else -%}
+        Learn more
+      {%- endif -%}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-1 h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+    </div>
+  </div>
+</a>

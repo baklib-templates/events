@@ -1,0 +1,49 @@
+{%- comment -%}
+  Compute event status (upcoming / live / ended) from settings.
+  Inputs:
+    event: PageDrop with template_name == 'event'
+  Output (assigned to caller scope is not possible across render boundary,
+  so this snippet only renders the badge UI; callers compute status with
+  the same recipe inline when they need conditional logic).
+  Usage:
+    {% render 'event_status', event: ev, variant: 'badge' %}
+    variant: 'badge' (default) | 'pill'
+{%- endcomment -%}
+
+{%- assign now_ts = 'now' | date: '%s' | plus: 0 -%}
+{%- assign start_ts = event.settings.start_datetime | date: '%s' | plus: 0 -%}
+{%- assign end_ts = event.settings.end_datetime | date: '%s' | plus: 0 -%}
+{%- if end_ts == 0 and start_ts > 0 -%}
+  {%- assign end_ts = start_ts | plus: 3600 -%}
+{%- endif -%}
+
+{%- assign status = 'upcoming' -%}
+{%- if start_ts > 0 -%}
+  {%- if now_ts >= end_ts -%}
+    {%- assign status = 'ended' -%}
+  {%- elsif now_ts >= start_ts -%}
+    {%- assign status = 'live' -%}
+  {%- endif -%}
+{%- else -%}
+  {%- assign status = 'tba' -%}
+{%- endif -%}
+
+{%- assign cls = 'badge-upcoming' -%}
+{%- assign label = 'Upcoming' -%}
+{%- if status == 'live' -%}
+  {%- assign cls = 'badge-live' -%}
+  {%- assign label = 'Live now' -%}
+{%- elsif status == 'ended' -%}
+  {%- assign cls = 'badge-replay' -%}
+  {%- assign label = 'Watch Replay' -%}
+{%- elsif status == 'tba' -%}
+  {%- assign cls = 'badge-tba' -%}
+  {%- assign label = 'TBA' -%}
+{%- endif -%}
+
+<span class="badge-status {{ cls }}">
+  {%- if status == 'live' -%}
+    <span class="status-dot" aria-hidden="true"></span>
+  {%- endif -%}
+  {{ label }}
+</span>

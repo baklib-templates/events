@@ -1,0 +1,127 @@
+{%- assign root = site.pages['/'] -%}
+{%- assign nav_items = '' -%}
+{%- if root -%}
+  {%- assign nav_items = root.children_in_nav_menu -%}
+  {%- if nav_items == blank -%}
+    {%- assign nav_items = root.children_in_list -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- assign brand_name = site.settings.brand_name | default: site.name -%}
+{%- assign cta_label = site.settings.cta_label | default: 'Browse Webinars' -%}
+{%- assign cta_url = site.settings.cta_url | presence -%}
+
+<header
+  class="sticky top-0 z-40 w-full border-b border-base-300/40 bg-base-100/90 backdrop-blur supports-[backdrop-filter]:bg-base-100/75"
+  x-data="{ open: false }"
+>
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:px-8">
+    <a
+      class="flex min-w-0 items-center gap-2"
+      href="{{ site.index_path }}"
+      data-turbo-frame="main-content-frame"
+      data-turbo-action="advance"
+      aria-label="Home"
+    >
+      {%- assign favicon_url = site.favicon_url | presence -%}
+      {%- if favicon_url -%}
+        <img class="h-8 w-8 shrink-0 rounded-md object-cover" src="{{ favicon_url }}" alt="" loading="eager" />
+      {%- else -%}
+        <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-content">
+          {{ brand_name | slice: 0 | upcase }}
+        </span>
+      {%- endif -%}
+      <span class="truncate text-base font-semibold tracking-tight text-base-content sm:text-lg">{{ brand_name }}</span>
+    </a>
+
+    <nav aria-label="Primary" class="hidden items-center gap-x-7 text-sm font-medium text-base-content/80 lg:flex">
+      {%- if nav_items != blank -%}
+        {%- for item in nav_items -%}
+          <a
+            href="{{ item.path }}"
+            class="transition hover:text-primary"
+            data-turbo-frame="main-content-frame"
+            data-turbo-action="advance"
+          >{{ item.link_text | default: item.name }}</a>
+        {%- endfor -%}
+      {%- endif -%}
+      {{ site.settings.header_menu_html }}
+    </nav>
+
+    <div class="hidden items-center gap-3 lg:flex">
+      {%- if site.search_path -%}
+        <a
+          href="{{ site.search_path }}"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-md text-base-content/70 transition hover:bg-base-content/5 hover:text-base-content"
+          aria-label="Search"
+          data-turbo-frame="main-content-frame"
+          data-turbo-action="advance"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        </a>
+      {%- endif -%}
+      {%- if cta_url -%}
+        <a
+          href="{{ cta_url }}"
+          class="btn btn-primary"
+          data-turbo-frame="main-content-frame"
+          data-turbo-action="advance"
+        >{{ cta_label }}</a>
+      {%- endif -%}
+    </div>
+
+    <button
+      type="button"
+      class="inline-flex h-9 w-9 items-center justify-center rounded-md text-base-content/70 hover:bg-base-content/5 hover:text-base-content lg:hidden"
+      @click="open = !open"
+      :aria-expanded="open"
+      aria-label="Menu"
+    >
+      <svg x-show="!open" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+      <svg x-show="open" x-cloak class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12" /></svg>
+    </button>
+  </div>
+
+  <div
+    class="border-t border-base-300/40 bg-base-100 lg:hidden"
+    x-show="open"
+    x-cloak
+    x-transition.opacity
+    style="display:none;"
+  >
+    <nav class="space-y-1 px-4 py-3 text-sm font-medium" aria-label="Mobile">
+      {%- if nav_items != blank -%}
+        {%- for item in nav_items -%}
+          <a
+            href="{{ item.path }}"
+            class="block rounded-md px-3 py-2 text-base-content/80 hover:bg-base-content/5 hover:text-primary"
+            data-turbo-frame="main-content-frame"
+            data-turbo-action="advance"
+            @click="open = false"
+          >{{ item.link_text | default: item.name }}</a>
+        {%- endfor -%}
+      {%- endif -%}
+      {%- if site.search_path -%}
+        <a
+          href="{{ site.search_path }}"
+          class="block rounded-md px-3 py-2 text-base-content/80 hover:bg-base-content/5 hover:text-primary"
+          data-turbo-frame="main-content-frame"
+          data-turbo-action="advance"
+          @click="open = false"
+        >Search</a>
+      {%- endif -%}
+      {%- if cta_url -%}
+        <a
+          href="{{ cta_url }}"
+          class="mt-2 block rounded-md bg-primary px-3 py-2 text-center text-primary-content hover:bg-primary/90"
+          data-turbo-frame="main-content-frame"
+          data-turbo-action="advance"
+          @click="open = false"
+        >{{ cta_label }}</a>
+      {%- endif -%}
+    </nav>
+  </div>
+</header>

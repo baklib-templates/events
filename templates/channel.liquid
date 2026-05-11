@@ -1,57 +1,277 @@
-{%- assign lessons = page.children_in_list -%}
+{%- comment -%}
+  Channel under an event hub: aggregates child pages with client-side tag filter.
+  Optional display_style: grid | gallery | list (page.settings.display_style).
+{%- endcomment -%}
 
-{%- capture nav_breadcrumbs -%}
-<nav class="flex flex-wrap items-center gap-2 text-sm text-base-content/70" aria-label="Breadcrumb">
-  <a href="{{ site.index_path }}" class="hover:text-primary">Home</a>
-  <span class="text-base-content/30">/</span>
-  <span class="font-medium text-base-content">{{ page.link_text | default: page.name }}</span>
-</nav>
-{%- endcapture -%}
+{%- assign event_ctx = page.parent -%}
+{%- assign sibling_channels = '' | split: '' -%}
+{%- if event_ctx -%}
+  {%- for sib in event_ctx.children_in_list -%}
+    {%- if sib.template_name == 'channel' -%}
+      {%- assign sibling_channels = sibling_channels | concat: (sib | split: '') -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
 
-{% render 'navbar', breadcrumbs: nav_breadcrumbs %}
+{%- assign items = page.children_in_list -%}
+{%- assign items_size = items | size -%}
+{%- assign display_style_raw = page.settings.display_style -%}
+{%- assign display_style = display_style_raw.value | default: display_style_raw | default: 'grid' -%}
 
-<main class="grow px-4 sm:px-6">
-  <div class="mx-auto max-w-6xl py-10 md:py-12">
-    <div class="mb-6">
-      <h1 class="text-2xl font-extrabold tracking-tight text-base-content md:text-3xl">{{ page.link_text | default: page.name }}</h1>
+{%- comment -%} Collect distinct tags from children for client-side filter. {%- endcomment -%}
+{%- assign tag_slugs = '' -%}
+{%- assign tag_names = '' -%}
+{%- for it in items -%}
+  {%- for t in it.tags -%}
+    {%- assign needle = t.slug | append: '|' -%}
+    {%- unless tag_slugs contains needle -%}
+      {%- assign tag_slugs = tag_slugs | append: needle -%}
+      {%- assign tag_names = tag_names | append: t.name | append: '|' -%}
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- assign tag_slug_list = tag_slugs | split: '|' -%}
+{%- assign tag_name_list = tag_names | split: '|' -%}
+
+{% set_meta_title page.link_text | default: page.name %}
+{% set_meta_description page.settings.description %}
+
+<main class="grow bg-base-100">
+  <section class="border-b border-base-300/40 bg-base-200">
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+      <nav class="mb-3 flex flex-wrap items-center gap-2 text-sm text-base-content/60" aria-label="Breadcrumb">
+        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
+        <span aria-hidden="true">/</span>
+        {%- if event_ctx -%}
+          <a href="{{ event_ctx.path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ event_ctx.link_text | default: event_ctx.name }}</a>
+          <span aria-hidden="true">/</span>
+        {%- endif -%}
+        <span class="text-base-content">{{ page.link_text | default: page.name }}</span>
+      </nav>
+      <h1 class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">{{ page.link_text | default: page.name }}</h1>
       {%- if page.settings.description != blank -%}
-        <p class="mt-2 text-base-content/70">{{ page.settings.description }}</p>
+        <p class="mt-3 max-w-3xl text-base text-base-content/70">{{ page.settings.description }}</p>
       {%- endif -%}
     </div>
+  </section>
 
-    <div class="divide-y divide-base-300/20 rounded-xl border border-base-300/20 bg-base-100">
-      {%- for lesson in lessons -%}
-        {%- assign ds = lesson.settings.duration_seconds | default: 0 | plus: 0 -%}
-        {%- capture dlab -%}{% render 'duration_label', seconds: ds %}{%- endcapture -%}
-        {%- assign vtype = 'article' -%}
-        {%- if lesson.settings.video_url != blank -%}
-          {%- assign vtype = 'video' -%}
-        {%- endif -%}
-        <div class="p-4">
-          {% render 'content_link',
-            title: lesson.link_text,
-            description: lesson.settings.description,
-            href: lesson.path,
-            link_type: vtype,
-            duration_label: dlab | strip
-          %}
+  <section
+    class="bg-base-100"
+    x-data="{ tag: (window.location.hash || '').replace('#tag=', '') }"
+    x-init="
+      $watch('tag', (v) => {
+        if (v) { history.replaceState(null, '', '#tag=' + v) }
+        else if (window.location.hash) { history.replaceState(null, '', window.location.pathname + window.location.search) }
+      })
+    "
+  >
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+      <div class="grid gap-10 lg:grid-cols-12">
+        <div class="lg:col-span-8 xl:col-span-9">
+
+          {%- assign tag_count = tag_slug_list | size -%}
+          {%- if tag_count > 0 -%}
+            <div class="mb-8 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                class="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition"
+                :class="tag === '' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
+                @click="tag = ''"
+              >All</button>
+              {%- for slug in tag_slug_list -%}
+                {%- assign s = slug | strip -%}
+                {%- if s != '' -%}
+                  {%- assign idx = forloop.index0 -%}
+                  {%- assign label = tag_name_list[idx] | strip -%}
+                  <button
+                    type="button"
+                    class="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition"
+                    :class="tag === '{{ s }}' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
+                    @click="tag = '{{ s }}'"
+                  >{{ label | default: s }}</button>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- if items_size > 0 -%}
+            {%- if display_style == 'gallery' -%}
+              <div class="grid gap-8 sm:grid-cols-2">
+                {%- for it in items -%}
+                  {%- assign item_tag_slugs = '' -%}
+                  {%- for t in it.tags -%}
+                    {%- assign item_tag_slugs = item_tag_slugs | append: t.slug | append: ',' -%}
+                  {%- endfor -%}
+                  <div
+                    data-tags="{{ item_tag_slugs }}"
+                    x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
+                    x-cloak
+                  >
+                    {%- if it.template_name == 'event' -%}
+                      {% render 'event_card', event: it %}
+                    {%- else -%}
+                      {%- assign g_cover = it.settings.thumb_image | default: it.settings.thumb_image_url | presence -%}
+                      {%- assign g_pub = it.published_at | default: it.created_at -%}
+                      <a
+                        href="{{ it.path }}"
+                        data-turbo-frame="main-content-frame"
+                        data-turbo-action="advance"
+                        class="group block overflow-hidden rounded-2xl border border-base-300/50 bg-base-100 transition hover:border-primary/40 hover:shadow-lg"
+                      >
+                        <div class="relative aspect-[4/3] w-full overflow-hidden bg-base-200">
+                          {%- if g_cover -%}
+                            <img src="{{ g_cover }}" alt="" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" loading="lazy" />
+                          {%- else -%}
+                            <div class="flex h-full w-full items-center justify-center text-base-content/25">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="h-16 w-16"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
+                            </div>
+                          {%- endif -%}
+                        </div>
+                        <div class="p-4">
+                          <div class="text-xs text-base-content/55">{{ g_pub | date: '%b %d, %Y' }}</div>
+                          <h3 class="mt-1 line-clamp-2 text-lg font-semibold tracking-tight text-base-content group-hover:text-primary">
+                            {{ it.link_text | default: it.name }}
+                          </h3>
+                          {%- if it.settings.description != blank -%}
+                            <p class="mt-2 line-clamp-2 text-sm text-base-content/65">{{ it.settings.description }}</p>
+                          {%- endif -%}
+                        </div>
+                      </a>
+                    {%- endif -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- elsif display_style == 'list' -%}
+              <ul class="divide-y divide-base-300/50 rounded-2xl border border-base-300/50 bg-base-100">
+                {%- for it in items -%}
+                  {%- assign item_tag_slugs = '' -%}
+                  {%- for t in it.tags -%}
+                    {%- assign item_tag_slugs = item_tag_slugs | append: t.slug | append: ',' -%}
+                  {%- endfor -%}
+                  <li
+                    data-tags="{{ item_tag_slugs }}"
+                    x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
+                    x-cloak
+                  >
+                    {%- if it.template_name == 'event' -%}
+                      <div class="p-4">
+                        {% render 'event_card', event: it %}
+                      </div>
+                    {%- else -%}
+                      {%- assign l_cover = it.settings.thumb_image | default: it.settings.thumb_image_url | presence -%}
+                      {%- assign l_pub = it.published_at | default: it.created_at -%}
+                      <a
+                        href="{{ it.path }}"
+                        data-turbo-frame="main-content-frame"
+                        data-turbo-action="advance"
+                        class="flex items-center gap-4 p-4 transition hover:bg-base-200/70"
+                      >
+                        <div class="relative h-14 w-20 shrink-0 overflow-hidden rounded-md bg-base-200">
+                          {%- if l_cover -%}
+                            <img src="{{ l_cover }}" alt="" class="h-full w-full object-cover" loading="lazy" />
+                          {%- endif -%}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <div class="text-xs text-base-content/55">{{ l_pub | date: '%b %d, %Y' }}</div>
+                          <div class="mt-0.5 truncate text-base font-semibold text-base-content">{{ it.link_text | default: it.name }}</div>
+                          {%- if it.settings.description != blank -%}
+                            <div class="mt-0.5 truncate text-sm text-base-content/65">{{ it.settings.description }}</div>
+                          {%- endif -%}
+                        </div>
+                        <span class="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
+                          View
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                        </span>
+                      </a>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- else -%}
+              <div class="grid gap-6 sm:grid-cols-2">
+                {%- for it in items -%}
+                  {%- assign item_tag_slugs = '' -%}
+                  {%- for t in it.tags -%}
+                    {%- assign item_tag_slugs = item_tag_slugs | append: t.slug | append: ',' -%}
+                  {%- endfor -%}
+                  <div
+                    data-tags="{{ item_tag_slugs }}"
+                    x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
+                    x-cloak
+                  >
+                    {%- if it.template_name == 'event' -%}
+                      {% render 'event_card', event: it %}
+                    {%- else -%}
+                      {% render 'post_card', post: it %}
+                    {%- endif -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          {%- else -%}
+            <p class="rounded-lg border border-dashed border-base-300/60 bg-base-200/50 p-10 text-center text-sm text-base-content/60">
+              No items yet.
+            </p>
+          {%- endif -%}
         </div>
-      {%- else -%}
-        <div class="p-6 text-sm text-base-content/60">No lessons yet.</div>
-      {%- endfor -%}
+
+        <div class="lg:col-span-4 xl:col-span-3">
+          <div x-data="{}">
+            {% render 'sidebar', current_page: page, event: event_ctx, siblings: sibling_channels %}
+
+            {%- if tag_count > 0 -%}
+              <div class="mt-8">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Filter by tag</h3>
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition"
+                    :class="$root.tag === '' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
+                    @click="$root.tag = ''"
+                  >All</button>
+                  {%- for slug in tag_slug_list -%}
+                    {%- assign s = slug | strip -%}
+                    {%- if s != '' -%}
+                      {%- assign idx = forloop.index0 -%}
+                      {%- assign label = tag_name_list[idx] | strip -%}
+                      <button
+                        type="button"
+                        class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition"
+                        :class="$root.tag === '{{ s }}' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
+                        @click="$root.tag = '{{ s }}'"
+                      >{{ label | default: s }}</button>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 </main>
 
 {% schema %}
   {
-    "name": "Course module",
-    "description": "Lesson list for one module",
+    "name": "Channel (resources / news)",
+    "description": "Aggregation page under an event hub with client-side tag filter",
     "thumb_url": "images/theme/preview-index.png",
     "preview_image_urls": ["images/theme/preview-index.png"],
     "sub_page_templates": ["page"],
     "settings": [
-      { "id": "description", "type": "textarea", "label": "Description", "to_markdown": true }
+      { "id": "description", "type": "textarea", "label": "Description", "to_markdown": true },
+      {
+        "id": "display_style",
+        "type": "select",
+        "label": "Display style",
+        "default": "grid",
+        "choices": [
+          { "label": "Grid (cards)", "value": "grid" },
+          { "label": "Gallery (image-first)", "value": "gallery" },
+          { "label": "List (compact)", "value": "list" }
+        ]
+      }
     ]
   }
 {% endschema %}

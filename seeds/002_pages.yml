@@ -4,79 +4,173 @@ pages:
   template_name: index
 
   children:
-    - name: "Orientation: Understanding Where You Are"
-      slug: orientation
-      template_name: channel
+    - name: "Scaling Product-Led Growth in 2026"
+      slug: scaling-plg-2026
+      template_name: event
+      tags: ["plg", "growth"]
       settings:
-        description: "You need to know where you're starting from, before you can pretend to decide where you're going."
-      children:
-        - name: "The Landscape of Choice"
-          slug: landscape-of-choice
-          template_name: page
-          settings:
-            description: "A practical map for navigating the illusion that you actually have any agency at all."
-            video_url: "https://assets.tailwindcss.com/templates/compass/landscape-of-choice.mp4"
-            thumb_image_url: "https://assets.tailwindcss.com/templates/compass/lesson-video-thumbnail-01.png"
-            duration_seconds: 876
-            content: "preset:lesson-body.html"
-        - name: "The Paradox of Agency"
-          slug: paradox-of-agency
-          template_name: page
-          settings:
-            description: "Explore whether you're living your life or just reacting to everyone else's."
-            duration_seconds: 0
-            content: "preset:lesson-body.html"
-        - name: "Liberation from Regret"
-          slug: liberation-from-regret
-          template_name: page
-          settings:
-            description: "If no alternative choice was ever possible, regret becomes logically unnecessary."
-            video_url: "https://assets.tailwindcss.com/templates/compass/liberation-from-regret.mp4"
-            thumb_image_url: "https://assets.tailwindcss.com/templates/compass/lesson-video-thumbnail-02.png"
-            duration_seconds: 947
-            content: "preset:lesson-body.html"
-
-    - name: "Direction: Choosing a Path"
-      slug: direction
-      template_name: channel
-      settings:
-        description: "Experience the sensation of choice without the burden of true responsibility."
-      children:
-        - name: "Mapping the Causal Factors"
-          slug: mapping-causal-factors
-          template_name: page
-          settings:
-            description: "The causes acting on you can give you insight into where they might take you."
-            video_url: "https://assets.tailwindcss.com/templates/compass/mapping-causal-factors.mp4"
-            thumb_image_url: "https://assets.tailwindcss.com/templates/compass/lesson-video-thumbnail-03.png"
-            duration_seconds: 892
-            content: "preset:lesson-body.html"
-
-    - name: Interviews
-      slug: interviews
-      template_name: channel.grid
-      settings:
-        description: "Explore interviews with industry experts and thought leaders."
+        start_datetime: "2026-09-12T14:00:00"
+        end_datetime: "2026-09-12T15:00:00"
+        location: "Online"
+        is_online: true
+        cover_image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=70"
+        register_url: ""
+        video_url: ""
+        slides_url: ""
+        description: "How modern B2B companies turn self-serve adoption into enterprise revenue without losing momentum."
+        agenda_html: "<ul><li>Opening keynote — 5 min</li><li>Product-led growth playbook — 25 min</li><li>Live Q&A — 25 min</li></ul>"
+        content: "<p>Join us for a 60-minute working session on what it takes to scale PLG in 2026.</p>"
       children:
         - name: "Annie King"
           slug: annie-king
-          template_name: page
+          template_name: team_member
           settings:
-            subtitle: "Interview"
-            intro: "Annie King shares her approach to life planning through her Legacy Tracker system and the art of scheduled spontaneity."
-            video_url: "https://assets.tailwindcss.com/templates/compass/annie-king-1080p.mp4"
-            thumb_image_url: "https://assets.tailwindcss.com/templates/compass/annie-king-video-thumbnail.png"
-            duration_seconds: 2570
-            chapters_html: "preset:annie-chapters.html"
-            transcript_html: "preset:annie-transcript.html"
-            content: "<h2>Highlights</h2><p>Select a chapter to jump in the video, or read the transcript below.</p>"
+            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=320&q=70"
+            job_title: "VP of Growth"
+            company: "Compass Labs"
+            homepage_url: "https://example.com/annie"
+            linkedin_url: "https://www.linkedin.com/"
+            twitter_url: ""
+            bio: "<p>Annie has scaled go-to-market motions at four B2B SaaS companies, three of which crossed $100M ARR.</p>"
+
+        - name: "Diego Romero"
+          slug: diego-romero
+          template_name: team_member
+          settings:
+            avatar: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=320&q=70"
+            job_title: "VP of RevOps"
+            company: "Atlas Software"
+            bio: "<p>Diego runs the revenue operations function at a publicly traded SaaS company.</p>"
+
+        - name: "News"
+          slug: news
+          template_name: channel
+          tags: ["announcement"]
+          settings:
+            description: "Updates and announcements about this webinar."
+            display_style: "grid"
+          children:
+            - name: "Why we're hosting this webinar"
+              slug: why-this-webinar
+              template_name: page
+              tags: ["marketing", "announcement"]
+              settings:
+                subtitle: "Announcement"
+                thumb_image: "https://images.unsplash.com/photo-1533750349088-cd871a92f312?auto=format&fit=crop&w=800&q=70"
+                description: "The PLG motion has shifted — here's why we're gathering operators now."
+                content: "<p>We designed this session around questions we hear every week from revenue leaders.</p>"
+
+        - name: "Gallery"
+          slug: gallery
+          template_name: channel
+          settings:
+            description: "Behind the scenes from studio setup and dry runs."
+            display_style: "gallery"
+          children:
+            - name: "Studio walkthrough"
+              slug: studio-walkthrough
+              template_name: page
+              tags: ["behind-the-scenes"]
+              settings:
+                thumb_image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=70"
+                description: "A photo tour of our broadcast desk, lighting grid, and backup feeds."
+                content: "<p>Consistency beats hype — here's how we keep every webinar sharp.</p>"
+
+        - name: "Resources"
+          slug: resources
+          template_name: channel
+          settings:
+            description: "Slides, transcript, and follow-up reading after the live session."
+            display_style: "list"
+          children:
+            - name: "Download the deck (PDF)"
+              slug: download-deck
+              template_name: page
+              tags: ["download", "playbook"]
+              settings:
+                subtitle: "Download"
+                thumb_image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=70"
+                description: "The slide deck from this webinar — frameworks, benchmarks, and talk tracks."
+                content: "<p>Use these slides to brief your leadership team or kick off a PLG workshop.</p>"
+
+    - name: "Inside the AI Buyer's Journey"
+      slug: ai-buyers-journey
+      template_name: event
+      tags: ["ai", "marketing"]
+      settings:
+        start_datetime: "2026-08-22T13:00:00"
+        end_datetime: "2026-08-22T14:00:00"
+        location: "Online"
+        is_online: true
+        cover_image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=70"
+        description: "How AI is rewriting the B2B buyer's journey — and what marketing teams should rebuild first."
+      children:
+        - name: "Mei Tanaka"
+          slug: mei-tanaka
+          template_name: team_member
+          settings:
+            avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=320&q=70"
+            job_title: "Head of Marketing"
+            company: "Northbeam"
+            twitter_url: "https://x.com/"
+            bio: "<p>Mei builds always-on demand engines for category-defining B2B brands.</p>"
+
+        - name: "Resources"
+          slug: resources
+          template_name: channel
+          settings:
+            description: "Briefing notes and curated articles referenced during the session."
+            display_style: "list"
+          children:
+            - name: "AI buyer journey map (PNG)"
+              slug: ai-buyer-map
+              template_name: page
+              tags: ["ai", "research"]
+              settings:
+                subtitle: "Download"
+                thumb_image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=70"
+                description: "A visual map of intent signals we monitor across the funnel."
+                content: "<p>Use this map to align marketing and sales on leading indicators.</p>"
+
+    - name: "Operations Excellence Summit (Replay)"
+      slug: operations-excellence-summit
+      template_name: event
+      tags: ["operations", "replay"]
+      settings:
+        start_datetime: "2025-11-04T09:00:00"
+        end_datetime: "2025-11-04T17:00:00"
+        location: "Online"
+        is_online: true
+        cover_image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=70"
+        video_url: "https://assets.tailwindcss.com/templates/compass/landscape-of-choice.mp4"
+        slides_url: "https://example.com/slides/ops-excellence.pdf"
+        transcript_html: "<p><strong>00:00</strong> Welcome and intro</p><p><strong>04:30</strong> The four pillars of operational excellence…</p>"
+        description: "A full-day virtual summit on operational excellence — talks, panels, and tactical workshops."
+      children:
         - name: "Dr. Nolan Grayson"
           slug: nolan-grayson
-          template_name: page
+          template_name: team_member
           settings:
-            subtitle: "Is Quantum Nirvana the key to true freedom?"
-            intro: "Dr. Nolan Grayson explores quantum determinism and the illusion of free will."
-            video_url: "https://assets.tailwindcss.com/templates/compass/nolan-grayson-1080p.mp4"
-            thumb_image_url: "https://assets.tailwindcss.com/templates/compass/nolan-grayson-video-thumbnail.png"
-            duration_seconds: 3480
-            content: "<h2>Highlights</h2><p>Discussion of parallel outcomes and perceived agency.</p>"
+            avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=320&q=70"
+            job_title: "Principal Researcher"
+            company: "Quantum Insights"
+            linkedin_url: "https://www.linkedin.com/"
+            bio: "<p>Nolan studies how applied AI reshapes enterprise decision-making.</p>"
+
+        - name: "Recaps"
+          slug: recaps
+          template_name: channel
+          settings:
+            description: "Written recaps and highlight reels from the summit."
+            display_style: "grid"
+          children:
+            - name: "Recap: 2025 highlights"
+              slug: recap-2025
+              template_name: page
+              tags: ["operations", "recap"]
+              settings:
+                subtitle: "Recap"
+                thumb_image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=70"
+                video_url: "https://assets.tailwindcss.com/templates/compass/liberation-from-regret.mp4"
+                description: "Highlights, screenshots, and key quotes from the 2025 Operations Excellence Summit."
+                content: "<p>The 2025 summit drew over 4,300 attendees from 38 countries. Here is what stood out.</p>"

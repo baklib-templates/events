@@ -1,143 +1,267 @@
 {%- assign root = site.pages['/'] -%}
-{%- assign mod_count = 0 -%}
-{%- assign lesson_count = 0 -%}
-{%- assign total_dur = 0 -%}
-{%- assign first_lesson_path = '' -%}
+{%- assign now_ts = 'now' | date: '%s' | plus: 0 -%}
+
+{%- comment -%} Collect all events under the root (one level). {%- endcomment -%}
+{%- assign all_events_raw = '' | split: '' -%}
 {%- if root -%}
-  {%- for mod in root.children_in_list -%}
-    {%- if mod.template_name == 'channel' -%}
-      {%- assign mod_count = mod_count | plus: 1 -%}
-      {%- assign ch_size = mod.children_in_list | size -%}
-      {%- assign lesson_count = lesson_count | plus: ch_size -%}
-      {%- for lesson in mod.children_in_list -%}
-        {%- assign d = lesson.settings.duration_seconds | default: 0 | plus: 0 -%}
-        {%- assign total_dur = total_dur | plus: d -%}
-        {%- if first_lesson_path == '' -%}
-          {%- assign first_lesson_path = lesson.path -%}
-        {%- endif -%}
-      {%- endfor -%}
+  {%- for child in root.children_in_list -%}
+    {%- if child.template_name == 'event' -%}
+      {%- assign all_events_raw = all_events_raw | concat: (child | split: '') -%}
     {%- endif -%}
   {%- endfor -%}
 {%- endif -%}
 
-{%- capture nav_breadcrumbs -%}
-<nav class="flex flex-wrap items-center gap-2 text-sm text-base-content/70" aria-label="Breadcrumb">
-  <a href="{{ site.index_path }}" class="hover:text-primary">Home</a>
-  <span class="text-base-content/30">/</span>
-  <span class="font-medium text-base-content">Overview</span>
-</nav>
-{%- endcapture -%}
+{%- comment -%} Partition events by start time. {%- endcomment -%}
+{%- assign upcoming_events = '' | split: '' -%}
+{%- assign past_events = '' | split: '' -%}
+{%- assign hero_event = nil -%}
+{%- assign hero_start = 0 -%}
+{%- for ev in all_events_raw -%}
+  {%- assign ev_start = ev.settings.start_datetime | date: '%s' | plus: 0 -%}
+  {%- assign ev_end = ev.settings.end_datetime | date: '%s' | plus: 0 -%}
+  {%- if ev_end == 0 and ev_start > 0 -%}
+    {%- assign ev_end = ev_start | plus: 3600 -%}
+  {%- endif -%}
+  {%- if ev_start > 0 and now_ts < ev_end -%}
+    {%- assign upcoming_events = upcoming_events | concat: (ev | split: '') -%}
+    {%- if hero_event == nil -%}
+      {%- assign hero_event = ev -%}
+      {%- assign hero_start = ev_start -%}
+    {%- elsif ev_start < hero_start -%}
+      {%- assign hero_event = ev -%}
+      {%- assign hero_start = ev_start -%}
+    {%- endif -%}
+  {%- else -%}
+    {%- assign past_events = past_events | concat: (ev | split: '') -%}
+  {%- endif -%}
+{%- endfor -%}
 
-{% render 'navbar', breadcrumbs: nav_breadcrumbs %}
+{%- comment -%} Hero fallback: most recent ended event. {%- endcomment -%}
+{%- if hero_event == nil -%}
+  {%- for ev in past_events -%}
+    {%- assign ev_start = ev.settings.start_datetime | date: '%s' | plus: 0 -%}
+    {%- if hero_event == nil or ev_start > hero_start -%}
+      {%- assign hero_event = ev -%}
+      {%- assign hero_start = ev_start -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
 
-<main class="grow px-4 sm:px-6">
-  <div class="relative mx-auto max-w-7xl">
-    {%- assign default_hero_rel = 'images/theme/hero-illustration.svg' | asset_url -%}
-    <div class="absolute -inset-x-2 top-0 -z-10 h-80 overflow-hidden rounded-t-2xl sm:h-[22rem] md:h-[28rem] lg:-inset-x-4 lg:h-[32rem]">
-      <img
-        src="{{ site.settings.hero_background_image | default: default_hero_rel }}"
-        alt=""
-        class="absolute inset-0 h-full w-full object-cover object-center opacity-40"
-        width="1200"
-        height="675"
-        loading="eager"
-      />
-      <div
-        class="absolute inset-0 bg-gradient-to-r from-base-100/90 via-base-100/40 to-transparent"
-        aria-hidden="true"
-      ></div>
-      <div class="absolute inset-0 rounded-t-2xl outline outline-1 -outline-offset-1 outline-base-300/30"></div>
-    </div>
+{%- comment -%} Latest posts: every event → channel → page. {%- endcomment -%}
+{%- assign latest_posts = '' | split: '' -%}
+{%- for ev in all_events_raw -%}
+  {%- for ch in ev.children_in_list -%}
+    {%- if ch.template_name == 'channel' -%}
+      {%- for p in ch.children_in_list -%}
+        {%- if p.template_name == 'page' -%}
+          {%- assign latest_posts = latest_posts | concat: (p | split: '') -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- assign latest_posts = latest_posts | sort: 'published_at' | reverse -%}
 
-    <div class="mx-auto max-w-6xl">
-      <div class="relative px-4 pb-10 pt-48 lg:py-24">
-        <div class="h-8 text-base-content">{% render 'logo', svg_class: 'h-8 w-auto text-base-content' %}</div>
-        <h1 class="sr-only">Course overview</h1>
-        <p class="mt-7 max-w-lg text-pretty text-base/7 text-base-content/70">
-          {{ site.settings.brand_slogan }}
-        </p>
-        <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm/7 font-semibold text-base-content sm:gap-3">
-          <div class="flex items-center gap-1.5">
-            <svg class="h-5 w-5 stroke-base-content/40" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-            {{ mod_count }} modules
+{%- assign hero_title = site.settings.hero_title | presence -%}
+{%- assign hero_subtitle = site.settings.hero_subtitle | presence -%}
+{%- assign hero_cover = nil -%}
+{%- if hero_event -%}
+  {%- assign hero_cover = hero_event.settings.cover_image | presence -%}
+{%- endif -%}
+{%- if hero_cover == nil -%}
+  {%- assign hero_cover = site.settings.hero_background_image -%}
+{%- endif -%}
+
+{%- assign hero_event_start = '' -%}
+{%- assign hero_event_end = '' -%}
+{%- if hero_event -%}
+  {%- assign hero_event_start = hero_event.settings.start_datetime -%}
+  {%- assign hero_event_end = hero_event.settings.end_datetime -%}
+{%- endif -%}
+
+{%- comment -%} ============ HERO ============ {%- endcomment -%}
+<section class="relative isolate overflow-hidden bg-secondary text-secondary-content">
+  <div class="absolute inset-0 -z-10">
+    {%- if hero_cover -%}
+      <img src="{{ hero_cover }}" alt="" class="h-full w-full object-cover opacity-30" />
+    {%- endif -%}
+    <div class="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/85 to-secondary/40"></div>
+  </div>
+
+  <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <div class="grid items-center gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        {%- if hero_event -%}
+          <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            {% render 'event_status', event: hero_event %}
+            {%- assign hero_loc = hero_event.settings.location | default: 'Online' -%}
+            <span class="text-white/60">·</span>
+            <span>{{ hero_loc }}</span>
           </div>
-          <span class="hidden text-base-content/30 sm:inline">·</span>
-          <div class="flex items-center gap-1.5">
-            <svg class="h-5 w-5 stroke-base-content/40" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M12 6v6l4 2"/></svg>
-            {{ lesson_count }} lessons
+        {%- endif -%}
+        <h1 class="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+          {{ hero_title | default: hero_event.link_text | default: site.settings.brand_name | default: site.name }}
+        </h1>
+        {%- if hero_subtitle -%}
+          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">{{ hero_subtitle }}</p>
+        {%- elsif hero_event and hero_event.settings.description != blank -%}
+          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">{{ hero_event.settings.description }}</p>
+        {%- elsif site.settings.brand_slogan != blank -%}
+          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">{{ site.settings.brand_slogan }}</p>
+        {%- endif -%}
+
+        {%- if hero_event and hero_event_start != blank -%}
+          <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/70">
+            <div class="flex items-center gap-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
+              <time datetime="{{ hero_event_start }}">{{ hero_event_start | date: '%a, %b %d, %Y · %H:%M' }}</time>
+            </div>
           </div>
-          <span class="hidden text-base-content/30 sm:inline">·</span>
-          <div class="flex items-center gap-1.5">
-            <svg class="h-5 w-5 stroke-base-content/40" viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            {% render 'duration_label', seconds: total_dur %}
-          </div>
-        </div>
-        {%- if first_lesson_path != blank -%}
-          <div class="mt-10">
+
+          {%- assign hero_now = 'now' | date: '%s' | plus: 0 -%}
+          {%- assign hero_end_ts = hero_event_end | date: '%s' | plus: 0 -%}
+          {%- if hero_end_ts == 0 -%}
+            {%- assign hero_end_ts = hero_start | plus: 3600 -%}
+          {%- endif -%}
+          {%- if hero_now < hero_start -%}
+            <div
+              class="mt-8 max-w-md"
+              data-controller="countdown"
+              data-countdown-target-time-value="{{ hero_event_start | date: '%Y-%m-%dT%H:%M:%S' }}"
+            >
+              <div class="grid grid-cols-4 gap-2 text-center">
+                <div class="rounded-lg border border-white/10 bg-white/5 px-2 py-3">
+                  <div class="text-2xl font-bold text-white" data-countdown-target="days">--</div>
+                  <div class="mt-1 text-[10px] uppercase tracking-wider text-white/60">Days</div>
+                </div>
+                <div class="rounded-lg border border-white/10 bg-white/5 px-2 py-3">
+                  <div class="text-2xl font-bold text-white" data-countdown-target="hours">--</div>
+                  <div class="mt-1 text-[10px] uppercase tracking-wider text-white/60">Hours</div>
+                </div>
+                <div class="rounded-lg border border-white/10 bg-white/5 px-2 py-3">
+                  <div class="text-2xl font-bold text-white" data-countdown-target="minutes">--</div>
+                  <div class="mt-1 text-[10px] uppercase tracking-wider text-white/60">Minutes</div>
+                </div>
+                <div class="rounded-lg border border-white/10 bg-white/5 px-2 py-3">
+                  <div class="text-2xl font-bold text-white" data-countdown-target="seconds">--</div>
+                  <div class="mt-1 text-[10px] uppercase tracking-wider text-white/60">Seconds</div>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+
+        <div class="mt-10 flex flex-wrap items-center gap-3">
+          {%- if hero_event -%}
+            {%- assign hero_now2 = 'now' | date: '%s' | plus: 0 -%}
+            {%- assign hero_cta_label = 'Reserve seat' -%}
+            {%- if hero_now2 >= hero_start and hero_now2 < hero_end_ts -%}
+              {%- assign hero_cta_label = 'Join live' -%}
+            {%- elsif hero_now2 >= hero_end_ts -%}
+              {%- assign hero_cta_label = 'Watch replay' -%}
+            {%- endif -%}
             <a
-              href="{{ first_lesson_path }}"
-              class="inline-flex items-center gap-x-2 rounded-full bg-primary px-3 py-1 text-sm/7 font-semibold text-primary-content hover:bg-primary/90"
+              href="{{ hero_event.path }}"
+              class="btn btn-primary btn-lg"
               data-turbo-frame="main-content-frame"
               data-turbo-action="advance"
-            >
-              <svg class="h-4 w-4 fill-primary-content" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-              Start the course
-            </a>
-          </div>
-        {%- endif -%}
-      </div>
-
-      <div class="grid grid-cols-1 gap-y-16 pb-10 sm:px-4">
-        {%- assign part_idx = 0 -%}
-        {%- if root -%}
-          {%- for mod in root.children_in_list -%}
-            {%- if mod.template_name == 'channel' -%}
-              {%- assign part_idx = part_idx | plus: 1 -%}
-              {%- assign part_label_str = 'Part ' | append: part_idx -%}
-              {%- capture part_inner -%}
-                <div class="max-w-2xl">
-                  <h2 class="text-pretty text-2xl/7 font-medium tracking-tight text-base-content">
-                    {{ mod.link_text | default: mod.name }}
-                  </h2>
-                  {%- if mod.settings.description != blank -%}
-                    <p class="mt-4 text-base/7 text-base-content/70 sm:text-sm/7">{{ mod.settings.description }}</p>
-                  {%- endif -%}
-                  <ol class="mt-6 space-y-4">
-                    {%- for lesson in mod.children_in_list -%}
-                      <li>
-                        {%- assign ds = lesson.settings.duration_seconds | default: 0 | plus: 0 -%}
-                        {%- capture dlab -%}{% render 'duration_label', seconds: ds %}{%- endcapture -%}
-                        {%- assign vtype = 'article' -%}
-                        {%- if lesson.settings.video_url != blank -%}
-                          {%- assign vtype = 'video' -%}
-                        {%- endif -%}
-                        {% render 'content_link',
-                          title: lesson.link_text,
-                          description: lesson.settings.description,
-                          href: lesson.path,
-                          link_type: vtype,
-                          duration_label: dlab | strip
-                        %}
-                      </li>
-                    {%- endfor -%}
-                  </ol>
-                </div>
-              {%- endcapture -%}
-              {% render 'page_section', anchor: mod.slug, part_label: part_label_str, inner: part_inner %}
-            {%- endif -%}
-          {%- endfor -%}
-        {%- endif -%}
+            >{{ hero_cta_label }}</a>
+          {%- endif -%}
+          {%- if site.settings.cta_url != blank -%}
+            <a
+              href="{{ site.settings.cta_url }}"
+              class="btn btn-ghost-light btn-lg"
+              data-turbo-frame="main-content-frame"
+              data-turbo-action="advance"
+            >{{ site.settings.cta_label | default: 'Browse all webinars' }}</a>
+          {%- endif -%}
+        </div>
       </div>
     </div>
   </div>
-</main>
+</section>
+
+{%- comment -%} ============ Press Logos ============ {%- endcomment -%}
+{%- assign press_logos = site.settings.press_logos_html | presence -%}
+{%- if press_logos -%}
+  <section class="border-b border-base-300/40 bg-base-100">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <p class="text-center text-xs font-semibold uppercase tracking-wider text-base-content/60">Trusted by teams at</p>
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-80">
+        {{ press_logos }}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{%- comment -%} ============ Upcoming Events ============ {%- endcomment -%}
+{%- assign upcoming_size = upcoming_events | size -%}
+{%- if upcoming_size > 0 -%}
+  <section class="bg-base-100">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-primary">Upcoming</p>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl">Upcoming events</h2>
+        </div>
+      </div>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {%- for ev in upcoming_events limit: 6 -%}
+          {% render 'event_card', event: ev %}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{%- comment -%} ============ Past replays ============ {%- endcomment -%}
+{%- assign past_size = past_events | size -%}
+{%- if past_size > 0 -%}
+  <section class="bg-base-200">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-primary">Replays</p>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl">Past replays</h2>
+          <p class="mt-3 max-w-2xl text-base text-base-content/70">Catch up on past webinars — videos, decks, and transcripts from every event hub.</p>
+        </div>
+      </div>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {%- assign sorted_past = past_events | sort: 'published_at' | reverse -%}
+        {%- for ev in sorted_past limit: 9 -%}
+          {% render 'event_card', event: ev %}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{%- comment -%} ============ Latest content from all events ============ {%- endcomment -%}
+{%- assign posts_size = latest_posts | size -%}
+{%- if posts_size > 0 -%}
+  <section class="bg-base-100">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-primary">Latest</p>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl">Latest content from all events</h2>
+        </div>
+      </div>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {%- for post in latest_posts limit: 6 -%}
+          {% render 'post_card', post: post %}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
 
 {% schema %}
   {
-    "name": "Course index",
-    "description": "Course overview with modules",
+    "name": "Index (B2B Webinar Hub)",
+    "description": "Hero + upcoming events + past replays + latest content across event hubs",
     "thumb_url": "images/theme/preview-index.png",
     "preview_image_urls": ["images/theme/preview-index.png"],
-    "sub_page_templates": ["channel", "channel.grid"]
+    "sub_page_templates": ["event"]
   }
 {% endschema %}
