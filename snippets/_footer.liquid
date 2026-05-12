@@ -4,6 +4,24 @@
 {%- assign contact_email = site.settings.contact_email | presence -%}
 {%- assign footer_html = site.settings.footer_menu_html | presence -%}
 {%- assign root = site.pages['/'] -%}
+{%- assign root_id = nil -%}
+{%- if root -%}
+  {%- assign root_id = root.id -%}
+{%- endif -%}
+{% query footer_nav_q from site.pages %}
+{
+  "order_by": ["published_at"],
+  "limit": 80
+}
+{% endquery %}
+{%- assign footer_nav_items = '' | split: '' -%}
+{%- if root_id -%}
+  {%- for item in footer_nav_q -%}
+    {%- if item.parent_id == root_id -%}
+      {%- assign footer_nav_items = footer_nav_items | concat: (item | sort: 'created_at') -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
 
 <footer class="mt-auto border-t border-base-300/40 bg-base-200 text-sm text-base-content/70">
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -36,18 +54,17 @@
       <div>
         <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content">Explore</h3>
         <ul class="mt-4 space-y-3">
-          {%- if root -%}
-            {%- for item in root.children_in_list -%}
-              {%- if forloop.index0 < 6 -%}
-                <li>
-                  <a
-                    href="{{ item.path }}"
-                    class="hover:text-primary"
-                    data-turbo-frame="main-content-frame"
-                    data-turbo-action="advance"
-                  >{{ item.link_text | default: item.name }}</a>
-                </li>
-              {%- endif -%}
+          {%- assign fn_sz = footer_nav_items | size -%}
+          {%- if fn_sz > 0 -%}
+            {%- for item in footer_nav_items limit: 6 -%}
+              <li>
+                <a
+                  href="{{ item.path | default: item.url }}"
+                  class="hover:text-primary"
+                  data-turbo-frame="main-content-frame"
+                  data-turbo-action="advance"
+                >{% render 'page_title', item: item %}</a>
+              </li>
             {%- endfor -%}
           {%- endif -%}
         </ul>

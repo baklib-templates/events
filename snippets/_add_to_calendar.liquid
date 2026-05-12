@@ -4,8 +4,35 @@
     event: PageDrop
 {%- endcomment -%}
 
-{%- assign start_iso = event.settings.start_datetime -%}
-{%- assign end_iso = event.settings.end_datetime -%}
+{%- assign cal_sd_raw = event.settings.start_datetime | presence -%}
+{%- assign cal_ed_raw = event.settings.end_datetime | presence -%}
+{%- assign cal_st = event.settings.start_time | presence -%}
+{%- assign cal_et = event.settings.end_time | presence -%}
+{%- assign cal_sd_str = '' -%}
+{%- assign cal_ed_str = '' -%}
+{%- if cal_sd_raw -%}{%- assign cal_sd_str = cal_sd_raw | date: '%Y-%m-%d' -%}{%- endif -%}
+{%- if cal_ed_raw -%}{%- assign cal_ed_str = cal_ed_raw | date: '%Y-%m-%d' -%}{%- endif -%}
+
+{%- assign start_iso = '' -%}
+{%- if cal_sd_str != blank -%}
+  {%- if cal_st -%}
+    {%- assign start_iso = cal_sd_str | append: 'T' | append: cal_st -%}
+  {%- else -%}
+    {%- assign start_iso = cal_sd_str | append: 'T00:00' -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- assign end_iso = '' -%}
+{%- if cal_ed_str != blank -%}
+  {%- if cal_et -%}
+    {%- assign end_iso = cal_ed_str | append: 'T' | append: cal_et -%}
+  {%- else -%}
+    {%- assign end_iso = cal_ed_str | append: 'T00:00' -%}
+  {%- endif -%}
+{%- elsif cal_sd_str != blank and cal_et -%}
+  {%- assign end_iso = cal_sd_str | append: 'T' | append: cal_et -%}
+{%- endif -%}
+
 {%- assign start_ts = start_iso | date: '%s' | plus: 0 -%}
 {%- assign end_ts = end_iso | date: '%s' | plus: 0 -%}
 {%- if end_ts == 0 and start_ts > 0 -%}
@@ -15,10 +42,11 @@
 
 {%- assign cal_start = start_iso | date: '%Y%m%dT%H%M%S' -%}
 {%- assign cal_end = end_iso | date: '%Y%m%dT%H%M%S' -%}
-{%- assign ev_title = event.link_text | default: event.name -%}
+{%- capture ev_title %}{% render 'page_title', item: event %}{% endcapture -%}
+{%- assign ev_title = ev_title | strip -%}
 {%- assign ev_desc = event.settings.description | default: '' -%}
 {%- assign ev_loc = event.settings.location | default: 'Online' -%}
-{%- assign ev_url = site.host | append: event.path -%}
+{%- assign ev_url = site.host | append: (event.path | default: event.url) -%}
 
 {%- capture gcal_url -%}
 https://www.google.com/calendar/render?action=TEMPLATE&text={{ ev_title | url_encode }}&dates={{ cal_start }}Z/{{ cal_end }}Z&details={{ ev_desc | strip_html | url_encode }}&location={{ ev_loc | url_encode }}&sprop=website:{{ ev_url | url_encode }}

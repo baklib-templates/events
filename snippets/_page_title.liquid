@@ -1,0 +1,6 @@
+{%- comment -%}
+  Page / PageDrop 展示标题：v2 下 `name` 常不可用，优先 link_text，再 title / name，最后 path。
+  用法：{% render 'page_title', item: some_page %}
+{%- endcomment -%}
+{%- assign _pt = item.link_text | default: item.title | default: item.name | default: item.path -%}
+{{- _pt -}}

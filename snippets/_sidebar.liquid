@@ -8,19 +8,90 @@
     sync_filter: boolean — when true, tag clicks set Alpine `tag` value (use inside x-data scope)
 {%- endcomment -%}
 
-{%- assign root = site.pages['/'] -%}
+{%- comment -%} 使用活动父级（站点首页 PageDrop）的一级子页，避免 `site.pages['/']` 返回 Decorator 导致字段/concat 异常。{%- endcomment -%}
+{%- assign nav_root = nil -%}
+{%- if event != blank -%}
+  {%- assign nav_root = event.parent -%}
+{%- endif -%}
 {%- assign siblings_sz = siblings | size -%}
+
+{% query sb_events from site.pages %}
+{
+  "where": {
+    "template_name_eq": "event"
+  },
+  "order_by": ["-published_at"],
+  "limit": 40
+}
+{% endquery %}
+{% query sb_channels from site.pages %}
+{
+  "where": {
+    "template_name_eq": "channel"
+  },
+  "order_by": ["published_at"],
+  "limit": 40
+}
+{% endquery %}
+{% query sb_teams from site.pages %}
+{
+  "where": {
+    "template_name_eq": "team"
+  },
+  "order_by": ["published_at"],
+  "limit": 20
+}
+{% endquery %}
+{% query sb_channel_pages from site.pages %}
+{
+  "where": {
+    "template_name_eq": "page"
+  },
+  "order_by": ["-published_at"],
+  "limit": 200
+}
+{% endquery %}
 
 {%- assign nav_channels = '' | split: '' -%}
 {%- assign latest_events = '' | split: '' -%}
-{%- if root -%}
-  {%- for child in root.children_in_list -%}
-    {%- if child.template_name == 'channel' or child.template_name == 'team' -%}
-      {%- assign nav_channels = nav_channels | concat: (child | split: '') -%}
-    {%- elsif child.template_name == 'event' -%}
-      {%- assign latest_events = latest_events | concat: (child | split: '') -%}
+{%- if nav_root -%}
+  {%- assign nr_id = nav_root.id -%}
+  {%- for child in sb_channels -%}
+    {%- if child.parent_id == nr_id -%}
+      {%- assign nav_channels = nav_channels | concat: (child | sort: 'created_at') -%}
     {%- endif -%}
   {%- endfor -%}
+  {%- for child in sb_teams -%}
+    {%- if child.parent_id == nr_id -%}
+      {%- assign nav_channels = nav_channels | concat: (child | sort: 'created_at') -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- for child in sb_events -%}
+    {%- if child.parent_id == nr_id -%}
+      {%- assign latest_events = latest_events | concat: (child | sort: 'created_at') -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- else -%}
+  {%- assign idx = site.pages['/'] -%}
+  {%- assign idx_id = nil -%}
+  {%- if idx -%}{%- assign idx_id = idx.id -%}{%- endif -%}
+  {%- if idx_id -%}
+    {%- for child in sb_channels -%}
+      {%- if child.parent_id == idx_id -%}
+        {%- assign nav_channels = nav_channels | concat: (child | sort: 'created_at') -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- for child in sb_teams -%}
+      {%- if child.parent_id == idx_id -%}
+        {%- assign nav_channels = nav_channels | concat: (child | sort: 'created_at') -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- for child in sb_events -%}
+      {%- if child.parent_id == idx_id -%}
+        {%- assign latest_events = latest_events | concat: (child | sort: 'created_at') -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
 {%- endif -%}
 {%- assign latest_events = latest_events | sort: 'published_at' | reverse -%}
 
@@ -28,7 +99,7 @@
   {%- if event != blank -%}
     <div class="rounded-2xl border border-base-300/50 bg-base-100 p-5">
       <a
-        href="{{ event.path }}"
+        href="{{ event.path | default: event.url }}"
         class="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
         data-turbo-frame="main-content-frame"
         data-turbo-action="advance"
@@ -41,11 +112,12 @@
           {% render 'event_status', event: event %}
         </div>
         <h3 class="mt-2 text-base font-bold leading-snug text-base-content">
-          <a href="{{ event.path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ event.link_text | default: event.name }}</a>
+          <a href="{{ event.path | default: event.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event %}</a>
         </h3>
         {%- assign ev_start = event.settings.start_datetime | presence -%}
+        {%- assign ev_start_time = event.settings.start_time | presence -%}
         {%- if ev_start -%}
-          <p class="mt-2 text-xs text-base-content/60">{{ ev_start | date: '%b %d, %Y · %H:%M' }}</p>
+          <p class="mt-2 text-xs text-base-content/60">{{ ev_start | date: '%b %d, %Y' }}{% if ev_start_time %} · {{ ev_start_time }}{% endif %}</p>
         {%- endif -%}
       </div>
     </div>
@@ -59,14 +131,19 @@
             {%- if current_page and ch.id == current_page.id -%}{%- assign is_current = true -%}{%- endif -%}
             <li>
               <a
-                href="{{ ch.path }}"
+                href="{{ ch.path | default: ch.url }}"
                 class="flex items-center justify-between rounded-md px-3 py-2 transition {% if is_current %}bg-primary/10 text-primary font-semibold{% else %}text-base-content/80 hover:bg-base-200 hover:text-base-content{% endif %}"
                 data-turbo-frame="main-content-frame"
                 data-turbo-action="advance"
                 {% if is_current %}aria-current="page"{% endif %}
               >
-                <span>{{ ch.link_text | default: ch.name }}</span>
-                {%- assign ch_count = ch.children_in_list | size -%}
+                <span>{% render 'page_title', item: ch %}</span>
+                {%- assign ch_count = 0 -%}
+                {%- for p in sb_channel_pages -%}
+                  {%- if p.parent_id == ch.id -%}
+                    {%- assign ch_count = ch_count | plus: 1 -%}
+                  {%- endif -%}
+                {%- endfor -%}
                 <span class="text-xs text-base-content/40">{{ ch_count }}</span>
               </a>
             </li>
@@ -83,14 +160,19 @@
           {%- if current_page and ch.id == current_page.id -%}{%- assign is_current = true -%}{%- endif -%}
           <li>
             <a
-              href="{{ ch.path }}"
+              href="{{ ch.path | default: ch.url }}"
               class="flex items-center justify-between rounded-md px-3 py-2 transition {% if is_current %}bg-primary/10 text-primary font-semibold{% else %}text-base-content/80 hover:bg-base-200 hover:text-base-content{% endif %}"
               data-turbo-frame="main-content-frame"
               data-turbo-action="advance"
               {% if is_current %}aria-current="page"{% endif %}
             >
-              <span>{{ ch.link_text | default: ch.name }}</span>
-              {%- assign ch_count = ch.children_in_list | size -%}
+              <span>{% render 'page_title', item: ch %}</span>
+              {%- assign ch_count = 0 -%}
+              {%- for p in sb_channel_pages -%}
+                {%- if p.parent_id == ch.id -%}
+                  {%- assign ch_count = ch_count | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
               <span class="text-xs text-base-content/40">{{ ch_count }}</span>
             </a>
           </li>
@@ -122,7 +204,7 @@
             >{{ t.name }}</button>
           {%- else -%}
             <a
-              href="{{ t.path }}"
+              href="{{ t.path | default: t.url }}"
               class="inline-flex items-center rounded-full border border-base-300/50 px-3 py-1 text-xs font-medium text-base-content/80 transition hover:border-primary/50 hover:text-primary"
               data-turbo-frame="main-content-frame"
               data-turbo-action="advance"
@@ -142,13 +224,13 @@
           {%- for ev in latest_events limit: 5 -%}
             <li>
               <a
-                href="{{ ev.path }}"
+                href="{{ ev.path | default: ev.url }}"
                 class="group block"
                 data-turbo-frame="main-content-frame"
                 data-turbo-action="advance"
               >
                 <div class="text-sm font-semibold leading-snug text-base-content group-hover:text-primary line-clamp-2">
-                  {{ ev.link_text | default: ev.name }}
+                  {% render 'page_title', item: ev %}
                 </div>
                 {%- assign ev_start = ev.settings.start_datetime | presence -%}
                 {%- if ev_start -%}

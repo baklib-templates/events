@@ -8,14 +8,14 @@
 {%- assign company = speaker.settings.company | presence -%}
 
 <a
-  href="{{ speaker.path }}"
+  href="{{ speaker.path | default: speaker.url }}"
   data-turbo-frame="main-content-frame"
   data-turbo-action="advance"
   class="group flex flex-col items-center rounded-xl border border-base-300/40 bg-base-100 p-6 text-center transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
 >
   {% render 'speaker_avatar', speaker: speaker, size: 'lg' %}
   <h3 class="mt-4 text-base font-semibold tracking-tight text-base-content group-hover:text-primary">
-    {{ speaker.link_text | default: speaker.name }}
+    {% render 'page_title', item: speaker %}
   </h3>
   {%- if job_title -%}
     <p class="mt-1 text-xs font-medium text-base-content/70">

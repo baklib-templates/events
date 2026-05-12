@@ -11,8 +11,36 @@
 {%- endcomment -%}
 
 {%- assign now_ts = 'now' | date: '%s' | plus: 0 -%}
-{%- assign start_ts = event.settings.start_datetime | date: '%s' | plus: 0 -%}
-{%- assign end_ts = event.settings.end_datetime | date: '%s' | plus: 0 -%}
+
+{%- assign st_sd_raw = event.settings.start_datetime | presence -%}
+{%- assign st_ed_raw = event.settings.end_datetime | presence -%}
+{%- assign st_st = event.settings.start_time | presence -%}
+{%- assign st_et = event.settings.end_time | presence -%}
+{%- assign st_sd_str = '' -%}
+{%- assign st_ed_str = '' -%}
+{%- if st_sd_raw -%}{%- assign st_sd_str = st_sd_raw | date: '%Y-%m-%d' -%}{%- endif -%}
+{%- if st_ed_raw -%}{%- assign st_ed_str = st_ed_raw | date: '%Y-%m-%d' -%}{%- endif -%}
+{%- assign st_start_iso = '' -%}
+{%- if st_sd_str != blank -%}
+  {%- if st_st -%}
+    {%- assign st_start_iso = st_sd_str | append: 'T' | append: st_st -%}
+  {%- else -%}
+    {%- assign st_start_iso = st_sd_str -%}
+  {%- endif -%}
+{%- endif -%}
+{%- assign st_end_iso = '' -%}
+{%- if st_ed_str != blank -%}
+  {%- if st_et -%}
+    {%- assign st_end_iso = st_ed_str | append: 'T' | append: st_et -%}
+  {%- else -%}
+    {%- assign st_end_iso = st_ed_str -%}
+  {%- endif -%}
+{%- elsif st_sd_str != blank and st_et -%}
+  {%- assign st_end_iso = st_sd_str | append: 'T' | append: st_et -%}
+{%- endif -%}
+
+{%- assign start_ts = st_start_iso | date: '%s' | plus: 0 -%}
+{%- assign end_ts = st_end_iso | date: '%s' | plus: 0 -%}
 {%- if end_ts == 0 and start_ts > 0 -%}
   {%- assign end_ts = start_ts | plus: 3600 -%}
 {%- endif -%}

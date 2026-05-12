@@ -11,16 +11,27 @@
 {%- assign twitter_url = page.settings.twitter_url | presence -%}
 
 {%- assign event_page = page.parent -%}
+{% query team_members_q from site.pages %}
+{
+  "where": {
+    "template_name_eq": "team_member"
+  },
+  "order_by": ["published_at"],
+  "limit": 80
+}
+{% endquery %}
 {%- assign sibling_speakers = '' | split: '' -%}
 {%- if event_page -%}
-  {%- for sib in event_page.children_in_list -%}
-    {%- if sib.template_name == 'team_member' -%}
-      {%- assign sibling_speakers = sibling_speakers | concat: (sib | split: '') -%}
+  {%- assign ev_pid = event_page.id -%}
+  {%- for sib in team_members_q -%}
+    {%- if sib.parent_id == ev_pid -%}
+      {%- assign sibling_speakers = sibling_speakers | concat: (sib | sort: 'created_at') -%}
     {%- endif -%}
   {%- endfor -%}
 {%- endif -%}
 
-{% set_meta_title page.link_text | default: page.name %}
+{% capture _meta_tm_title %}{% render 'page_title', item: page %}{% endcapture %}
+{% set_meta_title _meta_tm_title | strip %}
 {% set_meta_description page.settings.bio | strip_html | truncate: 160 %}
 
 <main class="grow bg-base-100">
@@ -30,16 +41,16 @@
         <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
         <span aria-hidden="true">/</span>
         {%- if event_page -%}
-          <a href="{{ event_page.path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ event_page.link_text | default: event_page.name }}</a>
+          <a href="{{ event_page.path | default: event_page.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_page %}</a>
           <span aria-hidden="true">/</span>
         {%- endif -%}
-        <span class="text-base-content">{{ page.link_text | default: page.name }}</span>
+        <span class="text-base-content">{% render 'page_title', item: page %}</span>
       </nav>
 
       {%- if event_page -%}
         <p class="mb-8 text-sm text-base-content/70">
           From:
-          <a href="{{ event_page.path }}" class="font-semibold text-primary hover:underline" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ event_page.link_text | default: event_page.name }}</a>
+          <a href="{{ event_page.path | default: event_page.url }}" class="font-semibold text-primary hover:underline" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_page %}</a>
         </p>
       {%- endif -%}
 
@@ -48,10 +59,12 @@
           <div class="overflow-hidden rounded-2xl border border-base-300/40 bg-base-100">
             <div class="aspect-square w-full bg-base-200">
               {%- if avatar -%}
-                <img src="{{ avatar }}" alt="{{ page.link_text | default: page.name | escape }}" class="h-full w-full object-cover" />
+                {% capture _tm_alt %}{% render 'page_title', item: page %}{% endcapture %}
+                <img src="{{ avatar }}" alt="{{ _tm_alt | strip | escape }}" class="h-full w-full object-cover" />
               {%- else -%}
                 <div class="flex h-full w-full items-center justify-center text-5xl font-bold text-base-content/30">
-                  {{ page.link_text | default: page.name | slice: 0 | upcase }}
+                  {% capture _tm_init %}{% render 'page_title', item: page %}{% endcapture %}
+                  {{ _tm_init | strip | slice: 0 | upcase }}
                 </div>
               {%- endif -%}
             </div>
@@ -82,7 +95,7 @@
         <div class="lg:col-span-2">
           <p class="text-xs font-semibold uppercase tracking-wider text-primary">Speaker</p>
           <h1 class="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
-            {{ page.link_text | default: page.name }}
+            {% render 'page_title', item: page %}
           </h1>
           {%- if job_title or company -%}
             <p class="mt-2 text-base font-medium text-base-content/80">
@@ -104,7 +117,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
           <h2 class="text-lg font-semibold tracking-tight text-base-content">Speakers at this event</h2>
           <a
-            href="{{ event_page.path }}#speakers"
+            href="{{ event_page.path | default: event_page.url }}#speakers"
             class="text-sm font-semibold text-primary hover:underline"
             data-turbo-frame="main-content-frame"
             data-turbo-action="advance"
@@ -113,9 +126,10 @@
         <div class="mt-6 flex flex-wrap items-center gap-3">
           {%- for sib in sibling_speakers -%}
             <a
-              href="{{ sib.path }}"
+              href="{{ sib.path | default: sib.url }}"
               class="{% if sib.id == page.id %}ring-2 ring-primary ring-offset-2 ring-offset-base-100{% endif %} inline-block rounded-full"
-              title="{{ sib.link_text | default: sib.name }}"
+              {% capture _sib_title %}{% render 'page_title', item: sib %}{% endcapture %}
+              title="{{ _sib_title | strip | escape }}"
               data-turbo-frame="main-content-frame"
               data-turbo-action="advance"
             >

@@ -4,16 +4,41 @@
 {%- endcomment -%}
 
 {%- assign event_ctx = page.parent -%}
+
+{% query channels_sibling_q from site.pages %}
+{
+  "where": {
+    "template_name_eq": "channel"
+  },
+  "order_by": ["published_at"],
+  "limit": 80
+}
+{% endquery %}
 {%- assign sibling_channels = '' | split: '' -%}
 {%- if event_ctx -%}
-  {%- for sib in event_ctx.children_in_list -%}
-    {%- if sib.template_name == 'channel' -%}
-      {%- assign sibling_channels = sibling_channels | concat: (sib | split: '') -%}
+  {%- assign ev_id = event_ctx.id -%}
+  {%- for sib in channels_sibling_q -%}
+    {%- if sib.parent_id == ev_id -%}
+      {%- assign sibling_channels = sibling_channels | concat: (sib | sort: 'created_at') -%}
     {%- endif -%}
   {%- endfor -%}
 {%- endif -%}
 
-{%- assign items = page.children_in_list -%}
+{% query channel_items_q from site.pages %}
+{
+  "where": {
+    "template_name_eq": "page"
+  },
+  "order_by": ["-published_at"],
+  "limit": 120
+}
+{% endquery %}
+{%- assign items = '' | split: '' -%}
+{%- for it in channel_items_q -%}
+  {%- if it.parent_id == page.id -%}
+    {%- assign items = items | concat: (it | sort: 'created_at') -%}
+  {%- endif -%}
+{%- endfor -%}
 {%- assign items_size = items | size -%}
 {%- assign display_style_raw = page.settings.display_style -%}
 {%- assign display_style = display_style_raw.value | default: display_style_raw | default: 'grid' -%}
@@ -33,7 +58,8 @@
 {%- assign tag_slug_list = tag_slugs | split: '|' -%}
 {%- assign tag_name_list = tag_names | split: '|' -%}
 
-{% set_meta_title page.link_text | default: page.name %}
+{% capture _meta_ch_title %}{% render 'page_title', item: page %}{% endcapture %}
+{% set_meta_title _meta_ch_title | strip %}
 {% set_meta_description page.settings.description %}
 
 <main class="grow bg-base-100">
@@ -43,12 +69,12 @@
         <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
         <span aria-hidden="true">/</span>
         {%- if event_ctx -%}
-          <a href="{{ event_ctx.path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ event_ctx.link_text | default: event_ctx.name }}</a>
+          <a href="{{ event_ctx.path | default: event_ctx.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_ctx %}</a>
           <span aria-hidden="true">/</span>
         {%- endif -%}
-        <span class="text-base-content">{{ page.link_text | default: page.name }}</span>
+        <span class="text-base-content">{% render 'page_title', item: page %}</span>
       </nav>
-      <h1 class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">{{ page.link_text | default: page.name }}</h1>
+      <h1 class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">{% render 'page_title', item: page %}</h1>
       {%- if page.settings.description != blank -%}
         <p class="mt-3 max-w-3xl text-base text-base-content/70">{{ page.settings.description }}</p>
       {%- endif -%}
@@ -107,13 +133,14 @@
                     x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
                     x-cloak
                   >
-                    {%- if it.template_name == 'event' -%}
+                    {%- assign it_tpl = it.template_name | default: '' -%}
+                    {%- if it_tpl == 'event' -%}
                       {% render 'event_card', event: it %}
                     {%- else -%}
                       {%- assign g_cover = it.settings.thumb_image | default: it.settings.thumb_image_url | presence -%}
                       {%- assign g_pub = it.published_at | default: it.created_at -%}
                       <a
-                        href="{{ it.path }}"
+                        href="{{ it.path | default: it.url }}"
                         data-turbo-frame="main-content-frame"
                         data-turbo-action="advance"
                         class="group block overflow-hidden rounded-2xl border border-base-300/50 bg-base-100 transition hover:border-primary/40 hover:shadow-lg"
@@ -130,7 +157,7 @@
                         <div class="p-4">
                           <div class="text-xs text-base-content/55">{{ g_pub | date: '%b %d, %Y' }}</div>
                           <h3 class="mt-1 line-clamp-2 text-lg font-semibold tracking-tight text-base-content group-hover:text-primary">
-                            {{ it.link_text | default: it.name }}
+                            {% render 'page_title', item: it %}
                           </h3>
                           {%- if it.settings.description != blank -%}
                             <p class="mt-2 line-clamp-2 text-sm text-base-content/65">{{ it.settings.description }}</p>
@@ -153,7 +180,8 @@
                     x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
                     x-cloak
                   >
-                    {%- if it.template_name == 'event' -%}
+                    {%- assign it_tpl = it.template_name | default: '' -%}
+                    {%- if it_tpl == 'event' -%}
                       <div class="p-4">
                         {% render 'event_card', event: it %}
                       </div>
@@ -161,7 +189,7 @@
                       {%- assign l_cover = it.settings.thumb_image | default: it.settings.thumb_image_url | presence -%}
                       {%- assign l_pub = it.published_at | default: it.created_at -%}
                       <a
-                        href="{{ it.path }}"
+                        href="{{ it.path | default: it.url }}"
                         data-turbo-frame="main-content-frame"
                         data-turbo-action="advance"
                         class="flex items-center gap-4 p-4 transition hover:bg-base-200/70"
@@ -173,7 +201,7 @@
                         </div>
                         <div class="min-w-0 flex-1">
                           <div class="text-xs text-base-content/55">{{ l_pub | date: '%b %d, %Y' }}</div>
-                          <div class="mt-0.5 truncate text-base font-semibold text-base-content">{{ it.link_text | default: it.name }}</div>
+                          <div class="mt-0.5 truncate text-base font-semibold text-base-content">{% render 'page_title', item: it %}</div>
                           {%- if it.settings.description != blank -%}
                             <div class="mt-0.5 truncate text-sm text-base-content/65">{{ it.settings.description }}</div>
                           {%- endif -%}
@@ -199,7 +227,8 @@
                     x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
                     x-cloak
                   >
-                    {%- if it.template_name == 'event' -%}
+                    {%- assign it_tpl = it.template_name | default: '' -%}
+                    {%- if it_tpl == 'event' -%}
                       {% render 'event_card', event: it %}
                     {%- else -%}
                       {% render 'post_card', post: it %}

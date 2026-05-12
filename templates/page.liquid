@@ -7,38 +7,55 @@
 {%- assign video = page.settings.video_asset | default: page.settings.video_url | presence -%}
 {%- assign published = page.published_at | default: page.created_at -%}
 {%- assign parent = page.parent -%}
+
+{% query page_siblings_q from site.pages %}
+{
+  "where": {
+    "template_name_eq": "page"
+  },
+  "order_by": ["-published_at"],
+  "limit": 40
+}
+{% endquery %}
 {%- assign siblings = '' | split: '' -%}
 {%- if parent -%}
-  {%- assign siblings = parent.children_in_list -%}
+  {%- assign pr_id = parent.id -%}
+  {%- for sib in page_siblings_q -%}
+    {%- if sib.parent_id == pr_id -%}
+      {%- assign siblings = siblings | concat: (sib | sort: 'created_at') -%}
+    {%- endif -%}
+  {%- endfor -%}
 {%- endif -%}
 
 {%- assign current_event = nil -%}
 {%- if parent and parent.parent -%}
-  {%- if parent.parent.template_name == 'event' -%}
+  {%- assign pp_tpl = parent.parent.template_name | default: '' -%}
+  {%- if pp_tpl == 'event' -%}
     {%- assign current_event = parent.parent -%}
   {%- endif -%}
 {%- endif -%}
 
-{%- assign root = site.pages['/'] -%}
-{%- assign recent_events = '' | split: '' -%}
-{%- if root -%}
-  {%- for child in root.children_in_list -%}
-    {%- if child.template_name == 'event' -%}
-      {%- assign recent_events = recent_events | concat: (child | split: '') -%}
-    {%- endif -%}
-  {%- endfor -%}
-{%- endif -%}
-{%- assign recent_events = recent_events | sort: 'published_at' | reverse -%}
+{% query global_events_q from site.pages %}
+{
+  "where": {
+    "template_name_eq": "event"
+  },
+  "order_by": ["-published_at"],
+  "limit": 16
+}
+{% endquery %}
 {%- assign recommended_events = '' | split: '' -%}
-{%- for ev in recent_events -%}
-  {%- if current_event == nil -%}
-    {%- assign recommended_events = recommended_events | concat: (ev | split: '') -%}
-  {%- elsif ev.id != current_event.id -%}
-    {%- assign recommended_events = recommended_events | concat: (ev | split: '') -%}
+{%- for ev in global_events_q -%}
+  {%- assign re_sz = recommended_events | size -%}
+  {%- if re_sz < 4 -%}
+    {%- if current_event == nil or ev.id != current_event.id -%}
+      {%- assign recommended_events = recommended_events | concat: (ev | sort: 'created_at') -%}
+    {%- endif -%}
   {%- endif -%}
 {%- endfor -%}
 
-{% set_meta_title page.link_text | default: page.name %}
+{% capture _meta_pg_title %}{% render 'page_title', item: page %}{% endcapture %}
+{% set_meta_title _meta_pg_title | strip %}
 {% set_meta_description page.settings.description | strip_html | default: page.settings.subtitle %}
 
 <main class="grow bg-base-100">
@@ -48,14 +65,14 @@
         <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
         <span aria-hidden="true">/</span>
         {%- if parent and parent.parent -%}
-          <a href="{{ parent.parent.path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ parent.parent.link_text | default: parent.parent.name }}</a>
+          <a href="{{ parent.parent.path | default: parent.parent.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: parent.parent %}</a>
           <span aria-hidden="true">/</span>
         {%- endif -%}
         {%- if parent -%}
-          <a href="{{ parent.path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ parent.link_text | default: parent.name }}</a>
+          <a href="{{ parent.path | default: parent.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: parent %}</a>
           <span aria-hidden="true">/</span>
         {%- endif -%}
-        <span class="text-base-content">{{ page.link_text | default: page.name }}</span>
+        <span class="text-base-content">{% render 'page_title', item: page %}</span>
       </nav>
     </div>
   </section>
@@ -67,10 +84,10 @@
           {%- if page.settings.subtitle != blank -%}
             <p class="text-xs font-semibold uppercase tracking-wider text-primary">{{ page.settings.subtitle }}</p>
           {%- elsif parent -%}
-            <p class="text-xs font-semibold uppercase tracking-wider text-primary">{{ parent.link_text | default: parent.name }}</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-primary">{% render 'page_title', item: parent %}</p>
           {%- endif -%}
           <h1 class="mt-2 text-3xl font-bold leading-tight tracking-tight text-base-content sm:text-4xl">
-            {{ page.link_text | default: page.name }}
+            {% render 'page_title', item: page %}
           </h1>
           <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-base-content/60">
             <time datetime="{{ published | date: '%Y-%m-%d' }}">{{ published | date: '%b %d, %Y' }}</time>
@@ -81,7 +98,7 @@
                 {%- for t in page.tags -%}
                   <li>
                     <a
-                      href="{{ t.path }}"
+                      href="{{ t.path | default: t.url }}"
                       class="inline-flex items-center rounded-full border border-base-300/50 px-2 py-0.5 text-xs font-medium text-base-content/80 hover:border-primary/50 hover:text-primary"
                       data-turbo-frame="main-content-frame"
                       data-turbo-action="advance"
@@ -128,13 +145,13 @@
                   {%- for ev in recommended_events limit: 4 -%}
                     <li>
                       <a
-                        href="{{ ev.path }}"
+                        href="{{ ev.path | default: ev.url }}"
                         data-turbo-frame="main-content-frame"
                         data-turbo-action="advance"
                         class="group block"
                       >
                         <div class="line-clamp-2 text-sm font-semibold leading-snug text-base-content group-hover:text-primary">
-                          {{ ev.link_text | default: ev.name }}
+                          {% render 'page_title', item: ev %}
                         </div>
                         {%- assign ev_start = ev.settings.start_datetime | presence -%}
                         {%- if ev_start -%}
@@ -150,7 +167,7 @@
             {%- assign sib_size = siblings | size -%}
             {%- if sib_size > 1 -%}
               <div class="rounded-2xl border border-base-300/40 bg-base-100 p-5">
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">More from {{ parent.link_text | default: parent.name }}</h3>
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">More from {% render 'page_title', item: parent %}</h3>
                 <ul class="mt-4 space-y-3">
                   {%- assign rendered = 0 -%}
                   {%- for sib in siblings -%}

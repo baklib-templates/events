@@ -8,17 +8,32 @@
 {%- assign cover = event.settings.cover_image | presence -%}
 {%- assign location = event.settings.location | presence -%}
 {%- assign is_online = event.settings.is_online -%}
-{%- assign start_ts = event.settings.start_datetime | date: '%s' | plus: 0 -%}
+
+{%- assign card_sd_raw = event.settings.start_datetime | presence -%}
+{%- assign card_st = event.settings.start_time | presence -%}
+{%- assign card_sd_str = '' -%}
+{%- if card_sd_raw -%}{%- assign card_sd_str = card_sd_raw | date: '%Y-%m-%d' -%}{%- endif -%}
+{%- assign card_start_iso = '' -%}
+{%- if card_sd_str != blank -%}
+  {%- if card_st -%}
+    {%- assign card_start_iso = card_sd_str | append: 'T' | append: card_st -%}
+  {%- else -%}
+    {%- assign card_start_iso = card_sd_str -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- assign start_ts = card_start_iso | date: '%s' | plus: 0 -%}
 {%- assign now_ts = 'now' | date: '%s' | plus: 0 -%}
-{%- assign date_label = event.settings.start_datetime | date: '%b %d, %Y' -%}
-{%- assign time_label = event.settings.start_datetime | date: '%H:%M' -%}
+{%- assign date_label = '' -%}
+{%- if card_sd_raw -%}{%- assign date_label = card_sd_raw | date: '%b %d, %Y' -%}{%- endif -%}
+{%- assign time_label = card_st | default: '' -%}
 {%- assign place_label = location | default: 'Online' -%}
 {%- if is_online -%}
   {%- assign place_label = 'Online' -%}
 {%- endif -%}
 
 <a
-  href="{{ event.path }}"
+  href="{{ event.path | default: event.url }}"
   data-turbo-frame="main-content-frame"
   data-turbo-action="advance"
   class="group flex flex-col overflow-hidden rounded-xl border border-base-300/50 bg-base-100 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
@@ -49,7 +64,7 @@
   <div class="flex flex-1 flex-col p-5">
     <div class="flex items-center gap-x-3 text-xs font-medium text-base-content/60">
       {%- if start_ts > 0 -%}
-        <time datetime="{{ event.settings.start_datetime }}">{{ date_label }}{% if time_label != blank %} · {{ time_label }}{% endif %}</time>
+        <time datetime="{{ card_start_iso }}">{{ date_label }}{% if time_label != blank %} · {{ time_label }}{% endif %}</time>
       {%- else -%}
         <span>Date TBA</span>
       {%- endif -%}
@@ -57,7 +72,7 @@
       <span>{{ place_label }}</span>
     </div>
     <h3 class="mt-2 line-clamp-2 text-lg font-semibold leading-snug tracking-tight text-base-content group-hover:text-primary">
-      {{ event.link_text | default: event.name }}
+      {% render 'page_title', item: event %}
     </h3>
     {%- if event.settings.description != blank -%}
       <p class="mt-2 line-clamp-2 text-sm text-base-content/70">{{ event.settings.description }}</p>

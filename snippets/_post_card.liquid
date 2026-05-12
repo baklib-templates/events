@@ -14,7 +14,7 @@
 
 {%- if variant == 'horizontal' -%}
   <a
-    href="{{ post.path }}"
+    href="{{ post.path | default: post.url }}"
     data-turbo-frame="main-content-frame"
     data-turbo-action="advance"
     class="group flex gap-4 rounded-lg p-2 transition hover:bg-base-200/60"
@@ -32,13 +32,13 @@
     <div class="min-w-0">
       <div class="text-xs text-base-content/60">{{ published | date: '%b %d, %Y' }}</div>
       <h4 class="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-base-content group-hover:text-primary">
-        {{ post.link_text | default: post.name }}
+        {% render 'page_title', item: post %}
       </h4>
     </div>
   </a>
 {%- else -%}
   <a
-    href="{{ post.path }}"
+    href="{{ post.path | default: post.url }}"
     data-turbo-frame="main-content-frame"
     data-turbo-action="advance"
     class="group flex h-full flex-col overflow-hidden rounded-xl border border-base-300/50 bg-base-100 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
@@ -60,17 +60,24 @@
     <div class="flex flex-1 flex-col p-5">
       <div class="flex items-center gap-2 text-xs font-medium text-base-content/60">
         <time datetime="{{ published | date: '%Y-%m-%d' }}">{{ published | date: '%b %d, %Y' }}</time>
-        {%- assign post_evt = post.parent.parent -%}
-        {%- if post_evt and post_evt.template_name == 'event' and post.parent -%}
+        {%- assign post_evt = nil -%}
+        {%- if post.parent -%}
+          {%- assign post_evt = post.parent.parent -%}
+        {%- endif -%}
+        {%- assign post_evt_tpl = '' -%}
+        {%- if post_evt -%}
+          {%- assign post_evt_tpl = post_evt.template_name | default: '' -%}
+        {%- endif -%}
+        {%- if post_evt and post_evt_tpl == 'event' and post.parent -%}
           <span aria-hidden="true">·</span>
-          <span>{{ post_evt.link_text | default: post_evt.name }} · {{ post.parent.link_text | default: post.parent.name }}</span>
+          <span>{% render 'page_title', item: post_evt %} · {% render 'page_title', item: post.parent %}</span>
         {%- elsif post.parent -%}
           <span aria-hidden="true">·</span>
-          <span>{{ post.parent.link_text | default: post.parent.name }}</span>
+          <span>{% render 'page_title', item: post.parent %}</span>
         {%- endif -%}
       </div>
       <h3 class="mt-2 line-clamp-2 text-base font-semibold leading-snug tracking-tight text-base-content group-hover:text-primary">
-        {{ post.link_text | default: post.name }}
+        {% render 'page_title', item: post %}
       </h3>
       {%- if post.settings.description != blank -%}
         <p class="mt-2 line-clamp-2 text-sm text-base-content/70">{{ post.settings.description }}</p>

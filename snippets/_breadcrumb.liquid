@@ -9,10 +9,11 @@
   <ul>
     {% for item in breadcrumb %}
       <li class="{% if forloop.last %}text-primary{% else %}text-base-content/60{% endif %}">
-        {% if item.path %}
-          <a href="{{ item.path }}">{{ item.link_text }}</a>
+        {% assign _bc_href = item.path | default: item.url %}
+        {% if _bc_href %}
+          <a href="{{ _bc_href }}">{% render 'page_title', item: item %}</a>
         {% else %}
-          {{ item.link_text }}
+          {% render 'page_title', item: item %}
         {% endif %}
       </li>
     {% endfor %}

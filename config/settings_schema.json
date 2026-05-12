@@ -106,23 +106,31 @@
       {
         "id": "hero_title",
         "type": "text",
-        "label": "首页 Hero 标题（可选，留空则使用最近一场活动标题）",
+        "label": "Hero 标题",
+        "info": "留空则使用品牌名称（站点设置「品牌名称」或站点名）。",
         "default": ""
       },
       {
-        "id": "hero_subtitle",
+        "id": "hero_description",
         "type": "textarea",
-        "label": "首页 Hero 副标题（可选）",
-        "rows": 2,
+        "label": "Hero 描述",
+        "rows": 3,
         "default": ""
       },
       {
-        "id": "hero_background_image",
+        "id": "hero_url",
+        "type": "text",
+        "label": "Hero 主按钮链接",
+        "info": "可填站内路径或外链。留空则不显示主按钮。",
+        "default": ""
+      },
+      {
+        "id": "hero_cover_image",
         "type": "image_picker",
         "ratio": "16:9",
-        "width": 240,
-        "label": "首页 Hero 背景图",
-        "default": "images/theme/hero-background.png"
+        "width": 1600,
+        "label": "Hero 背景图",
+        "default": ""
       },
       {
         "id": "press_logos_html",

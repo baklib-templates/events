@@ -1,10 +1,21 @@
 {%- assign root = site.pages['/'] -%}
-{%- assign nav_items = '' -%}
+{%- assign root_id = nil -%}
 {%- if root -%}
-  {%- assign nav_items = root.children_in_nav_menu -%}
-  {%- if nav_items == blank -%}
-    {%- assign nav_items = root.children_in_list -%}
-  {%- endif -%}
+  {%- assign root_id = root.id -%}
+{%- endif -%}
+{% query nav_top_q from site.pages %}
+{
+  "order_by": ["published_at"],
+  "limit": 80
+}
+{% endquery %}
+{%- assign nav_items = '' | split: '' -%}
+{%- if root_id -%}
+  {%- for item in nav_top_q -%}
+    {%- if item.parent_id == root_id -%}
+      {%- assign nav_items = nav_items | concat: (item | sort: 'created_at') -%}
+    {%- endif -%}
+  {%- endfor -%}
 {%- endif -%}
 
 {%- assign brand_name = site.settings.brand_name | default: site.name -%}
@@ -38,11 +49,11 @@
       {%- if nav_items != blank -%}
         {%- for item in nav_items -%}
           <a
-            href="{{ item.path }}"
+            href="{{ item.path | default: item.url }}"
             class="transition hover:text-primary"
             data-turbo-frame="main-content-frame"
             data-turbo-action="advance"
-          >{{ item.link_text | default: item.name }}</a>
+          >{% render 'page_title', item: item %}</a>
         {%- endfor -%}
       {%- endif -%}
       {{ site.settings.header_menu_html }}
@@ -96,12 +107,12 @@
       {%- if nav_items != blank -%}
         {%- for item in nav_items -%}
           <a
-            href="{{ item.path }}"
+            href="{{ item.path | default: item.url }}"
             class="block rounded-md px-3 py-2 text-base-content/80 hover:bg-base-content/5 hover:text-primary"
             data-turbo-frame="main-content-frame"
             data-turbo-action="advance"
             @click="open = false"
-          >{{ item.link_text | default: item.name }}</a>
+          >{% render 'page_title', item: item %}</a>
         {%- endfor -%}
       {%- endif -%}
       {%- if site.search_path -%}
