@@ -1,12 +1,13 @@
 {% set_meta_title 'Search' %}
 
 <main class="grow bg-base-100">
-  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+  <section class="page-container py-12 lg:py-16">
+    <div class="mx-auto max-w-5xl">
     <div class="mb-10 border-b border-base-300/40 pb-8">
-      <h1 class="text-2xl font-bold tracking-tight text-base-content sm:text-3xl">Search</h1>
+      <h1 class="text-2xl font-semibold tracking-tight text-accent sm:text-3xl">Search</h1>
       <p class="mt-2 text-sm text-base-content/70">Find webinars, replays, speakers, and articles.</p>
       {% form_tag 'search' %}
-        <label class="relative mt-6 flex items-center rounded-xl border border-base-300/50 bg-base-100 transition focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
+        <label class="surface-panel relative mt-6 flex items-center transition focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
           <span class="pointer-events-none absolute left-4 text-base-content/40">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
               <circle cx="11" cy="11" r="8"/>
@@ -17,7 +18,7 @@
             type="search"
             name="{{ form.keywords_field_name }}"
             value="{{ search.keywords | escape_once }}"
-            class="w-full rounded-xl border-0 bg-transparent py-3.5 pl-12 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:outline-none focus:ring-0 md:text-base"
+            class="w-full rounded-field border-0 bg-transparent py-3.5 pl-12 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:outline-none focus:ring-0 md:text-base"
             placeholder="Search webinars, speakers, articles…"
             autocomplete="off"
             x-init="$nextTick(() => { $el.focus(); $el.setSelectionRange($el.value.length, $el.value.length); })"
@@ -40,7 +41,7 @@
       <div class="min-h-[40vh]">
         {% if search.page_number == 1 %}
           {% for link in search.extends %}
-            <a class="mb-4 block rounded-xl border border-base-300/40 bg-base-200/60 p-5 transition hover:border-primary/40 hover:bg-base-200" href="{{ link.url }}">
+            <a class="surface-panel mb-4 block bg-base-200/60 p-5 transition hover:border-primary/40 hover:bg-base-200" href="{{ link.url }}">
               <div class="text-base font-semibold text-base-content">{{ link.link_text | default: link.name | default: link.title }}</div>
               <div class="mt-1 line-clamp-1 text-xs text-base-content/50">{{ link.url }}</div>
             </a>
@@ -74,7 +75,8 @@
         {% endpaginate_tag %}
       </div>
     {% else %}
-      <p class="py-16 text-center text-sm text-base-content/60">Enter a keyword to start searching.</p>
+      <p class="empty-state py-16 text-center text-base-content/60">Enter a keyword to start searching.</p>
     {% endif %}
+    </div>
   </section>
 </main>

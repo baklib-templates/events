@@ -54,10 +54,11 @@
     "settings": [
       {
         "id": "logo_url",
-        "type": "text",
+        "type": "image_picker",
+        "ratio": "3:1",
+        "width": 120,
         "label": "Header logo URL",
-        "info": "If empty, the header uses site.favicon_url and site.name.",
-        "default": ""
+        "info": "If empty, the header uses site.favicon_url and site.name."
       },
       {
         "id": "event_type",
@@ -65,6 +66,13 @@
         "label": "Event type options (one line per option)",
         "rows": 4,
         "default": "webinar\nconference\ntraining\nmeetup"
+      },
+      {
+        "id": "event_status_options",
+        "type": "textarea",
+        "label": "Event status options (one line per option)",
+        "rows": 3,
+        "default": "upcoming\nrecent\npast"
       }
     ]
   },

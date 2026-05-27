@@ -1,86 +1,39 @@
-{%- assign root = page | default: site.pages['/'] -%}
-{%- assign root_id = root.id | default: nil -%}
-{%- assign channel_items = channels -%}
-{%- assign channel_items_size = channel_items | size -%}
-{%- if root -%}
-  {%- if channel_items_size == 0 -%}
-    {%- assign channel_items = '' | split: '' -%}
-    {%- assign root_children = page.children_in_list | default: root.children_in_list | limit: 100 -%}
-    {%- for child in root_children -%}
-      {%- if child.template_name == 'channel' -%}
-        {%- assign channel_items = channel_items | concat: (child | sort: 'created_at') -%}
-      {%- endif -%}
-    {%- endfor -%}
-    {%- assign channel_items_size = channel_items | size -%}
-  {%- endif -%}
-
-  {%- if channel_items_size == 0 -%}
-    {%- assign root_children_all = page.children | default: root.children | limit: 100 -%}
-    {%- for child in root_children_all -%}
-      {%- if child.template_name == 'channel' -%}
-        {%- assign channel_items = channel_items | concat: (child | sort: 'created_at') -%}
-      {%- endif -%}
-    {%- endfor -%}
-    {%- assign channel_items_size = channel_items | size -%}
-  {%- endif -%}
-
-  {%- if channel_items_size == 0 -%}
-    {%- assign site_pages = site.pages_in_list | limit: 200 -%}
-    {%- for item in site_pages -%}
-      {%- if item.template_name == 'channel' and item.parent_id == root_id -%}
-        {%- assign channel_items = channel_items | concat: (item | sort: 'created_at') -%}
-      {%- endif -%}
-    {%- endfor -%}
-    {%- assign channel_items_size = channel_items | size -%}
-  {%- endif -%}
-{%- endif -%}
-
-{%- assign today_key = 'now' | date: '%Y-%m-%d' -%}
-{%- assign recent_floor_ts = 'now' | date: '%s' | minus: 5184000 -%}
-{%- assign recent_floor_key = recent_floor_ts | date: '%Y-%m-%d' -%}
-{%- assign upcoming_channels = '' | split: '' -%}
-{%- assign recent_channels = '' | split: '' -%}
-{%- assign past_channels = '' | split: '' -%}
-
-{%- for ch in channel_items -%}
-  {%- assign start_date = ch.settings.start_datetime | presence -%}
-  {%- assign end_date = ch.settings.end_datetime | default: start_date | presence -%}
-  {%- assign start_key = '' -%}
-  {%- assign end_key = '' -%}
-  {%- if start_date -%}{%- assign start_key = start_date | date: '%Y-%m-%d' -%}{%- endif -%}
-  {%- if end_date -%}{%- assign end_key = end_date | date: '%Y-%m-%d' -%}{%- endif -%}
-
-  {%- if start_key != blank and start_key > today_key -%}
-    {%- assign upcoming_channels = upcoming_channels | concat: (ch | sort: 'created_at') -%}
-  {%- elsif end_key != blank and end_key <= today_key and end_key >= recent_floor_key -%}
-    {%- assign recent_channels = recent_channels | concat: (ch | sort: 'created_at') -%}
-  {%- endif -%}
-
-  {%- if end_key != blank and end_key < recent_floor_key -%}
-    {%- assign past_channels = past_channels | concat: (ch | sort: 'created_at') -%}
-  {%- endif -%}
-{%- endfor -%}
-
-{%- assign featured = nil -%}
-{%- for ch in channel_items -%}
-  {%- if ch.settings.featured -%}
-    {%- assign featured = ch -%}
-    {%- break -%}
-  {%- endif -%}
-{%- endfor -%}
-{%- if featured == nil -%}
-  {%- assign featured = channel_items | first -%}
-{%- endif -%}
-
-
 <main class="flex-1 bg-base-100">
+  {% query featured_q from site.pages %}
+  {
+    "where": {
+      "template_name_eq": "channel",
+      "settings.featured.value_eq": true
+    },
+    "order_by": ["published_at"],
+    "limit": 1
+  }
+  {% endquery %}
+  {%- assign featured = nil -%}
+  {%- for item in featured_q limit: 1 -%}
+    {%- assign featured = item -%}
+  {%- endfor -%}
+  {%- if featured == nil -%}
+    {% query featured_fallback_q from site.pages %}
+    {
+      "where": {
+        "template_name_eq": "channel"
+      },
+      "order_by": ["published_at"],
+      "limit": 1
+    }
+    {% endquery %}
+    {%- for item in featured_fallback_q limit: 1 -%}
+      {%- assign featured = item -%}
+    {%- endfor -%}
+  {%- endif -%}
   <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
     <div class="page-container py-14 lg:py-16">
       {%- if featured -%}
         <div class="grid items-center gap-10 lg:grid-cols-2">
           <div>
             <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Featured event</p>
-            <h1 class="mt-3 text-4xl font-bold tracking-tight text-base-content lg:text-5xl">
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight text-accent lg:text-5xl">
               {% render 'page_title', item: featured %}
             </h1>
             {%- if featured.settings.intro != blank -%}
@@ -112,103 +65,131 @@
           </a>
         </div>
       {%- else -%}
-        <h1 class="text-4xl font-bold tracking-tight text-base-content lg:text-5xl">{{ site.name }}</h1>
+        <h1 class="text-4xl font-semibold tracking-tight text-accent lg:text-5xl">{{ site.name }}</h1>
       {%- endif -%}
     </div>
   </section>
 
+  {% query upcoming_q from page.children_in_list %}
+  {
+    "where": {
+      "settings.start_datetime_gteq": "{{ 'now' | date: '%Y-%m-%dT%H:%M:%SZ' }}"
+    },
+    "order_by": ["-published_at"],
+    "limit": 12
+  }
+  {% endquery %}
+
   <section class="page-container py-12">
     <div class="mb-6 flex items-center justify-between gap-3">
-      <h2 class="text-2xl font-bold tracking-tight text-base-content">Upcoming events</h2>
+      <h2 class="section-heading">Upcoming events</h2>
     </div>
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {%- for ch in upcoming_channels -%}
+      {%- for ch in upcoming_q -%}
         {% render 'channel_card', channel: ch %}
       {%- endfor -%}
     </div>
-    {%- assign upcoming_count = upcoming_channels | size -%}
+    {%- assign upcoming_count = upcoming_q | size -%}
     {%- if upcoming_count == 0 -%}
-      <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-6 text-sm text-base-content/70">No upcoming events yet.</p>
+      <p class="empty-state">No upcoming events yet.</p>
     {%- endif -%}
   </section>
 
+  {% query recent_q from page.children_in_list %}
+  {
+    "where": {
+      "template_name_eq": "channel",
+      "settings.event_status.value_eq": "recent"
+    },
+    "order_by": ["-published_at"],
+    "limit": 12
+  }
+  {% endquery %}
   <section class="page-container pb-12">
-    <h2 class="text-2xl font-bold tracking-tight text-base-content">Recent events</h2>
-    <div class="mt-6 rounded-box border border-base-300/50 bg-base-100">
-      {%- for ch in recent_channels -%}
+    <h2 class="section-heading">Recent events</h2>
+    <div class="surface-panel mt-6">
+      {%- for ch in recent_q -%}
         {%- assign start_raw = ch.settings.start_datetime | presence -%}
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
-          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+        <div class="list-row">
+          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content transition-colors hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
           <span class="text-sm text-base-content/60">{{ start_raw | date: "%b %d, %Y" }}</span>
         </div>
       {%- endfor -%}
-      {%- assign recent_count = recent_channels | size -%}
+      {%- assign recent_count = recent_q | size -%}
       {%- if recent_count == 0 -%}
         <p class="px-5 py-6 text-sm text-base-content/70">No recent events yet.</p>
       {%- endif -%}
     </div>
   </section>
 
+  {% query past_q from page.children_in_list %}
+  {
+    "where": {
+      "settings.event_status.value_eq": "past"
+    },
+    "order_by": ["-published_at"],
+    "limit": 120
+  }
+  {% endquery %}
   <section class="page-container pb-12">
-    <h2 class="text-2xl font-bold tracking-tight text-base-content">Past events</h2>
-    <div class="mt-6 rounded-box border border-base-300/50 bg-base-100">
-      {%- for ch in past_channels -%}
+    <h2 class="section-heading">Past events</h2>
+    <div class="surface-panel mt-6">
+      {%- for ch in past_q -%}
         {%- assign end_raw = ch.settings.end_datetime | default: ch.settings.start_datetime | presence -%}
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
-          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+        <div class="list-row">
+          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content transition-colors hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
           <span class="text-sm text-base-content/60">{{ end_raw | date: "%b %d, %Y" }}</span>
         </div>
       {%- endfor -%}
-      {%- assign past_count = past_channels | size -%}
+      {%- assign past_count = past_q | size -%}
       {%- if past_count == 0 -%}
         <p class="px-5 py-6 text-sm text-base-content/70">No past events yet.</p>
       {%- endif -%}
     </div>
   </section>
 
+  {% query speaker_q from site.pages %}
+  {
+    "where": {
+      "template_style_eq": "person"
+    },
+    "order_by": ["published_at"],
+    "limit": 12
+  }
+  {% endquery %}
+
   <section class="page-container pb-12">
-    <h2 class="text-2xl font-bold tracking-tight text-base-content">Speakers</h2>
+    <h2 class="section-heading">Speakers</h2>
     <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {%- assign speaker_count = 0 -%}
-      {%- for ch in channel_items -%}
-        {%- assign people = ch.children_in_list | limit: 100 -%}
-        {%- assign people_size = people | size -%}
-        {%- if people_size == 0 -%}
-          {%- assign people = ch.children | limit: 100 -%}
-        {%- endif -%}
-        {%- for person in people -%}
-          {%- if person.template_name == 'page.person' -%}
-            {%- assign speaker_count = speaker_count | plus: 1 -%}
-            {% render 'speaker_card', speaker: person %}
-          {%- endif -%}
-        {%- endfor -%}
+      {%- for person in speaker_q -%}
+        {% render 'speaker_card', speaker: person %}
       {%- endfor -%}
     </div>
+    {%- assign speaker_count = speaker_q | size -%}
     {%- if speaker_count == 0 -%}
-      <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-6 text-sm text-base-content/70">No speakers published yet.</p>
+      <p class="empty-state">No speakers published yet.</p>
     {%- endif -%}
   </section>
 
+  {% query asset_q from site.pages %}
+  {
+    "where": {
+      "template_style_eq": "asset"
+    },
+    "order_by": ["published_at"],
+    "limit": 12
+  }
+  {% endquery %}
   <section class="page-container pb-14">
-    <h2 class="text-2xl font-bold tracking-tight text-base-content">Assets</h2>
+    <h2 class="section-heading">Assets</h2>
     <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {%- assign asset_count = 0 -%}
-      {%- for ch in channel_items -%}
-        {%- assign assets = ch.children_in_list | limit: 100 -%}
-        {%- assign assets_size = assets | size -%}
-        {%- if assets_size == 0 -%}
-          {%- assign assets = ch.children | limit: 100 -%}
-        {%- endif -%}
-        {%- for item in assets -%}
-          {%- if item.template_name == 'page.asset' -%}
-            {%- assign asset_count = asset_count | plus: 1 -%}
-            {% render 'asset_card', item: item %}
-          {%- endif -%}
-        {%- endfor -%}
+      {%- for item in asset_q -%}
+        {% render 'asset_card', item: item %}
       {%- endfor -%}
     </div>
+    {%- assign asset_count = asset_q | size -%}
     {%- if asset_count == 0 -%}
-      <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-6 text-sm text-base-content/70">No assets published yet.</p>
+      <p class="empty-state">No assets published yet.</p>
     {%- endif -%}
   </section>
 </main>

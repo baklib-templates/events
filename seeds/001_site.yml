@@ -1,14 +1,17 @@
 site:
-  language: "en"
-  time_zone: "America/Los_Angeles"
-  favicon: ""
   settings:
-    logo_url: ""
     event_type: |-
       webinar
       conference
       training
       meetup
-    head_html: ""
-    header_html: ""
-    footer_html: ""
+    event_status_options: |-
+      upcoming
+      recent
+      past
+    head_html: |-
+      <meta name="theme-color" content="#0d9488" />
+    header_html: |-
+      <div class="text-sm text-base-content/70">Events by Baklib</div>
+    footer_html: |-
+      <div class="text-sm text-base-content/70">© 2026 Baklib Events</div>

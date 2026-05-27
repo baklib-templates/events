@@ -1,22 +1,9 @@
-{%- assign root = site.pages['/'] -%}
-{%- assign root_id = nil -%}
-{%- if root -%}
-  {%- assign root_id = root.id -%}
-{%- endif -%}
+
 {%- assign logo_url = site.settings.logo_url | presence -%}
 {%- assign favicon_url = site.favicon_url | presence -%}
 {%- assign brand_name = site.name -%}
 {%- assign header_html = site.settings.header_html | presence -%}
 
-{% query nav_q from site.pages %}
-{
-  "where": {
-    "template_name_eq": "channel"
-  },
-  "order_by": ["published_at"],
-  "limit": 60
-}
-{% endquery %}
 
 <header class="sticky top-0 z-40 border-b border-base-300/50 bg-base-100/90 backdrop-blur" x-data="{ open: false }">
   <div class="page-container flex items-center justify-between gap-4 py-3">
@@ -30,26 +17,16 @@
       {%- if logo_url -%}
         <img class="h-9 w-auto max-w-40 object-contain" src="{{ logo_url }}" alt="{{ brand_name | escape_once }}" loading="eager" />
       {%- elsif favicon_url -%}
-        <img class="h-9 w-9 rounded-md object-cover" src="{{ favicon_url }}" alt="" loading="eager" />
+        <img class="h-9 w-9 rounded-field object-cover" src="{{ favicon_url }}" alt="" loading="eager" />
+        <span class="truncate text-base font-semibold text-base-content">{{ brand_name }}</span>
       {%- else -%}
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-content">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-field bg-primary text-sm font-bold text-primary-content">
           {{ brand_name | slice: 0 | upcase }}
         </span>
       {%- endif -%}
-      <span class="truncate text-base font-semibold text-base-content">{{ brand_name }}</span>
     </a>
 
     <nav class="hidden items-center gap-6 text-sm font-medium text-base-content/80 lg:flex" aria-label="Primary">
-      {%- for item in nav_q -%}
-        {%- if item.parent_id == root_id -%}
-          <a
-            href="{{ item.path | default: item.url }}"
-            class="transition hover:text-primary"
-            data-turbo-frame="main-content-frame"
-            data-turbo-action="advance"
-          >{% render 'page_title', item: item %}</a>
-        {%- endif -%}
-      {%- endfor -%}
       {%- if header_html -%}
         {{ header_html }}
       {%- endif -%}
@@ -72,7 +49,7 @@
 
     <button
       type="button"
-      class="inline-flex h-9 w-9 items-center justify-center rounded-md text-base-content/70 hover:bg-base-content/5 hover:text-base-content lg:hidden"
+      class="inline-flex h-9 w-9 items-center justify-center rounded-field text-base-content/70 hover:bg-base-content/5 hover:text-base-content lg:hidden"
       @click="open = !open"
       :aria-expanded="open"
       aria-label="Menu"
@@ -84,21 +61,10 @@
 
   <div class="border-t border-base-300/50 bg-base-100 lg:hidden" x-show="open" x-cloak style="display: none;">
     <nav class="space-y-1 px-4 py-3 text-sm" aria-label="Mobile">
-      {%- for item in nav_q -%}
-        {%- if item.parent_id == root_id -%}
-          <a
-            href="{{ item.path | default: item.url }}"
-            class="block rounded-md px-3 py-2 hover:bg-base-200"
-            data-turbo-frame="main-content-frame"
-            data-turbo-action="advance"
-            @click="open = false"
-          >{% render 'page_title', item: item %}</a>
-        {%- endif -%}
-      {%- endfor -%}
       {%- if site.search_path -%}
         <a
           href="{{ site.search_path }}"
-          class="block rounded-md px-3 py-2 hover:bg-base-200"
+          class="block rounded-field px-3 py-2 hover:bg-base-200"
           data-turbo-frame="main-content-frame"
           data-turbo-action="advance"
           @click="open = false"

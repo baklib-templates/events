@@ -5,13 +5,13 @@
 {%- assign subtitle = page.settings.subtitle | presence -%}
 
 <main class="flex-1 bg-base-100">
-  <section class="border-b border-base-300/50 bg-base-100">
+  <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
     <div class="page-container py-10">
       <nav class="mb-4 flex items-center gap-2 text-sm text-base-content/60">
-        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
+        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
         {%- if event_page -%}
           <span>/</span>
-          <a href="{{ event_page.path | default: event_page.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_page %}</a>
+          <a href="{{ event_page.path | default: event_page.url }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_page %}</a>
         {%- endif -%}
         <span>/</span>
         <span class="text-base-content">{% render 'page_title', item: page %}</span>
@@ -19,7 +19,7 @@
       {%- if subtitle -%}
         <p class="text-sm font-semibold uppercase tracking-[0.16em] text-primary">{{ subtitle }}</p>
       {%- endif -%}
-      <h1 class="mt-2 text-4xl font-bold tracking-tight text-base-content lg:text-5xl">{% render 'page_title', item: page %}</h1>
+      <h1 class="mt-2 text-4xl font-semibold tracking-tight text-accent lg:text-5xl">{% render 'page_title', item: page %}</h1>
       <p class="mt-4 text-sm text-base-content/60">
         {{ page.published_at | default: page.created_at | date: "%b %d, %Y" }}
       </p>
@@ -37,7 +37,7 @@
       <p class="mx-auto mt-8 max-w-3xl text-lg leading-relaxed text-base-content/80">{{ page.settings.description }}</p>
     {%- endif -%}
 
-    <article class="ProseMirror prose prose-neutral mx-auto mt-8 max-w-3xl">
+    <article class="ProseMirror prose prose-neutral surface-panel mx-auto mt-8 max-w-3xl p-6">
       {{ page.settings.content }}
     </article>
   </section>
@@ -56,7 +56,7 @@
         "id": "thumb_image",
         "type": "image_picker",
         "ratio": "16:9",
-        "width": 1200,
+        "width": 240,
         "label": "Cover image"
       },
       { "id": "description", "type": "textarea", "label": "Summary", "rows": 3, "to_markdown": true },

@@ -24,6 +24,7 @@ pages:
         address: "San Francisco + Online"
         registration_url: "https://example.com/events/scale-2026/register"
         featured: true
+        event_status: "upcoming"
       children:
         - name: "Why Scale 2026 matters for revenue teams"
           slug: why-scale-2026-matters
@@ -76,6 +77,7 @@ pages:
         address: "Online"
         registration_url: "https://example.com/events/ai-buyer-journey/register"
         featured: false
+        event_status: "recent"
       children:
         - name: "How to prepare your demand team for AI-first buyers"
           slug: prepare-demand-team-ai-buyers
@@ -128,6 +130,7 @@ pages:
         address: "Remote"
         registration_url: ""
         featured: false
+        event_status: "past"
       children:
         - name: "Recap: Ops Excellence highlights"
           slug: ops-excellence-highlights

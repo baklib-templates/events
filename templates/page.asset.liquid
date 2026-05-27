@@ -1,22 +1,20 @@
-{% set_meta_title page.name %}
-
-{%- assign event_page = page.parent -%}
+{%- assign channel = page.parent -%}
 {%- assign asset_url = page.settings.asset_url | presence -%}
 {%- assign description = page.settings.description | presence -%}
 
 <main class="flex-1 bg-base-100">
-  <section class="border-b border-base-300/50 bg-base-100">
+  <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
     <div class="page-container py-10">
       <nav class="mb-4 flex items-center gap-2 text-sm text-base-content/60">
-        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
-        {%- if event_page -%}
+        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
+        {%- if channel -%}
           <span>/</span>
-          <a href="{{ event_page.path | default: event_page.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_page %}</a>
+          <a href="{{ channel.path | default: channel.url }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: channel %}</a>
         {%- endif -%}
         <span>/</span>
         <span class="text-base-content">Asset</span>
       </nav>
-      <h1 class="text-4xl font-bold tracking-tight text-base-content lg:text-5xl">{% render 'page_title', item: page %}</h1>
+      <h1 class="text-4xl font-semibold tracking-tight text-accent lg:text-5xl">{% render 'page_title', item: page %}</h1>
       {%- if description -%}
         <p class="mt-4 max-w-3xl text-base text-base-content/75">{{ description }}</p>
       {%- endif -%}
@@ -24,7 +22,7 @@
   </section>
 
   <section class="page-container py-10 lg:py-12">
-    <div class="rounded-box border border-base-300/50 bg-base-100 p-6">
+    <div class="surface-panel p-6">
       {%- if asset_url -%}
         <a href="{{ asset_url }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
           <i data-lucide="download" class="h-4 w-4"></i>
@@ -36,7 +34,7 @@
     </div>
 
     {%- if page.settings.content != blank -%}
-      <article class="ProseMirror prose prose-neutral mt-8 max-w-3xl">
+      <article class="ProseMirror prose prose-neutral surface-panel mt-8 max-w-3xl p-6">
         {{ page.settings.content }}
       </article>
     {%- endif -%}

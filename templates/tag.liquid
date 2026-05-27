@@ -1,21 +1,21 @@
 {% set_meta_title tag.name %}
 
 <main class="grow bg-base-100">
-  <section class="border-b border-base-300/40 bg-base-200">
-    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+  <section class="border-b border-base-300/40 bg-gradient-to-br from-base-100 to-base-200/70">
+    <div class="page-container py-10 lg:py-14">
       <nav class="mb-3 flex items-center gap-2 text-sm text-base-content/60" aria-label="Breadcrumb">
-        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
+        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
         <span aria-hidden="true">/</span>
         <span>Tag</span>
         <span aria-hidden="true">/</span>
         <span class="text-base-content">{{ tag.name }}</span>
       </nav>
-      <h1 class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">#{{ tag.name }}</h1>
+      <h1 class="text-3xl font-semibold tracking-tight text-accent sm:text-4xl">#{{ tag.name }}</h1>
     </div>
   </section>
 
   <section class="bg-base-100">
-    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+    <div class="page-container py-10 lg:py-14">
       {% paginate_tag tag.pages, as: 'items', per: 12 %}
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {% for it in items %}
@@ -30,7 +30,7 @@
               {% render 'post_card', post: it %}
             {%- endif -%}
           {% else %}
-            <p class="col-span-full rounded-lg border border-dashed border-base-300/60 bg-base-200/50 p-10 text-center text-sm text-base-content/60">
+            <p class="empty-state col-span-full p-10 text-center text-base-content/60">
               Nothing tagged yet.
             </p>
           {% endfor %}

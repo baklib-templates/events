@@ -1,15 +1,6 @@
-{% set_meta_title page.name %}
-
-{% query child_pages_q from site.pages %}
-{
-  "order_by": ["-published_at"],
-  "limit": 300
-}
-{% endquery %}
-
 {%- assign page_title = page.name | default: page.link_text -%}
 {%- assign hero_image = page.settings.hero_image_url | default: page.settings.thumb_image_url | presence -%}
-{%- assign intro = page.settings.intro | presence -%}
+{%- assign description = page.settings.description | presence -%}
 {%- assign event_type = page.settings.event_type | presence -%}
 {%- assign start_dt = page.settings.start_datetime | presence -%}
 {%- assign end_dt = page.settings.end_datetime | presence -%}
@@ -23,7 +14,7 @@
   <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
     <div class="page-container py-12 lg:py-16">
       <nav class="mb-5 flex items-center gap-2 text-sm text-base-content/60">
-        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
+        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
         <span>/</span>
         <span class="text-base-content">{% render 'page_title', item: page %}</span>
       </nav>
@@ -31,9 +22,15 @@
       <div class="grid items-start gap-8 lg:grid-cols-2">
         <div>
           <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Event</p>
-          <h1 class="mt-3 text-4xl font-bold tracking-tight text-base-content lg:text-5xl">{{ page_title }}</h1>
-          {%- if intro -%}
-            <p class="mt-4 text-base text-base-content/75 lg:text-lg">{{ intro }}</p>
+          {%- if page.settings.featured -%}
+            <span class="badge badge-outline mt-3 gap-1 border-base-300 bg-base-100 text-base-content/80">
+              <i data-lucide="star" class="h-3.5 w-3.5 text-accent"></i>
+              Featured
+            </span>
+          {%- endif -%}
+          <h1 class="mt-3 text-4xl font-semibold tracking-tight text-accent lg:text-5xl">{{ page_title }}</h1>
+          {%- if description -%}
+            <p class="mt-4 text-base text-base-content/75 lg:text-lg">{{ description }}</p>
           {%- endif -%}
           <div class="mt-7 flex flex-wrap gap-3">
             {%- if registration_url -%}
@@ -59,7 +56,7 @@
   </section>
 
   <section class="page-container py-10">
-    <div class="grid gap-6 rounded-box border border-base-300/50 bg-base-100 p-6 md:grid-cols-2 xl:grid-cols-4">
+    <div class="surface-panel grid gap-6 p-6 md:grid-cols-2 xl:grid-cols-4">
       <div>
         <p class="text-xs uppercase tracking-wider text-base-content/50">Start</p>
         <p class="mt-1 font-medium text-base-content">{% if start_dt %}{{ start_dt | date: "%b %d, %Y" }}{% else %}TBA{% endif %}</p>
@@ -81,8 +78,8 @@
 
   {%- if key_points -%}
     <section class="page-container pb-10">
-      <h2 class="text-2xl font-bold tracking-tight text-base-content">Key points</h2>
-      <div class="prose prose-neutral mt-4 max-w-none rounded-box border border-base-300/50 bg-base-100 p-6 text-base-content/85">
+      <h2 class="section-heading">Key points</h2>
+      <div class="prose prose-neutral surface-panel mt-4 max-w-none p-6 text-base-content/85">
         {{ key_points | newline_to_br }}
       </div>
     </section>
@@ -90,8 +87,8 @@
 
   {%- if page.settings.content != blank -%}
     <section class="page-container pb-10">
-      <h2 class="text-2xl font-bold tracking-tight text-base-content">Overview</h2>
-      <article class="ProseMirror prose prose-neutral mt-4 max-w-none rounded-box border border-base-300/50 bg-base-100 p-6">
+      <h2 class="section-heading">Overview</h2>
+      <article class="ProseMirror prose prose-neutral surface-panel mt-4 max-w-none p-6">
         {{ page.settings.content }}
       </article>
     </section>
@@ -99,8 +96,8 @@
 
   {%- if video_asset -%}
     <section class="page-container pb-10">
-      <h2 class="text-2xl font-bold tracking-tight text-base-content">Video</h2>
-      <div class="mt-4 overflow-hidden rounded-box border border-base-300/50 bg-base-100 p-2">
+      <h2 class="section-heading">Video</h2>
+      <div class="surface-panel mt-4 overflow-hidden p-2">
         <video class="aspect-video w-full rounded-lg object-cover" controls playsinline preload="metadata">
           <source src="{{ video_asset }}" />
         </video>
@@ -111,50 +108,35 @@
   <section class="page-container pb-14">
     <div class="grid gap-10 lg:grid-cols-3">
       <div>
-        <h2 class="text-2xl font-bold tracking-tight text-base-content">News</h2>
+        <h2 class="section-heading">News</h2>
         <div class="mt-5 space-y-4">
-          {%- assign news_count = 0 -%}
-          {%- for item in child_pages_q -%}
-            {%- if item.parent_id == page.id and item.template_name == "page" -%}
-              {%- assign news_count = news_count | plus: 1 -%}
-              {% render 'post_card', post: item, variant: "horizontal" %}
+          {%- for item in page.children_in_list -%}
+            {%- if item.template_style == "" -%}
+               {% render 'post_card', post: item, variant: "horizontal" %}
             {%- endif -%}
           {%- endfor -%}
-          {%- if news_count == 0 -%}
-            <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-4 text-sm text-base-content/70">No news content yet.</p>
-          {%- endif -%}
         </div>
       </div>
 
       <div>
-        <h2 class="text-2xl font-bold tracking-tight text-base-content">Speakers</h2>
+        <h2 class="section-heading">Speakers</h2>
         <div class="mt-5 grid gap-4">
-          {%- assign person_count = 0 -%}
-          {%- for item in child_pages_q -%}
-            {%- if item.parent_id == page.id and item.template_name == "page.person" -%}
-              {%- assign person_count = person_count | plus: 1 -%}
+          {%- for item in page.children_in_list -%}
+            {%- if item.template_style == "person" -%}
               {% render 'speaker_card', speaker: item %}
             {%- endif -%}
           {%- endfor -%}
-          {%- if person_count == 0 -%}
-            <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-4 text-sm text-base-content/70">No speakers yet.</p>
-          {%- endif -%}
         </div>
       </div>
 
       <div>
-        <h2 class="text-2xl font-bold tracking-tight text-base-content">Assets</h2>
+        <h2 class="section-heading">Assets</h2>
         <div class="mt-5 space-y-4">
-          {%- assign asset_count = 0 -%}
-          {%- for item in child_pages_q -%}
-            {%- if item.parent_id == page.id and item.template_name == "page.asset" -%}
-              {%- assign asset_count = asset_count | plus: 1 -%}
+          {%- for item in page.children_in_list  -%}
+            {%- if item.template_style == "asset" -%}
               {% render 'asset_card', item: item %}
             {%- endif -%}
           {%- endfor -%}
-          {%- if asset_count == 0 -%}
-            <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-4 text-sm text-base-content/70">No assets yet.</p>
-          {%- endif -%}
         </div>
       </div>
     </div>
@@ -163,17 +145,24 @@
 
 {% schema %}
   {
-    "name": "Event Channel",
+    "name": "Event Page",
     "description": "Landing page for one conference or webinar with event information, speakers, and assets.",
     "thumb_url": "images/theme/preview-index.png",
     "preview_image_urls": ["images/theme/preview-index.png"],
-    "sub_page_templates": ["page", "page.person", "page.asset"],
+    "sub_page_templates": ["page"],
     "settings": [
       {
-        "id": "intro",
+        "id": "description",
         "type": "textarea",
         "label": "Introduction",
         "rows": 3
+      },
+      {
+        "id": "tags",
+        "type": "tag_picker",
+        "multiple": true,
+        "label": "Tags",
+        "queryable": true
       },
       {
         "id": "content",
@@ -191,15 +180,15 @@
       {
         "id": "thumb_image_url",
         "type": "image_picker",
-        "ratio": "16:9",
-        "width": 1200,
+        "ratio": "4:3",
+        "width": 120,
         "label": "Thumbnail image"
       },
       {
         "id": "hero_image_url",
         "type": "image_picker",
         "ratio": "16:9",
-        "width": 1600,
+        "width": 300,
         "label": "Hero image"
       },
       {
@@ -207,7 +196,7 @@
         "type": "video_picker",
         "label": "Video",
         "ratio": "16:9",
-        "width": 1200
+        "width": 300
       },
       {
         "id": "asset_url",
@@ -216,24 +205,33 @@
       },
       {
         "id": "start_datetime",
-        "type": "date",
+        "type": "text",
         "label": "Start date"
       },
       {
         "id": "end_datetime",
-        "type": "date",
+        "type": "text",
         "label": "End date"
       },
       {
         "id": "event_type",
         "type": "select",
         "label": "Event type",
-        "choices_from": "$site.event_type"
+        "choices_from": "$site.event_type",
+        "queryable": true
+      },
+      {
+        "id": "event_status",
+        "type": "select",
+        "label": "Event status",
+        "choices_from": "$site.event_status_options",
+        "queryable": true
       },
       {
         "id": "address",
         "type": "text",
-        "label": "Address"
+        "label": "Address",
+        "queryable": true
       },
       {
         "id": "registration_url",
@@ -244,7 +242,8 @@
         "id": "featured",
         "type": "checkbox",
         "label": "Feature this event on homepage",
-        "default": false
+        "default": false,
+        "queryable": true
       }
     ]
   }

@@ -25,9 +25,9 @@
           {%- if logo_url -%}
             <img class="h-8 w-auto max-w-36 object-contain" src="{{ logo_url }}" alt="{{ brand_name | escape_once }}" loading="lazy" />
           {%- elsif favicon_url -%}
-            <img class="h-8 w-8 rounded-md object-cover" src="{{ favicon_url }}" alt="" loading="lazy" />
+            <img class="h-8 w-8 rounded-field object-cover" src="{{ favicon_url }}" alt="" loading="lazy" />
           {%- else -%}
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-content">{{ brand_name | slice: 0 | upcase }}</span>
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-field bg-primary text-sm font-bold text-primary-content">{{ brand_name | slice: 0 | upcase }}</span>
           {%- endif -%}
           <span class="font-semibold text-base-content">{{ brand_name }}</span>
         </div>
