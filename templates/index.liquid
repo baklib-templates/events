@@ -1,55 +1,77 @@
-{% query channels_q from site.pages %}
-{
-  "where": {
-    "template_name_eq": "channel"
-  },
-  "order_by": ["published_at"],
-  "limit": 200
-}
-{% endquery %}
+{%- assign root = page | default: site.pages['/'] -%}
+{%- assign root_id = root.id | default: nil -%}
+{%- assign channel_items = channels -%}
+{%- assign channel_items_size = channel_items | size -%}
+{%- if root -%}
+  {%- if channel_items_size == 0 -%}
+    {%- assign channel_items = '' | split: '' -%}
+    {%- assign root_children = page.children_in_list | default: root.children_in_list | limit: 100 -%}
+    {%- for child in root_children -%}
+      {%- if child.template_name == 'channel' -%}
+        {%- assign channel_items = channel_items | concat: (child | sort: 'created_at') -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- assign channel_items_size = channel_items | size -%}
+  {%- endif -%}
 
-{% query people_q from site.pages %}
-{
-  "where": {
-    "template_name_eq": "page.person"
-  },
-  "order_by": ["published_at"],
-  "limit": 200
-}
-{% endquery %}
+  {%- if channel_items_size == 0 -%}
+    {%- assign root_children_all = page.children | default: root.children | limit: 100 -%}
+    {%- for child in root_children_all -%}
+      {%- if child.template_name == 'channel' -%}
+        {%- assign channel_items = channel_items | concat: (child | sort: 'created_at') -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- assign channel_items_size = channel_items | size -%}
+  {%- endif -%}
 
-{% query assets_q from site.pages %}
-{
-  "where": {
-    "template_name_eq": "page.asset"
-  },
-  "order_by": ["published_at"],
-  "limit": 200
-}
-{% endquery %}
+  {%- if channel_items_size == 0 -%}
+    {%- assign site_pages = site.pages_in_list | limit: 200 -%}
+    {%- for item in site_pages -%}
+      {%- if item.template_name == 'channel' and item.parent_id == root_id -%}
+        {%- assign channel_items = channel_items | concat: (item | sort: 'created_at') -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- assign channel_items_size = channel_items | size -%}
+  {%- endif -%}
+{%- endif -%}
 
-{%- assign root = site.pages['/'] -%}
-{%- assign root_id = nil -%}
-{%- if root -%}{%- assign root_id = root.id -%}{%- endif -%}
-{%- assign now_ts = "now" | date: "%s" | plus: 0 -%}
-{%- assign recent_window = 5184000 -%}
-{%- assign recent_cutoff = now_ts | minus: recent_window -%}
+{%- assign today_key = 'now' | date: '%Y-%m-%d' -%}
+{%- assign recent_floor_ts = 'now' | date: '%s' | minus: 5184000 -%}
+{%- assign recent_floor_key = recent_floor_ts | date: '%Y-%m-%d' -%}
+{%- assign upcoming_channels = '' | split: '' -%}
+{%- assign recent_channels = '' | split: '' -%}
+{%- assign past_channels = '' | split: '' -%}
+
+{%- for ch in channel_items -%}
+  {%- assign start_date = ch.settings.start_datetime | presence -%}
+  {%- assign end_date = ch.settings.end_datetime | default: start_date | presence -%}
+  {%- assign start_key = '' -%}
+  {%- assign end_key = '' -%}
+  {%- if start_date -%}{%- assign start_key = start_date | date: '%Y-%m-%d' -%}{%- endif -%}
+  {%- if end_date -%}{%- assign end_key = end_date | date: '%Y-%m-%d' -%}{%- endif -%}
+
+  {%- if start_key != blank and start_key > today_key -%}
+    {%- assign upcoming_channels = upcoming_channels | concat: (ch | sort: 'created_at') -%}
+  {%- elsif end_key != blank and end_key <= today_key and end_key >= recent_floor_key -%}
+    {%- assign recent_channels = recent_channels | concat: (ch | sort: 'created_at') -%}
+  {%- endif -%}
+
+  {%- if end_key != blank and end_key < recent_floor_key -%}
+    {%- assign past_channels = past_channels | concat: (ch | sort: 'created_at') -%}
+  {%- endif -%}
+{%- endfor -%}
 
 {%- assign featured = nil -%}
-{%- for ch in channels_q -%}
-  {%- if ch.parent_id == root_id and ch.settings.featured -%}
+{%- for ch in channel_items -%}
+  {%- if ch.settings.featured -%}
     {%- assign featured = ch -%}
     {%- break -%}
   {%- endif -%}
 {%- endfor -%}
 {%- if featured == nil -%}
-  {%- for ch in channels_q -%}
-    {%- if ch.parent_id == root_id -%}
-      {%- assign featured = ch -%}
-      {%- break -%}
-    {%- endif -%}
-  {%- endfor -%}
+  {%- assign featured = channel_items | first -%}
 {%- endif -%}
+
 
 <main class="flex-1 bg-base-100">
   <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
@@ -100,19 +122,11 @@
       <h2 class="text-2xl font-bold tracking-tight text-base-content">Upcoming events</h2>
     </div>
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {%- assign upcoming_count = 0 -%}
-      {%- for ch in channels_q -%}
-        {%- if ch.parent_id == root_id -%}
-          {%- assign start_raw = ch.settings.start_datetime | presence -%}
-          {%- assign start_ts = 0 -%}
-          {%- if start_raw -%}{%- assign start_ts = start_raw | date: "%s" | plus: 0 -%}{%- endif -%}
-          {%- if start_ts > now_ts -%}
-            {%- assign upcoming_count = upcoming_count | plus: 1 -%}
-            {% render 'channel_card', channel: ch %}
-          {%- endif -%}
-        {%- endif -%}
+      {%- for ch in upcoming_channels -%}
+        {% render 'channel_card', channel: ch %}
       {%- endfor -%}
     </div>
+    {%- assign upcoming_count = upcoming_channels | size -%}
     {%- if upcoming_count == 0 -%}
       <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-6 text-sm text-base-content/70">No upcoming events yet.</p>
     {%- endif -%}
@@ -121,21 +135,14 @@
   <section class="page-container pb-12">
     <h2 class="text-2xl font-bold tracking-tight text-base-content">Recent events</h2>
     <div class="mt-6 rounded-box border border-base-300/50 bg-base-100">
-      {%- assign recent_count = 0 -%}
-      {%- for ch in channels_q -%}
-        {%- if ch.parent_id == root_id -%}
-          {%- assign start_raw = ch.settings.start_datetime | presence -%}
-          {%- assign start_ts = 0 -%}
-          {%- if start_raw -%}{%- assign start_ts = start_raw | date: "%s" | plus: 0 -%}{%- endif -%}
-          {%- if start_ts > 0 and start_ts <= now_ts and start_ts >= recent_cutoff -%}
-            {%- assign recent_count = recent_count | plus: 1 -%}
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
-              <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
-              <span class="text-sm text-base-content/60">{{ start_raw | date: "%b %d, %Y" }}</span>
-            </div>
-          {%- endif -%}
-        {%- endif -%}
+      {%- for ch in recent_channels -%}
+        {%- assign start_raw = ch.settings.start_datetime | presence -%}
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
+          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+          <span class="text-sm text-base-content/60">{{ start_raw | date: "%b %d, %Y" }}</span>
+        </div>
       {%- endfor -%}
+      {%- assign recent_count = recent_channels | size -%}
       {%- if recent_count == 0 -%}
         <p class="px-5 py-6 text-sm text-base-content/70">No recent events yet.</p>
       {%- endif -%}
@@ -145,21 +152,14 @@
   <section class="page-container pb-12">
     <h2 class="text-2xl font-bold tracking-tight text-base-content">Past events</h2>
     <div class="mt-6 rounded-box border border-base-300/50 bg-base-100">
-      {%- assign past_count = 0 -%}
-      {%- for ch in channels_q -%}
-        {%- if ch.parent_id == root_id -%}
-          {%- assign end_raw = ch.settings.end_datetime | default: ch.settings.start_datetime | presence -%}
-          {%- assign end_ts = 0 -%}
-          {%- if end_raw -%}{%- assign end_ts = end_raw | date: "%s" | plus: 0 -%}{%- endif -%}
-          {%- if end_ts > 0 and end_ts < recent_cutoff -%}
-            {%- assign past_count = past_count | plus: 1 -%}
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
-              <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
-              <span class="text-sm text-base-content/60">{{ end_raw | date: "%b %d, %Y" }}</span>
-            </div>
-          {%- endif -%}
-        {%- endif -%}
+      {%- for ch in past_channels -%}
+        {%- assign end_raw = ch.settings.end_datetime | default: ch.settings.start_datetime | presence -%}
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
+          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+          <span class="text-sm text-base-content/60">{{ end_raw | date: "%b %d, %Y" }}</span>
+        </div>
       {%- endfor -%}
+      {%- assign past_count = past_channels | size -%}
       {%- if past_count == 0 -%}
         <p class="px-5 py-6 text-sm text-base-content/70">No past events yet.</p>
       {%- endif -%}
@@ -170,12 +170,18 @@
     <h2 class="text-2xl font-bold tracking-tight text-base-content">Speakers</h2>
     <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {%- assign speaker_count = 0 -%}
-      {%- for person in people_q -%}
-        {%- assign person_parent = person.parent -%}
-        {%- if person_parent and person_parent.parent_id == root_id -%}
-          {%- assign speaker_count = speaker_count | plus: 1 -%}
-          {% render 'speaker_card', speaker: person %}
+      {%- for ch in channel_items -%}
+        {%- assign people = ch.children_in_list | limit: 100 -%}
+        {%- assign people_size = people | size -%}
+        {%- if people_size == 0 -%}
+          {%- assign people = ch.children | limit: 100 -%}
         {%- endif -%}
+        {%- for person in people -%}
+          {%- if person.template_name == 'page.person' -%}
+            {%- assign speaker_count = speaker_count | plus: 1 -%}
+            {% render 'speaker_card', speaker: person %}
+          {%- endif -%}
+        {%- endfor -%}
       {%- endfor -%}
     </div>
     {%- if speaker_count == 0 -%}
@@ -187,12 +193,18 @@
     <h2 class="text-2xl font-bold tracking-tight text-base-content">Assets</h2>
     <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
       {%- assign asset_count = 0 -%}
-      {%- for item in assets_q -%}
-        {%- assign item_parent = item.parent -%}
-        {%- if item_parent and item_parent.parent_id == root_id -%}
-          {%- assign asset_count = asset_count | plus: 1 -%}
-          {% render 'asset_card', item: item %}
+      {%- for ch in channel_items -%}
+        {%- assign assets = ch.children_in_list | limit: 100 -%}
+        {%- assign assets_size = assets | size -%}
+        {%- if assets_size == 0 -%}
+          {%- assign assets = ch.children | limit: 100 -%}
         {%- endif -%}
+        {%- for item in assets -%}
+          {%- if item.template_name == 'page.asset' -%}
+            {%- assign asset_count = asset_count | plus: 1 -%}
+            {% render 'asset_card', item: item %}
+          {%- endif -%}
+        {%- endfor -%}
       {%- endfor -%}
     </div>
     {%- if asset_count == 0 -%}
