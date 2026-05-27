@@ -7,10 +7,6 @@
 
 {%- assign cover = post.settings.thumb_image | default: post.settings.thumb_image_url | presence -%}
 {%- assign published = post.published_at | default: post.created_at -%}
-{%- assign has_video = false -%}
-{%- if post.settings.video_asset != blank or post.settings.video_url != blank -%}
-  {%- assign has_video = true -%}
-{%- endif -%}
 
 {%- if variant == 'horizontal' -%}
   <a
@@ -22,11 +18,6 @@
     <div class="relative aspect-video w-28 shrink-0 overflow-hidden rounded-md bg-base-200">
       {%- if cover -%}
         <img src="{{ cover }}" alt="" class="h-full w-full object-cover" loading="lazy" />
-      {%- endif -%}
-      {%- if has_video -%}
-        <span class="absolute inset-0 flex items-center justify-center bg-black/30 text-white">
-          <svg viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-        </span>
       {%- endif -%}
     </div>
     <div class="min-w-0">
@@ -41,7 +32,7 @@
     href="{{ post.path | default: post.url }}"
     data-turbo-frame="main-content-frame"
     data-turbo-action="advance"
-    class="group flex h-full flex-col overflow-hidden rounded-xl border border-base-300/50 bg-base-100 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+    class="group flex h-full flex-col overflow-hidden rounded-box border border-base-300/50 bg-base-100 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
   >
     <div class="relative aspect-[16/9] w-full overflow-hidden bg-base-200">
       {%- if cover -%}
@@ -51,27 +42,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="h-12 w-12"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
         </div>
       {%- endif -%}
-      {%- if has_video -%}
-        <span class="absolute inset-0 flex items-center justify-center bg-black/25 text-white opacity-0 transition group-hover:opacity-100">
-          <svg viewBox="0 0 24 24" fill="currentColor" class="h-12 w-12 drop-shadow-md" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-        </span>
-      {%- endif -%}
     </div>
     <div class="flex flex-1 flex-col p-5">
       <div class="flex items-center gap-2 text-xs font-medium text-base-content/60">
         <time datetime="{{ published | date: '%Y-%m-%d' }}">{{ published | date: '%b %d, %Y' }}</time>
-        {%- assign post_evt = nil -%}
         {%- if post.parent -%}
-          {%- assign post_evt = post.parent.parent -%}
-        {%- endif -%}
-        {%- assign post_evt_tpl = '' -%}
-        {%- if post_evt -%}
-          {%- assign post_evt_tpl = post_evt.template_name | default: '' -%}
-        {%- endif -%}
-        {%- if post_evt and post_evt_tpl == 'event' and post.parent -%}
-          <span aria-hidden="true">·</span>
-          <span>{% render 'page_title', item: post_evt %} · {% render 'page_title', item: post.parent %}</span>
-        {%- elsif post.parent -%}
           <span aria-hidden="true">·</span>
           <span>{% render 'page_title', item: post.parent %}</span>
         {%- endif -%}

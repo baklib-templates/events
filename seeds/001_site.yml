@@ -3,12 +3,12 @@ site:
   time_zone: "America/Los_Angeles"
   favicon: ""
   settings:
-    brand_name: "Baklib Events"
-    brand_slogan: "The B2B knowledge hub for product, marketing, and growth professionals — every webinar, every replay, every resource in one place."
-    cta_label: "Browse Webinars"
-    cta_url: "/events"
-    hero_description: "Live webinars and on-demand replays from operators who have built the playbook."
-    hero_url: "/events"
-    hero_cover_image: "images/theme/hero-background.png"
-    contact_email: "events@baklib.example"
-    company_address: "123 Market Street, Suite 500, San Francisco, CA"
+    logo_url: ""
+    event_type: |-
+      webinar
+      conference
+      training
+      meetup
+    head_html: ""
+    header_html: ""
+    footer_html: ""

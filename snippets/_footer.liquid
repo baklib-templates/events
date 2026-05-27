@@ -1,8 +1,5 @@
-{%- assign brand_name = site.settings.brand_name | default: site.name -%}
-{%- assign brand_slogan = site.settings.brand_slogan | presence -%}
-{%- assign company_address = site.settings.company_address | presence -%}
-{%- assign contact_email = site.settings.contact_email | presence -%}
-{%- assign footer_html = site.settings.footer_menu_html | presence -%}
+{%- assign brand_name = site.name -%}
+{%- assign footer_html = site.settings.footer_html | presence -%}
 {%- assign root = site.pages['/'] -%}
 {%- assign root_id = nil -%}
 {%- if root -%}
@@ -10,87 +7,64 @@
 {%- endif -%}
 {% query footer_nav_q from site.pages %}
 {
+  "where": {
+    "template_name_eq": "channel"
+  },
   "order_by": ["published_at"],
-  "limit": 80
+  "limit": 60
 }
 {% endquery %}
-{%- assign footer_nav_items = '' | split: '' -%}
-{%- if root_id -%}
-  {%- for item in footer_nav_q -%}
-    {%- if item.parent_id == root_id -%}
-      {%- assign footer_nav_items = footer_nav_items | concat: (item | sort: 'created_at') -%}
-    {%- endif -%}
-  {%- endfor -%}
-{%- endif -%}
 
-<footer class="mt-auto border-t border-base-300/40 bg-base-200 text-sm text-base-content/70">
-  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-    <div class="grid gap-10 lg:grid-cols-4">
-      <div class="lg:col-span-2">
-        <div class="flex items-center gap-2">
+<footer class="mt-auto border-t border-base-300/50 bg-base-200/60">
+  <div class="page-container py-10">
+    <div class="grid gap-10 lg:grid-cols-3">
+      <div>
+        <div class="flex items-center gap-3">
+          {%- assign logo_url = site.settings.logo_url | presence -%}
           {%- assign favicon_url = site.favicon_url | presence -%}
-          {%- if favicon_url -%}
-            <img class="h-8 w-8 rounded-md object-cover" src="{{ favicon_url }}" alt="" />
+          {%- if logo_url -%}
+            <img class="h-8 w-auto max-w-36 object-contain" src="{{ logo_url }}" alt="{{ brand_name | escape_once }}" loading="lazy" />
+          {%- elsif favicon_url -%}
+            <img class="h-8 w-8 rounded-md object-cover" src="{{ favicon_url }}" alt="" loading="lazy" />
           {%- else -%}
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-content">
-              {{ brand_name | slice: 0 | upcase }}
-            </span>
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-content">{{ brand_name | slice: 0 | upcase }}</span>
           {%- endif -%}
-          <span class="text-base font-semibold text-base-content">{{ brand_name }}</span>
+          <span class="font-semibold text-base-content">{{ brand_name }}</span>
         </div>
-        {%- if brand_slogan -%}
-          <p class="mt-4 max-w-md leading-6">{{ brand_slogan }}</p>
-        {%- endif -%}
-        {%- if contact_email -%}
-          <p class="mt-4">
-            <a class="font-medium text-base-content hover:text-primary" href="mailto:{{ contact_email }}">{{ contact_email }}</a>
-          </p>
-        {%- endif -%}
-        {%- if company_address -%}
-          <p class="mt-2 leading-6">{{ company_address }}</p>
-        {%- endif -%}
+        <p class="mt-3 text-sm text-base-content/70">Event hub for conferences, webinars, training programs, and meetup resources.</p>
       </div>
 
       <div>
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content">Explore</h3>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Explore</h3>
         <ul class="mt-4 space-y-3">
-          {%- assign fn_sz = footer_nav_items | size -%}
-          {%- if fn_sz > 0 -%}
-            {%- for item in footer_nav_items limit: 6 -%}
+          {%- for item in footer_nav_q -%}
+            {%- if item.parent_id == root_id -%}
               <li>
                 <a
                   href="{{ item.path | default: item.url }}"
-                  class="hover:text-primary"
+                  class="text-sm text-base-content/80 hover:text-primary"
                   data-turbo-frame="main-content-frame"
                   data-turbo-action="advance"
                 >{% render 'page_title', item: item %}</a>
               </li>
-            {%- endfor -%}
-          {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
         </ul>
       </div>
 
       <div>
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content">Resources</h3>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Resources</h3>
         <ul class="mt-4 space-y-3">
           {%- if site.search_path -%}
-            <li><a class="hover:text-primary" href="{{ site.search_path }}" data-turbo-frame="main-content-frame" data-turbo-action="advance">Search</a></li>
+            <li><a class="text-sm text-base-content/80 hover:text-primary" href="{{ site.search_path }}" data-turbo-frame="main-content-frame" data-turbo-action="advance">Search</a></li>
           {%- endif -%}
           {%- if footer_html -%}
-            {{ footer_html }}
+            <li class="text-sm text-base-content/80">{{ footer_html }}</li>
           {%- endif -%}
         </ul>
       </div>
     </div>
 
-    <div class="mt-10 flex flex-col items-start justify-between gap-3 border-t border-base-300/40 pt-6 sm:flex-row sm:items-center">
-      <div class="text-xs text-base-content/60">
-        © {{ 'now' | date: '%Y' }} {{ brand_name }}. All rights reserved.
-      </div>
-      <div class="flex flex-wrap items-center gap-4 text-xs text-base-content/60">
-        <a class="hover:text-primary" href="#">Terms</a>
-        <a class="hover:text-primary" href="#">Privacy</a>
-      </div>
-    </div>
+    <div class="mt-8 border-t border-base-300/50 pt-5 text-xs text-base-content/60">© {{ 'now' | date: '%Y' }} {{ brand_name }}. All rights reserved.</div>
   </div>
 </footer>

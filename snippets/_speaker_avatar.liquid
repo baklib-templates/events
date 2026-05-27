@@ -1,10 +1,10 @@
 {%- comment -%}
   Inputs:
-    speaker: PageDrop (template_name == 'team_member')
+    speaker: PageDrop (template_name == 'page.person')
     size: 'sm' (default) | 'md' | 'lg' | 'xl'
 {%- endcomment -%}
 
-{%- assign avatar = speaker.settings.avatar | presence -%}
+{%- assign avatar = speaker.settings.avatar_url | default: speaker.settings.avatar | presence -%}
 {%- assign size_cls = 'h-10 w-10 text-sm' -%}
 {%- if size == 'md' -%}
   {%- assign size_cls = 'h-14 w-14 text-base' -%}

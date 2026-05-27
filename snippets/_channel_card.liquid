@@ -1,0 +1,32 @@
+{%- assign hero = channel.settings.thumb_image_url | default: channel.settings.hero_image_url | presence -%}
+{%- assign start_dt = channel.settings.start_datetime | presence -%}
+{%- assign event_type = channel.settings.event_type | presence -%}
+{%- assign intro = channel.settings.intro | presence -%}
+
+<a
+  href="{{ channel.path | default: channel.url }}"
+  class="group flex h-full flex-col overflow-hidden rounded-box border border-base-300/50 bg-base-100 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+  data-turbo-frame="main-content-frame"
+  data-turbo-action="advance"
+>
+  <div class="relative overflow-hidden bg-base-200">
+    {%- if hero -%}
+      <img class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.03]" src="{{ hero }}" alt="" loading="lazy" />
+    {%- else -%}
+      <div class="flex aspect-[16/10] items-center justify-center text-base-content/30">
+        <i data-lucide="calendar-days" class="h-12 w-12"></i>
+      </div>
+    {%- endif -%}
+  </div>
+  <div class="flex flex-1 flex-col p-5">
+    <div class="flex items-center gap-2 text-xs text-base-content/60">
+      <span>{{ event_type | default: "Event" }}</span>
+      <span>·</span>
+      <span>{% if start_dt %}{{ start_dt | date: "%b %d, %Y" }}{% else %}Date TBA{% endif %}</span>
+    </div>
+    <h3 class="mt-2 text-lg font-semibold leading-snug text-base-content group-hover:text-primary">{% render 'page_title', item: channel %}</h3>
+    {%- if intro -%}
+      <p class="mt-2 line-clamp-2 text-sm text-base-content/70">{{ intro }}</p>
+    {%- endif -%}
+  </div>
+</a>

@@ -1,0 +1,81 @@
+{% set_meta_title page.name %}
+
+{%- assign event_page = page.parent -%}
+{%- assign avatar = page.settings.avatar_url | presence -%}
+{%- assign organization = page.settings.organization | presence -%}
+{%- assign contact = page.settings.contact | presence -%}
+{%- assign description = page.settings.description | presence -%}
+
+<main class="flex-1 bg-base-100">
+  <section class="border-b border-base-300/50 bg-base-100">
+    <div class="page-container py-10">
+      <nav class="mb-4 flex items-center gap-2 text-sm text-base-content/60">
+        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
+        {%- if event_page -%}
+          <span>/</span>
+          <a href="{{ event_page.path | default: event_page.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_page %}</a>
+        {%- endif -%}
+        <span>/</span>
+        <span class="text-base-content">Speaker</span>
+      </nav>
+      <h1 class="text-4xl font-bold tracking-tight text-base-content lg:text-5xl">{% render 'page_title', item: page %}</h1>
+      {%- if organization -%}
+        <p class="mt-3 text-lg text-base-content/75">{{ organization }}</p>
+      {%- endif -%}
+      {%- if description -%}
+        <p class="mt-4 max-w-3xl text-base text-base-content/75">{{ description }}</p>
+      {%- endif -%}
+    </div>
+  </section>
+
+  <section class="page-container py-10 lg:py-12">
+    <div class="grid gap-10 lg:grid-cols-[18rem_1fr]">
+      <aside>
+        <div class="rounded-box border border-base-300/50 bg-base-100 p-5">
+          <div class="overflow-hidden rounded-box bg-base-200">
+            {%- if avatar -%}
+              <img class="aspect-square w-full object-cover" src="{{ avatar }}" alt="{{ page.name | escape_once }}" loading="lazy" />
+            {%- else -%}
+              <div class="flex aspect-square items-center justify-center text-base-content/30">
+                <i data-lucide="user" class="h-14 w-14"></i>
+              </div>
+            {%- endif -%}
+          </div>
+          {%- if contact -%}
+            <div class="mt-4 border-t border-base-300/50 pt-4 text-sm">
+              <p class="text-base-content/60">Contact</p>
+              <p class="mt-1 text-base-content">{{ contact }}</p>
+            </div>
+          {%- endif -%}
+        </div>
+      </aside>
+
+      <article class="ProseMirror prose prose-neutral max-w-none">
+        {{ page.settings.content }}
+      </article>
+    </div>
+  </section>
+</main>
+
+{% schema %}
+  {
+    "name": "Speaker Page",
+    "description": "Speaker profile under one event channel.",
+    "thumb_url": "images/theme/preview-page.png",
+    "preview_image_urls": ["images/theme/preview-page.png"],
+    "sub_page_templates": [],
+    "settings": [
+      { "id": "organization", "type": "text", "label": "Organization" },
+      { "id": "contact", "type": "text", "label": "Contact" },
+      {
+        "id": "avatar_url",
+        "type": "image_picker",
+        "ratio": "1:1",
+        "width": 600,
+        "label": "Avatar"
+      },
+      { "id": "description", "type": "textarea", "label": "One-line introduction", "rows": 3, "to_markdown": true },
+      { "id": "content", "type": "richtext", "label": "Bio", "to_markdown": true }
+    ]
+  }
+{% endschema %}

@@ -1,280 +1,160 @@
-{%- comment -%}
-  Channel under an event hub: aggregates child pages with client-side tag filter.
-  Optional display_style: grid | gallery | list (page.settings.display_style).
-{%- endcomment -%}
+{% set_meta_title page.name %}
 
-{%- assign event_ctx = page.parent -%}
-
-{% query channels_sibling_q from site.pages %}
+{% query child_pages_q from site.pages %}
 {
-  "where": {
-    "template_name_eq": "channel"
-  },
-  "order_by": ["published_at"],
-  "limit": 80
-}
-{% endquery %}
-{%- assign sibling_channels = '' | split: '' -%}
-{%- if event_ctx -%}
-  {%- assign ev_id = event_ctx.id -%}
-  {%- for sib in channels_sibling_q -%}
-    {%- if sib.parent_id == ev_id -%}
-      {%- assign sibling_channels = sibling_channels | concat: (sib | sort: 'created_at') -%}
-    {%- endif -%}
-  {%- endfor -%}
-{%- endif -%}
-
-{% query channel_items_q from site.pages %}
-{
-  "where": {
-    "template_name_eq": "page"
-  },
   "order_by": ["-published_at"],
-  "limit": 120
+  "limit": 300
 }
 {% endquery %}
-{%- assign items = '' | split: '' -%}
-{%- for it in channel_items_q -%}
-  {%- if it.parent_id == page.id -%}
-    {%- assign items = items | concat: (it | sort: 'created_at') -%}
-  {%- endif -%}
-{%- endfor -%}
-{%- assign items_size = items | size -%}
-{%- assign display_style_raw = page.settings.display_style -%}
-{%- assign display_style = display_style_raw.value | default: display_style_raw | default: 'grid' -%}
 
-{%- comment -%} Collect distinct tags from children for client-side filter. {%- endcomment -%}
-{%- assign tag_slugs = '' -%}
-{%- assign tag_names = '' -%}
-{%- for it in items -%}
-  {%- for t in it.tags -%}
-    {%- assign needle = t.slug | append: '|' -%}
-    {%- unless tag_slugs contains needle -%}
-      {%- assign tag_slugs = tag_slugs | append: needle -%}
-      {%- assign tag_names = tag_names | append: t.name | append: '|' -%}
-    {%- endunless -%}
-  {%- endfor -%}
-{%- endfor -%}
-{%- assign tag_slug_list = tag_slugs | split: '|' -%}
-{%- assign tag_name_list = tag_names | split: '|' -%}
+{%- assign page_title = page.name | default: page.link_text -%}
+{%- assign hero_image = page.settings.hero_image_url | default: page.settings.thumb_image_url | presence -%}
+{%- assign intro = page.settings.intro | presence -%}
+{%- assign event_type = page.settings.event_type | presence -%}
+{%- assign start_dt = page.settings.start_datetime | presence -%}
+{%- assign end_dt = page.settings.end_datetime | presence -%}
+{%- assign address = page.settings.address | presence -%}
+{%- assign registration_url = page.settings.registration_url | presence -%}
+{%- assign key_points = page.settings.key_points | presence -%}
+{%- assign video_asset = page.settings.video_url | presence -%}
+{%- assign asset_url = page.settings.asset_url | presence -%}
 
-{% capture _meta_ch_title %}{% render 'page_title', item: page %}{% endcapture %}
-{% set_meta_title _meta_ch_title | strip %}
-{% set_meta_description page.settings.description %}
-
-<main class="grow bg-base-100">
-  <section class="border-b border-base-300/40 bg-base-200">
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
-      <nav class="mb-3 flex flex-wrap items-center gap-2 text-sm text-base-content/60" aria-label="Breadcrumb">
-        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
-        <span aria-hidden="true">/</span>
-        {%- if event_ctx -%}
-          <a href="{{ event_ctx.path | default: event_ctx.url }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_ctx %}</a>
-          <span aria-hidden="true">/</span>
-        {%- endif -%}
+<main class="flex-1 bg-base-100">
+  <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
+    <div class="page-container py-12 lg:py-16">
+      <nav class="mb-5 flex items-center gap-2 text-sm text-base-content/60">
+        <a href="{{ site.index_path }}" class="hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
+        <span>/</span>
         <span class="text-base-content">{% render 'page_title', item: page %}</span>
       </nav>
-      <h1 class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">{% render 'page_title', item: page %}</h1>
-      {%- if page.settings.description != blank -%}
-        <p class="mt-3 max-w-3xl text-base text-base-content/70">{{ page.settings.description }}</p>
-      {%- endif -%}
+
+      <div class="grid items-start gap-8 lg:grid-cols-2">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Event</p>
+          <h1 class="mt-3 text-4xl font-bold tracking-tight text-base-content lg:text-5xl">{{ page_title }}</h1>
+          {%- if intro -%}
+            <p class="mt-4 text-base text-base-content/75 lg:text-lg">{{ intro }}</p>
+          {%- endif -%}
+          <div class="mt-7 flex flex-wrap gap-3">
+            {%- if registration_url -%}
+              <a href="{{ registration_url }}" class="btn btn-primary btn-lg">Register now</a>
+            {%- endif -%}
+            {%- if asset_url -%}
+              <a href="{{ asset_url }}" class="btn btn-outline btn-lg">Download asset</a>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-box border border-base-300/50 bg-base-200">
+          {%- if hero_image -%}
+            <img class="aspect-[16/10] w-full object-cover" src="{{ hero_image }}" alt="" loading="lazy" />
+          {%- else -%}
+            <div class="flex aspect-[16/10] items-center justify-center text-base-content/30">
+              <i data-lucide="calendar-heart" class="h-14 w-14"></i>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
     </div>
   </section>
 
-  <section
-    class="bg-base-100"
-    x-data="{ tag: (window.location.hash || '').replace('#tag=', '') }"
-    x-init="
-      $watch('tag', (v) => {
-        if (v) { history.replaceState(null, '', '#tag=' + v) }
-        else if (window.location.hash) { history.replaceState(null, '', window.location.pathname + window.location.search) }
-      })
-    "
-  >
-    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
-      <div class="grid gap-10 lg:grid-cols-12">
-        <div class="lg:col-span-8 xl:col-span-9">
+  <section class="page-container py-10">
+    <div class="grid gap-6 rounded-box border border-base-300/50 bg-base-100 p-6 md:grid-cols-2 xl:grid-cols-4">
+      <div>
+        <p class="text-xs uppercase tracking-wider text-base-content/50">Start</p>
+        <p class="mt-1 font-medium text-base-content">{% if start_dt %}{{ start_dt | date: "%b %d, %Y" }}{% else %}TBA{% endif %}</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wider text-base-content/50">End</p>
+        <p class="mt-1 font-medium text-base-content">{% if end_dt %}{{ end_dt | date: "%b %d, %Y" }}{% else %}TBA{% endif %}</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wider text-base-content/50">Event type</p>
+        <p class="mt-1 font-medium text-base-content">{{ event_type | default: "General" }}</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wider text-base-content/50">Address</p>
+        <p class="mt-1 font-medium text-base-content">{{ address | default: "Online" }}</p>
+      </div>
+    </div>
+  </section>
 
-          {%- assign tag_count = tag_slug_list | size -%}
-          {%- if tag_count > 0 -%}
-            <div class="mb-8 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                class="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition"
-                :class="tag === '' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
-                @click="tag = ''"
-              >All</button>
-              {%- for slug in tag_slug_list -%}
-                {%- assign s = slug | strip -%}
-                {%- if s != '' -%}
-                  {%- assign idx = forloop.index0 -%}
-                  {%- assign label = tag_name_list[idx] | strip -%}
-                  <button
-                    type="button"
-                    class="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition"
-                    :class="tag === '{{ s }}' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
-                    @click="tag = '{{ s }}'"
-                  >{{ label | default: s }}</button>
-                {%- endif -%}
-              {%- endfor -%}
-            </div>
-          {%- endif -%}
+  {%- if key_points -%}
+    <section class="page-container pb-10">
+      <h2 class="text-2xl font-bold tracking-tight text-base-content">Key points</h2>
+      <div class="prose prose-neutral mt-4 max-w-none rounded-box border border-base-300/50 bg-base-100 p-6 text-base-content/85">
+        {{ key_points | newline_to_br }}
+      </div>
+    </section>
+  {%- endif -%}
 
-          {%- if items_size > 0 -%}
-            {%- if display_style == 'gallery' -%}
-              <div class="grid gap-8 sm:grid-cols-2">
-                {%- for it in items -%}
-                  {%- assign item_tag_slugs = '' -%}
-                  {%- for t in it.tags -%}
-                    {%- assign item_tag_slugs = item_tag_slugs | append: t.slug | append: ',' -%}
-                  {%- endfor -%}
-                  <div
-                    data-tags="{{ item_tag_slugs }}"
-                    x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
-                    x-cloak
-                  >
-                    {%- assign it_tpl = it.template_name | default: '' -%}
-                    {%- if it_tpl == 'event' -%}
-                      {% render 'event_card', event: it %}
-                    {%- else -%}
-                      {%- assign g_cover = it.settings.thumb_image | default: it.settings.thumb_image_url | presence -%}
-                      {%- assign g_pub = it.published_at | default: it.created_at -%}
-                      <a
-                        href="{{ it.path | default: it.url }}"
-                        data-turbo-frame="main-content-frame"
-                        data-turbo-action="advance"
-                        class="group block overflow-hidden rounded-2xl border border-base-300/50 bg-base-100 transition hover:border-primary/40 hover:shadow-lg"
-                      >
-                        <div class="relative aspect-[4/3] w-full overflow-hidden bg-base-200">
-                          {%- if g_cover -%}
-                            <img src="{{ g_cover }}" alt="" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" loading="lazy" />
-                          {%- else -%}
-                            <div class="flex h-full w-full items-center justify-center text-base-content/25">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="h-16 w-16"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
-                            </div>
-                          {%- endif -%}
-                        </div>
-                        <div class="p-4">
-                          <div class="text-xs text-base-content/55">{{ g_pub | date: '%b %d, %Y' }}</div>
-                          <h3 class="mt-1 line-clamp-2 text-lg font-semibold tracking-tight text-base-content group-hover:text-primary">
-                            {% render 'page_title', item: it %}
-                          </h3>
-                          {%- if it.settings.description != blank -%}
-                            <p class="mt-2 line-clamp-2 text-sm text-base-content/65">{{ it.settings.description }}</p>
-                          {%- endif -%}
-                        </div>
-                      </a>
-                    {%- endif -%}
-                  </div>
-                {%- endfor -%}
-              </div>
-            {%- elsif display_style == 'list' -%}
-              <ul class="divide-y divide-base-300/50 rounded-2xl border border-base-300/50 bg-base-100">
-                {%- for it in items -%}
-                  {%- assign item_tag_slugs = '' -%}
-                  {%- for t in it.tags -%}
-                    {%- assign item_tag_slugs = item_tag_slugs | append: t.slug | append: ',' -%}
-                  {%- endfor -%}
-                  <li
-                    data-tags="{{ item_tag_slugs }}"
-                    x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
-                    x-cloak
-                  >
-                    {%- assign it_tpl = it.template_name | default: '' -%}
-                    {%- if it_tpl == 'event' -%}
-                      <div class="p-4">
-                        {% render 'event_card', event: it %}
-                      </div>
-                    {%- else -%}
-                      {%- assign l_cover = it.settings.thumb_image | default: it.settings.thumb_image_url | presence -%}
-                      {%- assign l_pub = it.published_at | default: it.created_at -%}
-                      <a
-                        href="{{ it.path | default: it.url }}"
-                        data-turbo-frame="main-content-frame"
-                        data-turbo-action="advance"
-                        class="flex items-center gap-4 p-4 transition hover:bg-base-200/70"
-                      >
-                        <div class="relative h-14 w-20 shrink-0 overflow-hidden rounded-md bg-base-200">
-                          {%- if l_cover -%}
-                            <img src="{{ l_cover }}" alt="" class="h-full w-full object-cover" loading="lazy" />
-                          {%- endif -%}
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <div class="text-xs text-base-content/55">{{ l_pub | date: '%b %d, %Y' }}</div>
-                          <div class="mt-0.5 truncate text-base font-semibold text-base-content">{% render 'page_title', item: it %}</div>
-                          {%- if it.settings.description != blank -%}
-                            <div class="mt-0.5 truncate text-sm text-base-content/65">{{ it.settings.description }}</div>
-                          {%- endif -%}
-                        </div>
-                        <span class="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
-                          View
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
-                        </span>
-                      </a>
-                    {%- endif -%}
-                  </li>
-                {%- endfor -%}
-              </ul>
-            {%- else -%}
-              <div class="grid gap-6 sm:grid-cols-2">
-                {%- for it in items -%}
-                  {%- assign item_tag_slugs = '' -%}
-                  {%- for t in it.tags -%}
-                    {%- assign item_tag_slugs = item_tag_slugs | append: t.slug | append: ',' -%}
-                  {%- endfor -%}
-                  <div
-                    data-tags="{{ item_tag_slugs }}"
-                    x-show="tag === '' || ($el.dataset.tags || '').split(',').includes(tag)"
-                    x-cloak
-                  >
-                    {%- assign it_tpl = it.template_name | default: '' -%}
-                    {%- if it_tpl == 'event' -%}
-                      {% render 'event_card', event: it %}
-                    {%- else -%}
-                      {% render 'post_card', post: it %}
-                    {%- endif -%}
-                  </div>
-                {%- endfor -%}
-              </div>
+  {%- if page.settings.content != blank -%}
+    <section class="page-container pb-10">
+      <h2 class="text-2xl font-bold tracking-tight text-base-content">Overview</h2>
+      <article class="ProseMirror prose prose-neutral mt-4 max-w-none rounded-box border border-base-300/50 bg-base-100 p-6">
+        {{ page.settings.content }}
+      </article>
+    </section>
+  {%- endif -%}
+
+  {%- if video_asset -%}
+    <section class="page-container pb-10">
+      <h2 class="text-2xl font-bold tracking-tight text-base-content">Video</h2>
+      <div class="mt-4 overflow-hidden rounded-box border border-base-300/50 bg-base-100 p-2">
+        <video class="aspect-video w-full rounded-lg object-cover" controls playsinline preload="metadata">
+          <source src="{{ video_asset }}" />
+        </video>
+      </div>
+    </section>
+  {%- endif -%}
+
+  <section class="page-container pb-14">
+    <div class="grid gap-10 lg:grid-cols-3">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight text-base-content">News</h2>
+        <div class="mt-5 space-y-4">
+          {%- assign news_count = 0 -%}
+          {%- for item in child_pages_q -%}
+            {%- if item.parent_id == page.id and item.template_name == "page" -%}
+              {%- assign news_count = news_count | plus: 1 -%}
+              {% render 'post_card', post: item, variant: "horizontal" %}
             {%- endif -%}
-          {%- else -%}
-            <p class="rounded-lg border border-dashed border-base-300/60 bg-base-200/50 p-10 text-center text-sm text-base-content/60">
-              No items yet.
-            </p>
+          {%- endfor -%}
+          {%- if news_count == 0 -%}
+            <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-4 text-sm text-base-content/70">No news content yet.</p>
           {%- endif -%}
         </div>
+      </div>
 
-        <div class="lg:col-span-4 xl:col-span-3">
-          <div x-data="{}">
-            {% render 'sidebar', current_page: page, event: event_ctx, siblings: sibling_channels %}
-
-            {%- if tag_count > 0 -%}
-              <div class="mt-8">
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Filter by tag</h3>
-                <div class="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition"
-                    :class="$root.tag === '' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
-                    @click="$root.tag = ''"
-                  >All</button>
-                  {%- for slug in tag_slug_list -%}
-                    {%- assign s = slug | strip -%}
-                    {%- if s != '' -%}
-                      {%- assign idx = forloop.index0 -%}
-                      {%- assign label = tag_name_list[idx] | strip -%}
-                      <button
-                        type="button"
-                        class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition"
-                        :class="$root.tag === '{{ s }}' ? 'border-primary bg-primary text-primary-content' : 'border-base-300/50 text-base-content/80 hover:border-primary/50'"
-                        @click="$root.tag = '{{ s }}'"
-                      >{{ label | default: s }}</button>
-                    {%- endif -%}
-                  {%- endfor -%}
-                </div>
-              </div>
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight text-base-content">Speakers</h2>
+        <div class="mt-5 grid gap-4">
+          {%- assign person_count = 0 -%}
+          {%- for item in child_pages_q -%}
+            {%- if item.parent_id == page.id and item.template_name == "page.person" -%}
+              {%- assign person_count = person_count | plus: 1 -%}
+              {% render 'speaker_card', speaker: item %}
             {%- endif -%}
-          </div>
+          {%- endfor -%}
+          {%- if person_count == 0 -%}
+            <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-4 text-sm text-base-content/70">No speakers yet.</p>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight text-base-content">Assets</h2>
+        <div class="mt-5 space-y-4">
+          {%- assign asset_count = 0 -%}
+          {%- for item in child_pages_q -%}
+            {%- if item.parent_id == page.id and item.template_name == "page.asset" -%}
+              {%- assign asset_count = asset_count | plus: 1 -%}
+              {% render 'asset_card', item: item %}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if asset_count == 0 -%}
+            <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-4 text-sm text-base-content/70">No assets yet.</p>
+          {%- endif -%}
         </div>
       </div>
     </div>
@@ -283,23 +163,88 @@
 
 {% schema %}
   {
-    "name": "Channel (resources / news)",
-    "description": "Aggregation page under an event hub with client-side tag filter",
+    "name": "Event Channel",
+    "description": "Landing page for one conference or webinar with event information, speakers, and assets.",
     "thumb_url": "images/theme/preview-index.png",
     "preview_image_urls": ["images/theme/preview-index.png"],
-    "sub_page_templates": ["page"],
+    "sub_page_templates": ["page", "page.person", "page.asset"],
     "settings": [
-      { "id": "description", "type": "textarea", "label": "Description", "to_markdown": true },
       {
-        "id": "display_style",
+        "id": "intro",
+        "type": "textarea",
+        "label": "Introduction",
+        "rows": 3
+      },
+      {
+        "id": "content",
+        "type": "richtext",
+        "label": "Content",
+        "to_markdown": true
+      },
+      {
+        "id": "key_points",
+        "type": "textarea",
+        "label": "Key points",
+        "rows": 5,
+        "to_markdown": true
+      },
+      {
+        "id": "thumb_image_url",
+        "type": "image_picker",
+        "ratio": "16:9",
+        "width": 1200,
+        "label": "Thumbnail image"
+      },
+      {
+        "id": "hero_image_url",
+        "type": "image_picker",
+        "ratio": "16:9",
+        "width": 1600,
+        "label": "Hero image"
+      },
+      {
+        "id": "video_url",
+        "type": "video_picker",
+        "label": "Video",
+        "ratio": "16:9",
+        "width": 1200
+      },
+      {
+        "id": "asset_url",
+        "type": "dam_picker",
+        "label": "Asset URL (DAM)"
+      },
+      {
+        "id": "start_datetime",
+        "type": "date",
+        "label": "Start date"
+      },
+      {
+        "id": "end_datetime",
+        "type": "date",
+        "label": "End date"
+      },
+      {
+        "id": "event_type",
         "type": "select",
-        "label": "Display style",
-        "default": "grid",
-        "choices": [
-          { "label": "Grid (cards)", "value": "grid" },
-          { "label": "Gallery (image-first)", "value": "gallery" },
-          { "label": "List (compact)", "value": "list" }
-        ]
+        "label": "Event type",
+        "choices_from": "$site.event_type"
+      },
+      {
+        "id": "address",
+        "type": "text",
+        "label": "Address"
+      },
+      {
+        "id": "registration_url",
+        "type": "text",
+        "label": "Registration URL"
+      },
+      {
+        "id": "featured",
+        "type": "checkbox",
+        "label": "Feature this event on homepage",
+        "default": false
       }
     ]
   }

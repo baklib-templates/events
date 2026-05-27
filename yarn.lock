@@ -537,6 +537,11 @@ cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
+daisyui@^5.5.20:
+  version "5.5.20"
+  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-5.5.20.tgz#631ea6b05ab7e346713bf3a84894c5ef8abca131"
+  integrity sha512-HemJcjl0Gk9rQ8BcgofN6p+EURrqftQG9wK1Hkxs98i49xe68+QxpNvry+PyxwkIUgrbMpNmZ5ZWjmtffAjfhQ==
+
 data-view-buffer@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/data-view-buffer/-/data-view-buffer-1.0.2.tgz"
@@ -1169,6 +1174,11 @@ load-json-file@^4.0.0:
     parse-json "^4.0.0"
     pify "^3.0.0"
     strip-bom "^3.0.0"
+
+lucide@^1.16.0:
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/lucide/-/lucide-1.16.0.tgz#830f9df4d703aab485b221591aec71edb243903f"
+  integrity sha512-20QvduCJTB7e7K9WVvoLBuKPsYZ8d6ptwe9PIdTFiZmjVTPdFWQreBNyNCM9QQtGnqHR0PLiEQdxyhYsL1LdoA==
 
 magic-string@^0.30.21:
   version "0.30.21"

@@ -1,17 +1,17 @@
 {%- comment -%}
   Speaker card for team grid.
   Inputs:
-    speaker: PageDrop (template_name == 'team_member')
+    speaker: PageDrop (template_name == 'page.person')
 {%- endcomment -%}
 
-{%- assign job_title = speaker.settings.job_title | presence -%}
-{%- assign company = speaker.settings.company | presence -%}
+{%- assign job_title = speaker.settings.description | presence -%}
+{%- assign company = speaker.settings.organization | presence -%}
 
 <a
   href="{{ speaker.path | default: speaker.url }}"
   data-turbo-frame="main-content-frame"
   data-turbo-action="advance"
-  class="group flex flex-col items-center rounded-xl border border-base-300/40 bg-base-100 p-6 text-center transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+  class="group flex flex-col items-center rounded-box border border-base-300/50 bg-base-100 p-6 text-center transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
 >
   {% render 'speaker_avatar', speaker: speaker, size: 'lg' %}
   <h3 class="mt-4 text-base font-semibold tracking-tight text-base-content group-hover:text-primary">

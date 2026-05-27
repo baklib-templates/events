@@ -5,36 +5,12 @@
     <meta name="author" content="Baklib">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% meta_tags %}
+    {% render 'theme_runtime_colors' %}
     {{ 'stylesheets/application.css' | asset_url | stylesheet_tag: data-turbo-track: 'reload' }}
     {{ 'baklib/shared/main.css' | asset_url | stylesheet_tag: data-turbo-track: 'reload' }}
     {{ 'baklib/shared/main.js' | asset_url | script_tag: defer: true, data-turbo-track: 'reload' }}
     {{ 'javascripts/application.js' | asset_url | script_tag: defer: true, data-turbo-track: 'reload' }}
     {{ site.settings.head_html }}
-
-    <style>
-      :root {
-        --color-base-100: var(--theme-color-base-100);
-        --color-base-200: var(--theme-color-base-200);
-        --color-base-300: var(--theme-color-base-300);
-        --color-base-content: var(--theme-color-base-content);
-        --color-primary: var(--theme-color-primary);
-        --color-primary-content: var(--theme-color-primary-content);
-        --color-secondary: var(--theme-color-secondary);
-        --color-secondary-content: var(--theme-color-secondary-content);
-        --color-accent: var(--theme-color-accent);
-        --color-accent-content: var(--theme-color-accent-content);
-        --color-neutral: var(--theme-color-neutral);
-        --color-neutral-content: var(--theme-color-neutral-content);
-        --color-info: var(--theme-color-info);
-        --color-info-content: var(--theme-color-info-content);
-        --color-success: var(--theme-color-success);
-        --color-success-content: var(--theme-color-success-content);
-        --color-warning: var(--theme-color-warning);
-        --color-warning-content: var(--theme-color-warning-content);
-        --color-error: var(--theme-color-error);
-        --color-error-content: var(--theme-color-error-content);
-      }
-    </style>
   </head>
 
   <body class="flex min-h-screen flex-col bg-base-100 text-base-content" x-data>

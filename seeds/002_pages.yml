@@ -2,181 +2,159 @@ pages:
   name: Home
   slug: index
   template_name: index
-
   children:
-    - name: "Scaling Product-Led Growth in 2026"
-      slug: scaling-plg-2026
-      template_name: event
-      tags: ["plg", "growth"]
+    - name: "Scale 2026 Conference"
+      slug: scale-2026-conference
+      template_name: channel
+      tags: ["conference", "growth"]
       settings:
-        start_datetime: "2026-09-12"
-        start_time: "14:00"
-        end_datetime: "2026-09-12"
-        end_time: "15:00"
-        location: "Online"
-        is_online: true
-        cover_image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=70"
-        register_url: ""
+        intro: "A flagship conference for operators who build repeatable growth systems."
+        content: "<p>Scale 2026 brings together leaders from product, growth, and revenue operations for one intensive day of practical sessions.</p>"
+        key_points: |-
+          Practical GTM frameworks
+          Real-world team playbooks
+          Cross-functional execution patterns
+        thumb_image_url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=70"
+        hero_image_url: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=70"
         video_url: ""
-        slides_url: ""
-        description: "How modern B2B companies turn self-serve adoption into enterprise revenue without losing momentum."
-        agenda_html: "<ul><li>Opening keynote — 5 min</li><li>Product-led growth playbook — 25 min</li><li>Live Q&A — 25 min</li></ul>"
-        content: "<p>Join us for a 60-minute working session on what it takes to scale PLG in 2026.</p>"
+        asset_url: ""
+        start_datetime: "2026-09-12"
+        end_datetime: "2026-09-13"
+        event_type: "conference"
+        address: "San Francisco + Online"
+        registration_url: "https://example.com/events/scale-2026/register"
+        featured: true
       children:
+        - name: "Why Scale 2026 matters for revenue teams"
+          slug: why-scale-2026-matters
+          template_name: page
+          tags: ["announcement", "growth"]
+          settings:
+            subtitle: "Announcement"
+            thumb_image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=70"
+            description: "A quick look at the agenda, target audience, and business outcomes."
+            content: "<p>This conference is designed for teams that need practical alignment between demand generation, sales, and customer success.</p>"
+
         - name: "Annie King"
           slug: annie-king
-          template_name: team_member
+          template_name: page.person
+          tags: ["speaker"]
           settings:
-            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=320&q=70"
-            job_title: "VP of Growth"
-            company: "Compass Labs"
-            homepage_url: "https://example.com/annie"
-            linkedin_url: "https://www.linkedin.com/"
-            twitter_url: ""
-            bio: "<p>Annie has scaled go-to-market motions at four B2B SaaS companies, three of which crossed $100M ARR.</p>"
+            organization: "Compass Labs"
+            contact: "annie@compass.example"
+            avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=70"
+            description: "VP of Growth"
+            content: "<p>Annie has led growth programs at multiple B2B SaaS companies from Series B to public scale.</p>"
 
-        - name: "Diego Romero"
-          slug: diego-romero
-          template_name: team_member
+        - name: "Conference deck (PDF)"
+          slug: conference-deck-pdf
+          template_name: page.asset
+          tags: ["asset", "download"]
           settings:
-            avatar: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=320&q=70"
-            job_title: "VP of RevOps"
-            company: "Atlas Software"
-            bio: "<p>Diego runs the revenue operations function at a publicly traded SaaS company.</p>"
+            asset_url: "https://example.com/assets/scale-2026-deck.pdf"
+            description: "Slide deck covering the full conference framework."
+            content: "<p>This deck includes keynote highlights, benchmark tables, and implementation checklists.</p>"
 
-        - name: "News"
-          slug: news
-          template_name: channel
-          tags: ["announcement"]
-          settings:
-            description: "Updates and announcements about this webinar."
-            display_style: "grid"
-          children:
-            - name: "Why we're hosting this webinar"
-              slug: why-this-webinar
-              template_name: page
-              tags: ["marketing", "announcement"]
-              settings:
-                subtitle: "Announcement"
-                thumb_image: "https://images.unsplash.com/photo-1533750349088-cd871a92f312?auto=format&fit=crop&w=800&q=70"
-                description: "The PLG motion has shifted — here's why we're gathering operators now."
-                content: "<p>We designed this session around questions we hear every week from revenue leaders.</p>"
-
-        - name: "Gallery"
-          slug: gallery
-          template_name: channel
-          settings:
-            description: "Behind the scenes from studio setup and dry runs."
-            display_style: "gallery"
-          children:
-            - name: "Studio walkthrough"
-              slug: studio-walkthrough
-              template_name: page
-              tags: ["behind-the-scenes"]
-              settings:
-                thumb_image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=70"
-                description: "A photo tour of our broadcast desk, lighting grid, and backup feeds."
-                content: "<p>Consistency beats hype — here's how we keep every webinar sharp.</p>"
-
-        - name: "Resources"
-          slug: resources
-          template_name: channel
-          settings:
-            description: "Slides, transcript, and follow-up reading after the live session."
-            display_style: "list"
-          children:
-            - name: "Download the deck (PDF)"
-              slug: download-deck
-              template_name: page
-              tags: ["download", "playbook"]
-              settings:
-                subtitle: "Download"
-                thumb_image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=70"
-                description: "The slide deck from this webinar — frameworks, benchmarks, and talk tracks."
-                content: "<p>Use these slides to brief your leadership team or kick off a PLG workshop.</p>"
-
-    - name: "Inside the AI Buyer's Journey"
-      slug: ai-buyers-journey
-      template_name: event
-      tags: ["ai", "marketing"]
+    - name: "AI Buyer Journey Webinar"
+      slug: ai-buyer-journey-webinar
+      template_name: channel
+      tags: ["webinar", "ai"]
       settings:
+        intro: "A live walkthrough of modern B2B intent signals and conversion paths."
+        content: "<p>Learn how AI tooling changes discovery, evaluation, and purchase behavior in enterprise sales cycles.</p>"
+        key_points: |-
+          Signal design for demand teams
+          Qualification workflows with AI
+          Conversion tracking across channels
+        thumb_image_url: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=70"
+        hero_image_url: "https://images.unsplash.com/photo-1533750349088-cd871a92f312?auto=format&fit=crop&w=1600&q=70"
+        video_url: ""
+        asset_url: "https://example.com/assets/ai-buyer-journey-map.png"
         start_datetime: "2026-08-22"
-        start_time: "13:00"
         end_datetime: "2026-08-22"
-        end_time: "14:00"
-        location: "Online"
-        is_online: true
-        cover_image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=70"
-        description: "How AI is rewriting the B2B buyer's journey — and what marketing teams should rebuild first."
+        event_type: "webinar"
+        address: "Online"
+        registration_url: "https://example.com/events/ai-buyer-journey/register"
+        featured: false
       children:
+        - name: "How to prepare your demand team for AI-first buyers"
+          slug: prepare-demand-team-ai-buyers
+          template_name: page
+          tags: ["ai", "marketing"]
+          settings:
+            subtitle: "Guide"
+            thumb_image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=70"
+            description: "A tactical guide for building an intent-driven demand system."
+            content: "<p>This article breaks down a practical framework for identifying high-intent buying moments.</p>"
+
         - name: "Mei Tanaka"
           slug: mei-tanaka
-          template_name: team_member
+          template_name: page.person
+          tags: ["speaker", "ai"]
           settings:
-            avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=320&q=70"
-            job_title: "Head of Marketing"
-            company: "Northbeam"
-            twitter_url: "https://x.com/"
-            bio: "<p>Mei builds always-on demand engines for category-defining B2B brands.</p>"
+            organization: "Northbeam"
+            contact: "mei@northbeam.example"
+            avatar_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=70"
+            description: "Head of Marketing"
+            content: "<p>Mei builds always-on pipeline systems for enterprise software teams.</p>"
 
-        - name: "Resources"
-          slug: resources
-          template_name: channel
+        - name: "AI buyer journey map (PNG)"
+          slug: ai-buyer-journey-map
+          template_name: page.asset
+          tags: ["asset", "research"]
           settings:
-            description: "Briefing notes and curated articles referenced during the session."
-            display_style: "list"
-          children:
-            - name: "AI buyer journey map (PNG)"
-              slug: ai-buyer-map
-              template_name: page
-              tags: ["ai", "research"]
-              settings:
-                subtitle: "Download"
-                thumb_image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=70"
-                description: "A visual map of intent signals we monitor across the funnel."
-                content: "<p>Use this map to align marketing and sales on leading indicators.</p>"
+            asset_url: "https://example.com/assets/ai-buyer-journey-map.png"
+            description: "A visual map of high-intent moments across the full buyer lifecycle."
+            content: "<p>Use this map to align campaign planning, qualification, and sales handoff.</p>"
 
-    - name: "Operations Excellence Summit (Replay)"
-      slug: operations-excellence-summit
-      template_name: event
-      tags: ["operations", "replay"]
+    - name: "Ops Excellence Meetup"
+      slug: ops-excellence-meetup
+      template_name: channel
+      tags: ["meetup", "operations"]
       settings:
+        intro: "A monthly meetup focused on practical process design for lean operations teams."
+        content: "<p>Short talks, implementation breakdowns, and peer Q&A sessions for operators.</p>"
+        key_points: |-
+          Process simplification patterns
+          Reporting and KPI routines
+          Team enablement templates
+        thumb_image_url: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=70"
+        hero_image_url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1600&q=70"
+        video_url: ""
+        asset_url: ""
         start_datetime: "2025-11-04"
-        start_time: "09:00"
         end_datetime: "2025-11-04"
-        end_time: "17:00"
-        location: "Online"
-        is_online: true
-        cover_image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=70"
-        video_url: "https://assets.tailwindcss.com/templates/compass/landscape-of-choice.mp4"
-        slides_url: "https://example.com/slides/ops-excellence.pdf"
-        transcript_html: "<p><strong>00:00</strong> Welcome and intro</p><p><strong>04:30</strong> The four pillars of operational excellence…</p>"
-        description: "A full-day virtual summit on operational excellence — talks, panels, and tactical workshops."
+        event_type: "meetup"
+        address: "Remote"
+        registration_url: ""
+        featured: false
       children:
-        - name: "Dr. Nolan Grayson"
-          slug: nolan-grayson
-          template_name: team_member
+        - name: "Recap: Ops Excellence highlights"
+          slug: ops-excellence-highlights
+          template_name: page
+          tags: ["recap", "operations"]
           settings:
-            avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=320&q=70"
-            job_title: "Principal Researcher"
-            company: "Quantum Insights"
-            linkedin_url: "https://www.linkedin.com/"
-            bio: "<p>Nolan studies how applied AI reshapes enterprise decision-making.</p>"
+            subtitle: "Recap"
+            thumb_image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=70"
+            description: "Key takeaways from the latest meetup sessions."
+            content: "<p>We collected practical examples from team leads building scalable operations habits.</p>"
 
-        - name: "Recaps"
-          slug: recaps
-          template_name: channel
+        - name: "Nolan Grayson"
+          slug: nolan-grayson
+          template_name: page.person
+          tags: ["speaker", "operations"]
           settings:
-            description: "Written recaps and highlight reels from the summit."
-            display_style: "grid"
-          children:
-            - name: "Recap: 2025 highlights"
-              slug: recap-2025
-              template_name: page
-              tags: ["operations", "recap"]
-              settings:
-                subtitle: "Recap"
-                thumb_image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=70"
-                video_url: "https://assets.tailwindcss.com/templates/compass/liberation-from-regret.mp4"
-                description: "Highlights, screenshots, and key quotes from the 2025 Operations Excellence Summit."
-                content: "<p>The 2025 summit drew over 4,300 attendees from 38 countries. Here is what stood out.</p>"
+            organization: "Quantum Insights"
+            contact: "nolan@quantum.example"
+            avatar_url: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=600&q=70"
+            description: "Principal Researcher"
+            content: "<p>Nolan studies operational systems for high-growth B2B companies.</p>"
+
+        - name: "Ops checklist workbook"
+          slug: ops-checklist-workbook
+          template_name: page.asset
+          tags: ["asset", "operations"]
+          settings:
+            asset_url: "https://example.com/assets/ops-checklist-workbook.pdf"
+            description: "A workbook template for recurring operations reviews."
+            content: "<p>Includes planning prompts, KPI sheets, and a weekly review cadence.</p>"

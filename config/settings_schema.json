@@ -3,8 +3,8 @@
     "name": "theme_info",
     "theme_name": "events",
     "theme_label": "Events",
-    "theme_description": "B2B Webinar & Event Hub —— 活动预告与长尾资源沉淀站点主题。",
-    "theme_version": "0.2.1",
+    "theme_description": "A CMS theme for enterprise events, conferences, webinars, and campaign resources.",
+    "theme_version": "1.0.0",
     "theme_syntax_version": "v2",
     "theme_scope": "cms",
     "theme_author": "Baklib",
@@ -16,13 +16,13 @@
       "images/theme/preview-page.png"
     ],
     "theme_languages": [
-      { "name": "中文简体", "value": "zh-CN" },
-      { "name": "English", "value": "en" }
+      { "name": "English", "value": "en" },
+      { "name": "中文简体", "value": "zh-CN" }
     ],
     "recommendations": {
       "color_schemas": {
         "default": {
-          "name": "Teal / B2B",
+          "name": "Teal",
           "colors": {
             "--theme-color-base-100": "#ffffff",
             "--theme-color-base-200": "#f8fafc",
@@ -45,140 +45,49 @@
             "--theme-color-error": "#ef4444",
             "--theme-color-error-content": "#ffffff"
           }
-        },
-        "midnight": {
-          "name": "Midnight",
-          "colors": {
-            "--theme-color-base-100": "#0f172a",
-            "--theme-color-base-200": "#0b1220",
-            "--theme-color-base-300": "#1e293b",
-            "--theme-color-base-content": "#f8fafc",
-            "--theme-color-primary": "#2dd4bf",
-            "--theme-color-primary-content": "#0f172a",
-            "--theme-color-secondary": "#f8fafc",
-            "--theme-color-secondary-content": "#0f172a",
-            "--theme-color-accent": "#5eead4",
-            "--theme-color-accent-content": "#0f172a",
-            "--theme-color-neutral": "#f8fafc",
-            "--theme-color-neutral-content": "#0f172a",
-            "--theme-color-info": "#38bdf8",
-            "--theme-color-info-content": "#0f172a",
-            "--theme-color-success": "#4ade80",
-            "--theme-color-success-content": "#0f172a",
-            "--theme-color-warning": "#fbbf24",
-            "--theme-color-warning-content": "#0f172a",
-            "--theme-color-error": "#f87171",
-            "--theme-color-error-content": "#0f172a"
-          }
         }
       }
     }
   },
   {
-    "name": "站点设置",
+    "name": "Site Settings",
     "settings": [
       {
-        "id": "brand_name",
+        "id": "logo_url",
         "type": "text",
-        "label": "品牌名称",
-        "default": "Baklib Events"
+        "label": "Header logo URL",
+        "info": "If empty, the header uses site.favicon_url and site.name.",
+        "default": ""
       },
       {
-        "id": "brand_slogan",
+        "id": "event_type",
         "type": "textarea",
-        "label": "品牌简介（页脚展示）",
-        "default": "The B2B knowledge hub for product, marketing, and growth professionals — every webinar, every replay, every resource in one place.",
-        "rows": 3
-      },
-      {
-        "id": "cta_label",
-        "type": "text",
-        "label": "顶栏 CTA 文案",
-        "default": "Browse Webinars"
-      },
-      {
-        "id": "cta_url",
-        "type": "text",
-        "label": "顶栏 CTA 链接",
-        "info": "可选。可指向某场活动详情或其它外链；留空则不显示顶栏次要按钮。",
-        "default": ""
-      },
-      {
-        "id": "hero_title",
-        "type": "text",
-        "label": "Hero 标题",
-        "info": "留空则使用品牌名称（站点设置「品牌名称」或站点名）。",
-        "default": ""
-      },
-      {
-        "id": "hero_description",
-        "type": "textarea",
-        "label": "Hero 描述",
-        "rows": 3,
-        "default": ""
-      },
-      {
-        "id": "hero_url",
-        "type": "text",
-        "label": "Hero 主按钮链接",
-        "info": "可填站内路径或外链。留空则不显示主按钮。",
-        "default": ""
-      },
-      {
-        "id": "hero_cover_image",
-        "type": "image_picker",
-        "ratio": "16:9",
-        "width": 1600,
-        "label": "Hero 背景图",
-        "default": ""
-      },
-      {
-        "id": "press_logos_html",
-        "type": "html",
-        "label": "首页 Logo 墙 HTML（可选，<img> 列表）",
-        "rows": 4
-      },
-      {
-        "id": "company_address",
-        "type": "textarea",
-        "label": "公司地址（页脚展示）",
-        "rows": 2,
-        "default": ""
-      },
-      {
-        "id": "contact_email",
-        "type": "text",
-        "label": "联系邮箱（页脚展示）",
-        "default": ""
+        "label": "Event type options (one line per option)",
+        "rows": 4,
+        "default": "webinar\nconference\ntraining\nmeetup"
       }
     ]
   },
   {
-    "name": "t:schema.custom_html.name",
+    "name": "Custom HTML",
     "settings": [
       {
         "id": "head_html",
         "type": "html",
-        "label": "t:schema.custom_html.settings.head_html.label",
-        "info": "t:schema.custom_html.settings.head_html.info",
-        "rows": 10,
-        "placeholder": "t:schema.custom_html.settings.head_html.placeholder"
+        "label": "Head HTML",
+        "rows": 10
       },
       {
-        "id": "header_menu_html",
+        "id": "header_html",
         "type": "html",
-        "label": "t:schema.custom_html.settings.header_menu_html.label",
-        "info": "t:schema.custom_html.settings.header_menu_html.info",
-        "rows": 6,
-        "placeholder": "t:schema.custom_html.settings.header_menu_html.placeholder"
+        "label": "Header HTML",
+        "rows": 6
       },
       {
-        "id": "footer_menu_html",
+        "id": "footer_html",
         "type": "html",
-        "label": "t:schema.custom_html.settings.footer_menu_html.label",
-        "info": "t:schema.custom_html.settings.footer_menu_html.info",
-        "rows": 6,
-        "placeholder": "t:schema.custom_html.settings.footer_menu_html.placeholder"
+        "label": "Footer HTML",
+        "rows": 6
       }
     ]
   }

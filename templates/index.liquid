@@ -1,161 +1,212 @@
-{%- comment -%}
-  Index：直接 query 全部 events，按 published_at 倒序输出。时间分桶等待数据稳定后再加。
-{%- endcomment -%}
-
-{% query events_q from site.pages %}
+{% query channels_q from site.pages %}
 {
   "where": {
-    "template_name_eq": "event"
+    "template_name_eq": "channel"
   },
-  "order_by": ["-published_at"],
-  "limit": 100
+  "order_by": ["published_at"],
+  "limit": 200
 }
 {% endquery %}
 
-{%- assign hero_title_setting = site.settings.hero_title | presence -%}
-{%- assign hero_description = site.settings.hero_description | presence -%}
-{%- assign hero_url = site.settings.hero_url | strip -%}
-{%- assign hero_cover_image = site.settings.hero_cover_image | presence -%}
-{%- assign hero_cta_label = site.settings.cta_label | default: 'Learn more' -%}
-{%- assign hero_display_title = hero_title_setting | default: site.settings.brand_name | default: site.name -%}
-
-{%- assign press_logos = site.settings.press_logos_html | presence -%}
-
-{%- if params.debug == '1' -%}
-  {%- assign dbg_events_q_size = events_q | size -%}
-  {%- assign sniff_events_first = events_q.first -%}
-  <div class="border-b border-warning/40 bg-warning/10">
-    <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-      <details open class="rounded-box border border-base-300 bg-base-100 p-4 text-base-content shadow-sm">
-        <summary class="cursor-pointer select-none text-sm font-semibold text-warning-content marker:text-warning">
-          Index template debug (<code class="text-xs">?debug=1</code>)
-        </summary>
-        <div class="mt-4 space-y-6 text-xs leading-relaxed">
-          <dl class="grid gap-2 sm:grid-cols-[minmax(0,12rem)_1fr]">
-            <dt class="font-semibold text-base-content/70">page (index)</dt>
-            <dd>
-              标量请用 <code>| to_json</code>。
-              template_name={{ page.template_name | to_json }} · id={{ page.id | to_json }} · path={{ page.path | to_json }} · link_text={{ page.link_text | to_json }} · url={{ page.url | to_json }}
-            </dd>
-            <dt class="font-semibold text-base-content/70">All Events Section</dt>
-            <dd>All Events Section count = {{ dbg_events_q_size }}</dd>
-            <dt class="font-semibold text-base-content/70">events_q.first (to_json)</dt>
-            <dd>
-              <pre class="mt-1 max-h-48 overflow-auto rounded-md border border-base-300 bg-base-200/60 p-3 text-[11px] whitespace-pre-wrap">{%- if sniff_events_first -%}{{ sniff_events_first | to_json }}{%- else -%}(nil){%- endif -%}</pre>
-            </dd>
-            <dt class="font-semibold text-base-content/70">site.settings hero_*</dt>
-            <dd>
-              hero_title={{ hero_title_setting | to_json }} · hero_description={{ hero_description | to_json }} · hero_url={{ hero_url | to_json }} · hero_cover_image={{ hero_cover_image | to_json }}
-            </dd>
-            <dt class="font-semibold text-base-content/70">press_logos</dt>
-            <dd>{%- if press_logos -%}set (non-empty HTML){%- else -%}(nil){%- endif -%}</dd>
-            <dt class="font-semibold text-base-content/70">query 块（实际语法，便于截图）</dt>
-            <dd>
-              <p class="mb-2 text-[11px] text-base-content/60">首行仅允许 <code>query 变量名 from 集合</code>，条件为块内 JSON；无 <code>paginate</code> / <code>per_page</code> 等首行参数。</p>
-              <pre class="max-h-64 overflow-auto rounded-md border border-base-300 bg-base-200/60 p-3 text-[11px] whitespace-pre-wrap">{% raw %}{% query events_q from site.pages %}
+{% query people_q from site.pages %}
 {
   "where": {
-    "template_name_eq": "event"
+    "template_name_eq": "page.person"
   },
-  "order_by": ["-published_at"],
-  "limit": 100
+  "order_by": ["published_at"],
+  "limit": 200
 }
-{% endquery %}{% endraw %}</pre>
-            </dd>
-          </dl>
-        </div>
-      </details>
-    </div>
-  </div>
+{% endquery %}
+
+{% query assets_q from site.pages %}
+{
+  "where": {
+    "template_name_eq": "page.asset"
+  },
+  "order_by": ["published_at"],
+  "limit": 200
+}
+{% endquery %}
+
+{%- assign root = site.pages['/'] -%}
+{%- assign root_id = nil -%}
+{%- if root -%}{%- assign root_id = root.id -%}{%- endif -%}
+{%- assign now_ts = "now" | date: "%s" | plus: 0 -%}
+{%- assign recent_window = 5184000 -%}
+{%- assign recent_cutoff = now_ts | minus: recent_window -%}
+
+{%- assign featured = nil -%}
+{%- for ch in channels_q -%}
+  {%- if ch.parent_id == root_id and ch.settings.featured -%}
+    {%- assign featured = ch -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if featured == nil -%}
+  {%- for ch in channels_q -%}
+    {%- if ch.parent_id == root_id -%}
+      {%- assign featured = ch -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
 {%- endif -%}
 
-
-{%- comment -%} ============ HERO（站点设置 site.settings，非自动活动） ============ {%- endcomment -%}
-<section class="relative isolate overflow-hidden bg-secondary text-secondary-content">
-  <div class="absolute inset-0 -z-10">
-    {%- if hero_cover_image != blank -%}
-      <img src="{{ hero_cover_image }}" alt="" class="h-full w-full object-cover opacity-30" />
-    {%- endif -%}
-    <div class="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/85 to-secondary/40"></div>
-  </div>
-
-  <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-    <div class="grid items-center gap-10 lg:grid-cols-12">
-      <div class="lg:col-span-7">
-        <h1 class="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-          {{ hero_display_title }}
-        </h1>
-        {%- if hero_description != blank -%}
-          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">{{ hero_description }}</p>
-        {%- elsif site.settings.brand_slogan != blank -%}
-          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/80">{{ site.settings.brand_slogan }}</p>
-        {%- endif -%}
-
-        <div class="mt-10 flex flex-wrap items-center gap-3">
-          {%- if hero_url != blank -%}
-            <a
-              href="{{ hero_url }}"
-              class="btn btn-primary btn-lg"
-              data-turbo-frame="main-content-frame"
-              data-turbo-action="advance"
-            >{{ hero_cta_label }}</a>
-          {%- endif -%}
-          {%- if site.settings.cta_url != blank -%}
-            <a
-              href="{{ site.settings.cta_url }}"
-              class="btn btn-ghost-light btn-lg"
-              data-turbo-frame="main-content-frame"
-              data-turbo-action="advance"
-            >{{ site.settings.cta_label | default: 'Browse all webinars' }}</a>
-          {%- endif -%}
+<main class="flex-1 bg-base-100">
+  <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
+    <div class="page-container py-14 lg:py-16">
+      {%- if featured -%}
+        <div class="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Featured event</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight text-base-content lg:text-5xl">
+              {% render 'page_title', item: featured %}
+            </h1>
+            {%- if featured.settings.intro != blank -%}
+              <p class="mt-4 text-base text-base-content/75 lg:text-lg">{{ featured.settings.intro }}</p>
+            {%- endif -%}
+            <div class="mt-7">
+              <a
+                href="{{ featured.path | default: featured.url }}"
+                class="btn btn-primary btn-lg"
+                data-turbo-frame="main-content-frame"
+                data-turbo-action="advance"
+              >View details</a>
+            </div>
+          </div>
+          <a
+            href="{{ featured.path | default: featured.url }}"
+            class="block overflow-hidden rounded-box border border-base-300/50 bg-base-200"
+            data-turbo-frame="main-content-frame"
+            data-turbo-action="advance"
+          >
+            {%- assign featured_hero = featured.settings.hero_image_url | default: featured.settings.thumb_image_url | presence -%}
+            {%- if featured_hero -%}
+              <img class="aspect-[16/10] w-full object-cover" src="{{ featured_hero }}" alt="" loading="lazy" />
+            {%- else -%}
+              <div class="flex aspect-[16/10] items-center justify-center text-base-content/30">
+                <i data-lucide="calendar-days" class="h-14 w-14"></i>
+              </div>
+            {%- endif -%}
+          </a>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{%- comment -%} ============ Press Logos ============ {%- endcomment -%}
-{%- if press_logos -%}
-  <section class="border-b border-base-300/40 bg-base-100">
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <p class="text-center text-xs font-semibold uppercase tracking-wider text-base-content/60">Trusted by teams at</p>
-      <div class="mt-4 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-80">
-        {{ press_logos }}
-      </div>
+      {%- else -%}
+        <h1 class="text-4xl font-bold tracking-tight text-base-content lg:text-5xl">{{ site.name }}</h1>
+      {%- endif -%}
     </div>
   </section>
-{%- endif -%}
 
-{%- comment -%} ============ All Events（全站 event 页，按 published_at 倒序） ============ {%- endcomment -%}
-<section class="bg-base-100">
-  <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-    <div class="flex items-end justify-between gap-4">
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-primary">Events</p>
-        <h2 class="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl">All Events</h2>
-      </div>
+  <section class="page-container py-12">
+    <div class="mb-6 flex items-center justify-between gap-3">
+      <h2 class="text-2xl font-bold tracking-tight text-base-content">Upcoming events</h2>
     </div>
-    <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {%- for ev in events_q -%}
-        {% render 'event_card', event: ev %}
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {%- assign upcoming_count = 0 -%}
+      {%- for ch in channels_q -%}
+        {%- if ch.parent_id == root_id -%}
+          {%- assign start_raw = ch.settings.start_datetime | presence -%}
+          {%- assign start_ts = 0 -%}
+          {%- if start_raw -%}{%- assign start_ts = start_raw | date: "%s" | plus: 0 -%}{%- endif -%}
+          {%- if start_ts > now_ts -%}
+            {%- assign upcoming_count = upcoming_count | plus: 1 -%}
+            {% render 'channel_card', channel: ch %}
+          {%- endif -%}
+        {%- endif -%}
       {%- endfor -%}
     </div>
-  </div>
-</section>
+    {%- if upcoming_count == 0 -%}
+      <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-6 text-sm text-base-content/70">No upcoming events yet.</p>
+    {%- endif -%}
+  </section>
 
-{%- comment -%}
-  ============ 以下区块已暂时停用（避免空白误导）；恢复分桶后可从 git 取回 ============
-  Upcoming Events — 原依赖 upcoming_events
-  Past replays — 原依赖 past_events
-  Latest content — 原依赖 latest_posts + post_card
-{%- endcomment -%}
+  <section class="page-container pb-12">
+    <h2 class="text-2xl font-bold tracking-tight text-base-content">Recent events</h2>
+    <div class="mt-6 rounded-box border border-base-300/50 bg-base-100">
+      {%- assign recent_count = 0 -%}
+      {%- for ch in channels_q -%}
+        {%- if ch.parent_id == root_id -%}
+          {%- assign start_raw = ch.settings.start_datetime | presence -%}
+          {%- assign start_ts = 0 -%}
+          {%- if start_raw -%}{%- assign start_ts = start_raw | date: "%s" | plus: 0 -%}{%- endif -%}
+          {%- if start_ts > 0 and start_ts <= now_ts and start_ts >= recent_cutoff -%}
+            {%- assign recent_count = recent_count | plus: 1 -%}
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
+              <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+              <span class="text-sm text-base-content/60">{{ start_raw | date: "%b %d, %Y" }}</span>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if recent_count == 0 -%}
+        <p class="px-5 py-6 text-sm text-base-content/70">No recent events yet.</p>
+      {%- endif -%}
+    </div>
+  </section>
+
+  <section class="page-container pb-12">
+    <h2 class="text-2xl font-bold tracking-tight text-base-content">Past events</h2>
+    <div class="mt-6 rounded-box border border-base-300/50 bg-base-100">
+      {%- assign past_count = 0 -%}
+      {%- for ch in channels_q -%}
+        {%- if ch.parent_id == root_id -%}
+          {%- assign end_raw = ch.settings.end_datetime | default: ch.settings.start_datetime | presence -%}
+          {%- assign end_ts = 0 -%}
+          {%- if end_raw -%}{%- assign end_ts = end_raw | date: "%s" | plus: 0 -%}{%- endif -%}
+          {%- if end_ts > 0 and end_ts < recent_cutoff -%}
+            {%- assign past_count = past_count | plus: 1 -%}
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/40 px-5 py-4 last:border-b-0">
+              <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+              <span class="text-sm text-base-content/60">{{ end_raw | date: "%b %d, %Y" }}</span>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if past_count == 0 -%}
+        <p class="px-5 py-6 text-sm text-base-content/70">No past events yet.</p>
+      {%- endif -%}
+    </div>
+  </section>
+
+  <section class="page-container pb-12">
+    <h2 class="text-2xl font-bold tracking-tight text-base-content">Speakers</h2>
+    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {%- assign speaker_count = 0 -%}
+      {%- for person in people_q -%}
+        {%- assign person_parent = person.parent -%}
+        {%- if person_parent and person_parent.parent_id == root_id -%}
+          {%- assign speaker_count = speaker_count | plus: 1 -%}
+          {% render 'speaker_card', speaker: person %}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    {%- if speaker_count == 0 -%}
+      <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-6 text-sm text-base-content/70">No speakers published yet.</p>
+    {%- endif -%}
+  </section>
+
+  <section class="page-container pb-14">
+    <h2 class="text-2xl font-bold tracking-tight text-base-content">Assets</h2>
+    <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {%- assign asset_count = 0 -%}
+      {%- for item in assets_q -%}
+        {%- assign item_parent = item.parent -%}
+        {%- if item_parent and item_parent.parent_id == root_id -%}
+          {%- assign asset_count = asset_count | plus: 1 -%}
+          {% render 'asset_card', item: item %}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    {%- if asset_count == 0 -%}
+      <p class="rounded-box border border-dashed border-base-300/70 bg-base-200/40 p-6 text-sm text-base-content/70">No assets published yet.</p>
+    {%- endif -%}
+  </section>
+</main>
 
 {% schema %}
   {
-    "name": "Index (B2B Webinar Hub)",
-    "description": "Hero + all events list (time buckets deferred)",
+    "name": "Events Home",
+    "description": "Homepage for featured events, event lists, speakers, and assets.",
     "thumb_url": "images/theme/preview-index.png",
     "preview_image_urls": ["images/theme/preview-index.png"],
-    "sub_page_templates": ["event"]
+    "sub_page_templates": ["channel"]
   }
 {% endschema %}

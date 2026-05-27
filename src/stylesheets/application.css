@@ -2,6 +2,18 @@
 @import "tailwindcss";
 @import "./typography.css";
 
+@plugin "daisyui" {
+  themes: false;
+  exclude: scrollbar, rootcolor;
+  logs: false;
+}
+
+@source "../../layout/*.liquid";
+@source "../../snippets/*.liquid";
+@source "../../statics/*.liquid";
+@source "../../templates/*.liquid";
+@source "../../src/javascripts/**/*.js";
+
 @theme inline {
   --font-sans: "InterVar", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
@@ -30,6 +42,17 @@
   --text-6xl--line-height: calc(1 / 1);
 }
 
+:root {
+  --radius-selector: 0.75rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
 @layer base {
   html {
     font-family: var(--font-sans);
@@ -47,8 +70,15 @@
 }
 
 @layer components {
+  .page-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-field px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
   }
   .btn-lg {
     @apply px-5 py-3 text-base;
@@ -67,34 +97,10 @@
   }
 
   .form-input {
-    @apply block w-full rounded-md border border-base-300/60 bg-base-100 px-3 py-2 text-sm text-base-content placeholder:text-base-content/40 transition focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/20;
+    @apply block w-full rounded-field border border-base-300/60 bg-base-100 px-3 py-2 text-sm text-base-content placeholder:text-base-content/40 transition focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/20;
   }
 
-  .badge-status {
-    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider;
+  .event-section-title {
+    @apply text-2xl font-bold tracking-tight text-base-content;
   }
-  .badge-upcoming {
-    @apply bg-info/10 text-info ring-1 ring-info/30;
-  }
-  .badge-live {
-    @apply bg-error/10 text-error ring-1 ring-error/30;
-  }
-  .badge-replay {
-    @apply bg-primary/10 text-primary ring-1 ring-primary/30;
-  }
-  .badge-tba {
-    @apply bg-base-content/10 text-base-content/70 ring-1 ring-base-content/15;
-  }
-
-  .status-dot {
-    @apply inline-block h-2 w-2 rounded-full bg-current;
-    box-shadow: 0 0 0 0 currentColor;
-    animation: status-pulse 1.6s infinite;
-  }
-}
-
-@keyframes status-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); }
-  70% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }

@@ -20,8 +20,12 @@
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {% for it in items %}
             {%- assign it_tpl = it.template_name | default: '' -%}
-            {%- if it_tpl == 'event' -%}
-              {% render 'event_card', event: it %}
+            {%- if it_tpl == 'channel' -%}
+              {% render 'channel_card', channel: it %}
+            {%- elsif it_tpl == 'page.person' -%}
+              {% render 'speaker_card', speaker: it %}
+            {%- elsif it_tpl == 'page.asset' -%}
+              {% render 'asset_card', item: it %}
             {%- else -%}
               {% render 'post_card', post: it %}
             {%- endif -%}

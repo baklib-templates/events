@@ -54,44 +54,42 @@ SUBDOMAINS = %w[
 > - 同一品牌多语言/多地区站点可分行列出
 > - 如需标注用途，用括号补充短备注
 
-```text
-- https://developer.apple.com/wwdc26/ (Apple WWDC：大会首页/入口信息/内容消费路径)
-- https://developer.apple.com/wwdc26/special-event/ (WWDC：线下特别活动报名/申请入口形态)
-- https://developer.apple.com/events/ (Apple Developer Events：活动聚合/筛选/落地页入口)
-- https://io.google/ (Google I/O：大会首页)
-- https://io.google/2026/ (Google I/O：大会专题页/主 KV/导航到议程与注册)
-- https://io.google/2026/register/ (Google I/O：注册入口)
-- https://build.microsoft.com/en-US/home (Microsoft Build：大会首页)
-- https://register.build.microsoft.com/ (Microsoft Build：注册入口)
-- https://build.microsoft.com/en-US/sessions (Microsoft Build：Session Catalog / 议程列表)
-- https://config.figma.com/ (Figma Config：大会首页)
-- https://config.figma.com/san-francisco/agenda/ (Figma Config：Agenda / 议程)
-- https://config.figma.com/san-francisco/register/ (Figma Config：注册/购票入口)
-- https://stripe.com/sessions/2026 (Stripe Sessions：大会首页/售票/会议信息)
-- https://aws.amazon.com/cn/events/summits/ (AWS Summits：线下峰会合集/城市分站/报名入口)
-- https://www.atlassian.com/company/events (Atlassian Events：品牌活动聚合/按地区与类型浏览)
-- https://business.adobe.com/summit/adobe-summit.html (Adobe Summit：大型线下峰会专题/转化入口/内容分区)
-- https://conf.splunk.com/ (Splunk .conf：大会主站/日程与参会路径)
-- https://unbound.hubspot.com/ (HubSpot INBOUND / Unbound：大型线下大会专题/购票/内容导航)
-- https://websummit.com/schedule/ (Web Summit：议程/日程)
-- https://websummit.com/speakers/ (Web Summit：讲者目录/筛选)
-- https://websummit.com/tickets/attendees/ (Web Summit：购票/票种/转化页)
-- https://ceba.swoogo.com/summit2026/home (Swoogo 托管大会站：典型 Event SaaS 站点结构参考)
-- https://www.figma.com/webinars/ (Webinar：线上研讨会聚合/列表 → 详情/报名)
-- https://www.webflow.com/webinars (Webinar：线上研讨会聚合/筛选)
-- https://www.intercom.com/webinars (Webinar：线上研讨会聚合/列表 → 详情/报名)
-- https://www.notion.so/webinars (Webinar：线上研讨会聚合/列表)
-- https://www.gong.io/webinars/ (Webinar：线上研讨会聚合/列表 → 详情)
-- https://www.hubspot.com/resources/webinar (Webinar：资源型聚合页（webinar + 录播/资料）)
-- https://www.livestorm.co/webinars (Webinar：产品主办 Webinar 展示/报名)
-- https://www.atlassian.com/webinars (Webinar：线上研讨会聚合/报名转化)
-- https://www.slack.com/events/webinars (Webinar：events 下的 webinars 聚合/信息架构参考)
-- https://amplitude.com/webinars (Webinar：线上研讨会聚合/列表)
-- https://www.zendesk.com/resources/webinars/ (Webinar：资源中心下的 webinars 聚合)
-- https://www.airtable.com/webinars (Webinar：线上研讨会聚合/列表 → 详情)
-- https://www.miro.com/webinars/ (Webinar：线上研讨会聚合/列表)
-- https://www.canva.com/designschool/webinars/ (Webinar：教育/学院体系下的 webinars 聚合)
-```
+- [https://developer.apple.com/wwdc26/](https://developer.apple.com/wwdc26/) (Apple WWDC：大会首页/入口信息/内容消费路径)
+- [https://developer.apple.com/wwdc26/special-event/](https://developer.apple.com/wwdc26/special-event/) (WWDC：线下特别活动报名/申请入口形态)
+- [https://developer.apple.com/events/](https://developer.apple.com/events/) (Apple Developer Events：活动聚合/筛选/落地页入口)
+- [https://io.google/](https://io.google/) (Google I/O：大会首页)
+- [https://io.google/2026/](https://io.google/2026/) (Google I/O：大会专题页/主 KV/导航到议程与注册)
+- [https://io.google/2026/register/](https://io.google/2026/register/) (Google I/O：注册入口)
+- [https://build.microsoft.com/en-US/home](https://build.microsoft.com/en-US/home) (Microsoft Build：大会首页)
+- [https://register.build.microsoft.com/](https://register.build.microsoft.com/) (Microsoft Build：注册入口)
+- [https://build.microsoft.com/en-US/sessions](https://build.microsoft.com/en-US/sessions) (Microsoft Build：Session Catalog / 议程列表)
+- [https://config.figma.com/](https://config.figma.com/) (Figma Config：大会首页)
+- [https://config.figma.com/san-francisco/agenda/](https://config.figma.com/san-francisco/agenda/) (Figma Config：Agenda / 议程)
+- [https://config.figma.com/san-francisco/register/](https://config.figma.com/san-francisco/register/) (Figma Config：注册/购票入口)
+- [https://stripe.com/sessions/2026](https://stripe.com/sessions/2026) (Stripe Sessions：大会首页/售票/会议信息)
+- [https://aws.amazon.com/cn/events/summits/](https://aws.amazon.com/cn/events/summits/) (AWS Summits：线下峰会合集/城市分站/报名入口)
+- [https://www.atlassian.com/company/events](https://www.atlassian.com/company/events) (Atlassian Events：品牌活动聚合/按地区与类型浏览)
+- [https://business.adobe.com/summit/adobe-summit.html](https://business.adobe.com/summit/adobe-summit.html) (Adobe Summit：大型线下峰会专题/转化入口/内容分区)
+- [https://conf.splunk.com/](https://conf.splunk.com/) (Splunk .conf：大会主站/日程与参会路径)
+- [https://unbound.hubspot.com/](https://unbound.hubspot.com/) (HubSpot INBOUND / Unbound：大型线下大会专题/购票/内容导航)
+- [https://websummit.com/schedule/](https://websummit.com/schedule/) (Web Summit：议程/日程)
+- [https://websummit.com/speakers/](https://websummit.com/speakers/) (Web Summit：讲者目录/筛选)
+- [https://websummit.com/tickets/attendees/](https://websummit.com/tickets/attendees/) (Web Summit：购票/票种/转化页)
+- [https://ceba.swoogo.com/summit2026/home](https://ceba.swoogo.com/summit2026/home) (Swoogo 托管大会站：典型 Event SaaS 站点结构参考)
+- [https://www.figma.com/webinars/](https://www.figma.com/webinars/) (Webinar：线上研讨会聚合/列表 → 详情/报名)
+- [https://www.webflow.com/webinars](https://www.webflow.com/webinars) (Webinar：线上研讨会聚合/筛选)
+- [https://www.intercom.com/webinars](https://www.intercom.com/webinars) (Webinar：线上研讨会聚合/列表 → 详情/报名)
+- [https://www.notion.so/webinars](https://www.notion.so/webinars) (Webinar：线上研讨会聚合/列表)
+- [https://www.gong.io/webinars/](https://www.gong.io/webinars/) (Webinar：线上研讨会聚合/列表 → 详情)
+- [https://www.hubspot.com/resources/webinar](https://www.hubspot.com/resources/webinar) (Webinar：资源型聚合页（webinar + 录播/资料）)
+- [https://www.livestorm.co/webinars](https://www.livestorm.co/webinars) (Webinar：产品主办 Webinar 展示/报名)
+- [https://www.atlassian.com/webinars](https://www.atlassian.com/webinars) (Webinar：线上研讨会聚合/报名转化)
+- [https://www.slack.com/events/webinars](https://www.slack.com/events/webinars) (Webinar：events 下的 webinars 聚合/信息架构参考)
+- [https://amplitude.com/webinars](https://amplitude.com/webinars) (Webinar：线上研讨会聚合/列表)
+- [https://www.zendesk.com/resources/webinars/](https://www.zendesk.com/resources/webinars/) (Webinar：资源中心下的 webinars 聚合)
+- [https://www.airtable.com/webinars](https://www.airtable.com/webinars) (Webinar：线上研讨会聚合/列表 → 详情)
+- [https://www.miro.com/webinars/](https://www.miro.com/webinars/) (Webinar：线上研讨会聚合/列表)
+- [https://www.canva.com/designschool/webinars/](https://www.canva.com/designschool/webinars/) (Webinar：教育/学院体系下的 webinars 聚合)
 
 ## 模板案例参考（theme demos）
 
@@ -99,14 +97,12 @@ SUBDOMAINS = %w[
 
 如需标注用途，用括号补充短备注（例如 Landing/Online Event/Meetup 等）
 
-```text
-- https://themes.themegoods.com/grandconference/landing/ (Grand Conference：Landing 页模板参考)
-- https://preview.themeforest.net/item/eventor-meetup-conference-wordpress-landing-page/full_screen_preview/42504130 (ThemeForest：Eventor Landing Page 模板预览)
-- https://demo.goodlayers.com/u/confera/online/ (Confera：Online Event 模板参考)
-- 活动页：https://grandconferencev5-2.themegoods.com/multi-events
-- 参考风格：https://demo.goodlayers.com/u/confera/online/event/welcome-introduction
-- 讲师页： https://demo.goodlayers.com/u/confera/online/speakers-column-style
-```
+- [https://themes.themegoods.com/grandconference/landing/](https://themes.themegoods.com/grandconference/landing/) (Grand Conference：Landing 页模板参考)
+- [https://preview.themeforest.net/item/eventor-meetup-conference-wordpress-landing-page/full_screen_preview/42504130](https://preview.themeforest.net/item/eventor-meetup-conference-wordpress-landing-page/full_screen_preview/42504130) (ThemeForest：Eventor Landing Page 模板预览)
+- [https://demo.goodlayers.com/u/confera/online/](https://demo.goodlayers.com/u/confera/online/) (Confera：Online Event 模板参考)
+- 活动页：[https://grandconferencev5-2.themegoods.com/multi-events](https://grandconferencev5-2.themegoods.com/multi-events)
+- 参考风格：[https://demo.goodlayers.com/u/confera/online/event/welcome-introduction](https://demo.goodlayers.com/u/confera/online/event/welcome-introduction)
+- 讲师页：[https://demo.goodlayers.com/u/confera/online/speakers-column-style](https://demo.goodlayers.com/u/confera/online/speakers-column-style)
 
 ## TODO（待补充清单）
 
