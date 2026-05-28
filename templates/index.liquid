@@ -3,7 +3,7 @@
   {
     "where": {
       "template_name_eq": "channel",
-      "settings.featured.value_eq": true
+      "settings.featured_eq": true
     },
     "order_by": ["published_at"],
     "limit": 1
@@ -73,7 +73,7 @@
   {% query upcoming_q from page.children_in_list %}
   {
     "where": {
-      "settings.start_datetime_gteq": "{{ 'now' | date: '%Y-%m-%dT%H:%M:%SZ' }}"
+      "settings.start_datetime_gteq": "{{ 'now' | date: '%Y-%m-%d' }}"
     },
     "order_by": ["-published_at"],
     "limit": 12
@@ -99,7 +99,7 @@
   {
     "where": {
       "template_name_eq": "channel",
-      "settings.event_status.value_eq": "recent"
+      "settings.event_status_eq": "recent"
     },
     "order_by": ["-published_at"],
     "limit": 12
@@ -125,7 +125,7 @@
   {% query past_q from page.children_in_list %}
   {
     "where": {
-      "settings.event_status.value_eq": "past"
+      "settings.event_status_eq": "past"
     },
     "order_by": ["-published_at"],
     "limit": 120
