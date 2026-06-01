@@ -8,12 +8,13 @@
     "theme_syntax_version": "v2",
     "theme_scope": "cms",
     "theme_author": "Baklib",
-    "theme_documentation_url": "https://help.baklib.cn/",
-    "theme_support_url": "https://help.baklib.cn/",
+    "theme_documentation_url": "https://www.github.com/baklib/cms-templates/events",
+    "theme_support_url": "https://www.github.com/baklib/cms-templates/events",
     "theme_thumb_url": "images/theme/thumb.png",
     "theme_preview_images": [
-      "images/theme/preview-index.png",
-      "images/theme/preview-page.png"
+      "images/theme/${lang}/cover.png",
+      "images/theme/${lang}/index.png",
+      "images/theme/${lang}/page.article.png"
     ],
     "theme_languages": [
       { "name": "English", "value": "en" },
@@ -22,7 +23,7 @@
     "recommendations": {
       "color_schemas": {
         "default": {
-          "name": "Teal",
+          "name": "Baklib Teal",
           "colors": {
             "--theme-color-base-100": "#ffffff",
             "--theme-color-base-200": "#f8fafc",
@@ -43,6 +44,56 @@
             "--theme-color-warning": "#f59e0b",
             "--theme-color-warning-content": "#0f172a",
             "--theme-color-error": "#ef4444",
+            "--theme-color-error-content": "#ffffff"
+          }
+        },
+        "summit_indigo": {
+          "name": "Summit Indigo",
+          "colors": {
+            "--theme-color-base-100": "#ffffff",
+            "--theme-color-base-200": "#f1f5f9",
+            "--theme-color-base-300": "#e2e8f0",
+            "--theme-color-base-content": "#0f172a",
+            "--theme-color-primary": "#4338ca",
+            "--theme-color-primary-content": "#ffffff",
+            "--theme-color-secondary": "#1e1b4b",
+            "--theme-color-secondary-content": "#ffffff",
+            "--theme-color-accent": "#d97706",
+            "--theme-color-accent-content": "#ffffff",
+            "--theme-color-neutral": "#1e293b",
+            "--theme-color-neutral-content": "#ffffff",
+            "--theme-color-info": "#0284c7",
+            "--theme-color-info-content": "#ffffff",
+            "--theme-color-success": "#059669",
+            "--theme-color-success-content": "#ffffff",
+            "--theme-color-warning": "#f59e0b",
+            "--theme-color-warning-content": "#0f172a",
+            "--theme-color-error": "#dc2626",
+            "--theme-color-error-content": "#ffffff"
+          }
+        },
+        "ember_connect": {
+          "name": "Ember Connect",
+          "colors": {
+            "--theme-color-base-100": "#fffbf7",
+            "--theme-color-base-200": "#fff7ed",
+            "--theme-color-base-300": "#fed7aa",
+            "--theme-color-base-content": "#431407",
+            "--theme-color-primary": "#c2410c",
+            "--theme-color-primary-content": "#ffffff",
+            "--theme-color-secondary": "#7c2d12",
+            "--theme-color-secondary-content": "#ffffff",
+            "--theme-color-accent": "#0e7490",
+            "--theme-color-accent-content": "#ffffff",
+            "--theme-color-neutral": "#292524",
+            "--theme-color-neutral-content": "#ffffff",
+            "--theme-color-info": "#0284c7",
+            "--theme-color-info-content": "#ffffff",
+            "--theme-color-success": "#16a34a",
+            "--theme-color-success-content": "#ffffff",
+            "--theme-color-warning": "#ca8a04",
+            "--theme-color-warning-content": "#431407",
+            "--theme-color-error": "#b91c1c",
             "--theme-color-error-content": "#ffffff"
           }
         }

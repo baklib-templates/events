@@ -70,10 +70,13 @@
     </div>
   </section>
 
+  {%- assign now_date = 'now' | date: '%Y-%m-%d' -%}
+  {%- assign now_ts = 'now' | date: '%s' -%}
+
   {% query upcoming_q from page.children_in_list %}
   {
     "where": {
-      "settings.start_datetime_gteq": "{{ 'now' | date: '%Y-%m-%d' }}"
+      "settings.start_datetime_gteq": "{{ now_date }}"
     },
     "order_by": ["-published_at"],
     "limit": 12
@@ -98,24 +101,30 @@
   {% query recent_q from page.children_in_list %}
   {
     "where": {
-      "template_name_eq": "channel",
-      "settings.event_status_eq": "recent"
+      "settings.start_datetime_lteq": "{{ now_date }}"
     },
     "order_by": ["-published_at"],
-    "limit": 12
+    "limit": 120
   }
   {% endquery %}
+
   <section class="page-container pb-12">
     <h2 class="section-heading">Recent events</h2>
     <div class="surface-panel mt-6">
+      {%- assign recent_count = 0 -%}
       {%- for ch in recent_q -%}
         {%- assign start_raw = ch.settings.start_datetime | presence -%}
-        <div class="list-row">
-          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content transition-colors hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
-          <span class="text-sm text-base-content/60">{{ start_raw | date: "%b %d, %Y" }}</span>
-        </div>
+        {%- assign end_raw = ch.settings.end_datetime | presence -%}
+        {%- assign start_ts = start_raw | date: '%s' -%}
+        {%- assign end_ts = end_raw | date: '%s' -%}
+        {%- if start_raw and start_ts <= now_ts and end_raw and end_ts >= now_ts -%}
+          {%- assign recent_count = recent_count | plus: 1 -%}
+          <div class="list-row">
+            <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content transition-colors hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+            <span class="text-sm text-base-content/60">{{ start_raw | date: "%b %d, %Y" }}</span>
+          </div>
+        {%- endif -%}
       {%- endfor -%}
-      {%- assign recent_count = recent_q | size -%}
       {%- if recent_count == 0 -%}
         <p class="px-5 py-6 text-sm text-base-content/70">No recent events yet.</p>
       {%- endif -%}
@@ -125,7 +134,7 @@
   {% query past_q from page.children_in_list %}
   {
     "where": {
-      "settings.event_status_eq": "past"
+      "settings.start_datetime_lteq": "{{ now_date }}"
     },
     "order_by": ["-published_at"],
     "limit": 120
@@ -134,14 +143,20 @@
   <section class="page-container pb-12">
     <h2 class="section-heading">Past events</h2>
     <div class="surface-panel mt-6">
+      {%- assign past_count = 0 -%}
       {%- for ch in past_q -%}
+        {%- assign start_raw = ch.settings.start_datetime | presence -%}
         {%- assign end_raw = ch.settings.end_datetime | default: ch.settings.start_datetime | presence -%}
-        <div class="list-row">
-          <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content transition-colors hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
-          <span class="text-sm text-base-content/60">{{ end_raw | date: "%b %d, %Y" }}</span>
-        </div>
+        {%- assign start_ts = start_raw | date: '%s' -%}
+        {%- assign end_ts = end_raw | date: '%s' -%}
+        {%- if start_raw and start_ts <= now_ts and end_raw and end_ts < now_ts -%}
+          {%- assign past_count = past_count | plus: 1 -%}
+          <div class="list-row">
+            <a href="{{ ch.path | default: ch.url }}" class="font-semibold text-base-content transition-colors hover:text-primary" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: ch %}</a>
+            <span class="text-sm text-base-content/60">{{ end_raw | date: "%b %d, %Y" }}</span>
+          </div>
+        {%- endif -%}
       {%- endfor -%}
-      {%- assign past_count = past_q | size -%}
       {%- if past_count == 0 -%}
         <p class="px-5 py-6 text-sm text-base-content/70">No past events yet.</p>
       {%- endif -%}
@@ -198,8 +213,8 @@
   {
     "name": "Events Home",
     "description": "Homepage for featured events, event lists, speakers, and assets.",
-    "thumb_url": "images/theme/preview-index.png",
-    "preview_image_urls": ["images/theme/preview-index.png"],
+    "thumb_url": "images/theme/${lang}/index.png",
+    "preview_image_urls": ["images/theme/${lang}/index.png"],
     "sub_page_templates": ["channel"]
   }
 {% endschema %}
