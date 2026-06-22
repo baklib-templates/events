@@ -111,8 +111,8 @@
         <h2 class="section-heading">News</h2>
         <div class="mt-5 space-y-4">
           {%- for item in page.children_in_list -%}
-            {%- if item.template_style == "" -%}
-               {% render 'post_card', post: item, variant: "horizontal" %}
+            {%- if item.template_style == "article" -%}
+              {% render 'post_card', post: item, variant: "horizontal" %}
             {%- endif -%}
           {%- endfor -%}
         </div>
