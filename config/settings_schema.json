@@ -2,8 +2,8 @@
   {
     "name": "theme_info",
     "theme_name": "events",
-    "theme_label": "Events",
-    "theme_description": "A CMS theme for enterprise events, conferences, webinars, and campaign resources.",
+    "theme_label": "t:schema.theme_label",
+    "theme_description": "t:schema.theme_description",
     "theme_version": "1.0.0",
     "theme_syntax_version": "v2",
     "theme_scope": "cms",
@@ -102,51 +102,51 @@
     }
   },
   {
-    "name": "Site Settings",
+    "name": "t:schema.site_settings.name",
     "settings": [
       {
         "id": "logo_url",
         "type": "image_picker",
         "ratio": "3:1",
         "width": 120,
-        "label": "Header logo URL",
-        "info": "If empty, the header uses site.favicon_url and site.name."
+        "label": "t:schema.site_settings.settings.logo_url.label",
+        "info": "t:schema.site_settings.settings.logo_url.info"
       },
       {
         "id": "event_type",
         "type": "textarea",
-        "label": "Event type options (one line per option)",
+        "label": "t:schema.site_settings.settings.event_type.label",
         "rows": 4,
         "default": "webinar\nconference\ntraining\nmeetup"
       },
       {
         "id": "event_status_options",
         "type": "textarea",
-        "label": "Event status options (one line per option)",
+        "label": "t:schema.site_settings.settings.event_status_options.label",
         "rows": 3,
         "default": "upcoming\nrecent\npast"
       }
     ]
   },
   {
-    "name": "Custom HTML",
+    "name": "t:schema.custom_html.name",
     "settings": [
       {
         "id": "head_html",
         "type": "html",
-        "label": "Head HTML",
+        "label": "t:schema.custom_html.settings.head_html.label",
         "rows": 10
       },
       {
         "id": "header_html",
         "type": "html",
-        "label": "Header HTML",
+        "label": "t:schema.custom_html.settings.header_html.label",
         "rows": 6
       },
       {
         "id": "footer_html",
         "type": "html",
-        "label": "Footer HTML",
+        "label": "t:schema.custom_html.settings.footer_html.label",
         "rows": 6
       }
     ]

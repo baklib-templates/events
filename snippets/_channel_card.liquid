@@ -20,9 +20,9 @@
   </div>
   <div class="flex flex-1 flex-col p-5">
     <div class="flex items-center gap-2 text-xs text-base-content/60">
-      <span>{{ event_type | default: "Event" }}</span>
+      <span>{% if event_type %}{{ event_type }}{% else %}{{ 'snippets.channel_card.event' | t }}{% endif %}</span>
       <span>·</span>
-      <span>{% if start_dt %}{{ start_dt | date: "%b %d, %Y" }}{% else %}Date TBA{% endif %}</span>
+      <span>{% if start_dt %}{{ start_dt | date: "%b %d, %Y" }}{% else %}{{ 'snippets.channel_card.date_tba' | t }}{% endif %}</span>
     </div>
     <h3 class="mt-2 text-lg font-semibold leading-snug text-base-content group-hover:text-primary">{% render 'page_title', item: channel %}</h3>
     {%- if intro -%}

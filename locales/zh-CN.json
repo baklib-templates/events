@@ -1,0 +1,113 @@
+{
+  "generic": {
+    "events": "活动",
+    "home": "首页",
+    "search": "搜索",
+    "menu": "菜单",
+    "featured": "精选",
+    "tba": "待定",
+    "all": "全部",
+    "tag": "标签",
+    "back_home": "返回首页"
+  },
+  "header": {
+    "home": "首页",
+    "primary": "主导航",
+    "mobile": "移动导航"
+  },
+  "footer": {
+    "tagline": "会议、直播、培训和活动资料的活动站。",
+    "explore": "浏览",
+    "resources": "资源",
+    "rights": "保留所有权利。"
+  },
+  "sidebar": {
+    "events": "活动",
+    "tags": "标签",
+    "latest_articles": "最新文章"
+  },
+  "paginate": {
+    "showing": "当前显示第",
+    "range_separator": "至",
+    "records": "条记录",
+    "total": "总共",
+    "previous": "上一页",
+    "next": "下一页"
+  },
+  "snippets": {
+    "channel_card": {
+      "event": "活动",
+      "date_tba": "日期待定"
+    },
+    "asset_card": {
+      "details": "详情",
+      "download": "下载"
+    }
+  },
+  "templates": {
+    "index": {
+      "featured_event": "精选活动",
+      "view_details": "查看详情",
+      "upcoming": "即将开始",
+      "upcoming_empty": "暂无即将开始的活动。",
+      "recent": "正在进行",
+      "recent_empty": "暂无正在进行的活动。",
+      "past": "往期活动",
+      "past_empty": "暂无往期活动。",
+      "speakers": "嘉宾",
+      "speakers_empty": "还没有公开的嘉宾。",
+      "assets": "资料",
+      "assets_empty": "还没有公开的资料。"
+    },
+    "channel": {
+      "kicker": "活动",
+      "register": "立即报名",
+      "download_asset": "下载资料",
+      "start": "开始",
+      "end": "结束",
+      "event_type": "活动类型",
+      "event_type_fallback": "综合",
+      "address": "地点",
+      "address_fallback": "线上",
+      "key_points": "要点",
+      "overview": "介绍",
+      "video": "视频",
+      "news": "动态",
+      "speakers": "嘉宾",
+      "assets": "资料"
+    },
+    "article": {
+      "speaker": "嘉宾"
+    },
+    "asset": {
+      "crumb": "资料",
+      "open": "打开资源",
+      "empty": "还没有配置资源文件。"
+    },
+    "person": {
+      "crumb": "嘉宾",
+      "contact": "联系方式"
+    },
+    "search": {
+      "title": "搜索",
+      "hint": "查找直播、回放、嘉宾和文章。",
+      "placeholder": "搜索直播、嘉宾、文章…",
+      "empty": "没有找到结果。",
+      "prompt": "输入关键词开始搜索。"
+    },
+    "tag": {
+      "empty": "这个标签下还没有内容。",
+      "breadcrumb": "面包屑"
+    },
+    "feedback_success": {
+      "title": "报名已收到",
+      "message": "谢谢。我们会在直播开始前把参会链接发到你的邮箱。",
+      "toast": "已报名，请查收邮件。"
+    },
+    "feedback_error": {
+      "title": "提交没有成功",
+      "message": "请稍后再试。",
+      "toast": "提交失败，请重试。"
+    }
+  }
+}

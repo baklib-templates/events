@@ -8,7 +8,7 @@
   <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
     <div class="page-container py-10">
       <nav class="mb-4 flex items-center gap-2 text-sm text-base-content/60">
-        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
+        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ 'generic.events' | t }}</a>
         {%- if event_page -%}
           <span>/</span>
           <a href="{{ event_page.path | default: event_page.url }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: event_page %}</a>
@@ -45,22 +45,22 @@
 
 {% schema %}
   {
-    "name": "Article Page",
-    "description": "News report or event article detail page.",
+    "name": "t:schema.templates.article.name",
+    "description": "t:schema.templates.article.description",
     "thumb_url": "images/theme/${lang}/page.article.png",
     "preview_image_urls": ["images/theme/${lang}/page.article.png"],
     "sub_page_templates": [],
     "settings": [
-      { "id": "subtitle", "type": "text", "label": "Subtitle" },
+      { "id": "subtitle", "type": "text", "label": "t:schema.templates.article.settings.subtitle.label" },
       {
         "id": "thumb_image",
         "type": "image_picker",
         "ratio": "16:9",
         "width": 240,
-        "label": "Cover image"
+        "label": "t:schema.templates.article.settings.thumb_image.label"
       },
-      { "id": "description", "type": "textarea", "label": "Summary", "rows": 3, "to_markdown": true },
-      { "id": "content", "type": "richtext", "label": "Content", "to_markdown": true }
+      { "id": "description", "type": "textarea", "label": "t:schema.templates.article.settings.description.label", "rows": 3, "to_markdown": true },
+      { "id": "content", "type": "richtext", "label": "t:schema.templates.article.settings.content.label", "to_markdown": true }
     ]
   }
 {% endschema %}

@@ -11,7 +11,8 @@
         <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-success/15 text-success">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
         </span>
-        <span class="font-semibold">{{ success | default: 'Registered. Check your inbox.' }}</span>
+        {%- assign success_fallback = 'templates.feedback_success.toast' | t -%}
+        <span class="font-semibold">{{ success | default: success_fallback }}</span>
       </div>
     </div>
   </template>

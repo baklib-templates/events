@@ -1,11 +1,12 @@
-{% set_meta_title 'Search' %}
+{% assign search_meta_title = 'templates.search.title' | t %}
+{% set_meta_title search_meta_title %}
 
 <main class="grow bg-base-100">
   <section class="page-container py-12 lg:py-16">
     <div class="mx-auto max-w-5xl">
     <div class="mb-10 border-b border-base-300/40 pb-8">
-      <h1 class="text-2xl font-semibold tracking-tight text-accent sm:text-3xl">Search</h1>
-      <p class="mt-2 text-sm text-base-content/70">Find webinars, replays, speakers, and articles.</p>
+      <h1 class="text-2xl font-semibold tracking-tight text-accent sm:text-3xl">{{ 'templates.search.title' | t }}</h1>
+      <p class="mt-2 text-sm text-base-content/70">{{ 'templates.search.hint' | t }}</p>
       {% form_tag 'search' %}
         <label class="surface-panel relative mt-6 flex items-center transition focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
           <span class="pointer-events-none absolute left-4 text-base-content/40">
@@ -19,7 +20,7 @@
             name="{{ form.keywords_field_name }}"
             value="{{ search.keywords | escape_once }}"
             class="w-full rounded-field border-0 bg-transparent py-3.5 pl-12 pr-4 text-sm text-base-content placeholder:text-base-content/40 focus:outline-none focus:ring-0 md:text-base"
-            placeholder="Search webinars, speakers, articles…"
+            placeholder="{{ 'templates.search.placeholder' | t }}"
             autocomplete="off"
             x-init="$nextTick(() => { $el.focus(); $el.setSelectionRange($el.value.length, $el.value.length); })"
           />
@@ -63,7 +64,7 @@
                 </a>
               </li>
             {% else %}
-              <li class="py-24 text-center text-sm text-base-content/60">No results.</li>
+              <li class="py-24 text-center text-sm text-base-content/60">{{ 'templates.search.empty' | t }}</li>
             {% endfor %}
           </ul>
 
@@ -75,7 +76,7 @@
         {% endpaginate_tag %}
       </div>
     {% else %}
-      <p class="empty-state py-16 text-center text-base-content/60">Enter a keyword to start searching.</p>
+      <p class="empty-state py-16 text-center text-base-content/60">{{ 'templates.search.prompt' | t }}</p>
     {% endif %}
     </div>
   </section>

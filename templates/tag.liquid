@@ -3,10 +3,10 @@
 <main class="grow bg-base-100">
   <section class="border-b border-base-300/40 bg-gradient-to-br from-base-100 to-base-200/70">
     <div class="page-container py-10 lg:py-14">
-      <nav class="mb-3 flex items-center gap-2 text-sm text-base-content/60" aria-label="Breadcrumb">
-        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">Home</a>
+      <nav class="mb-3 flex items-center gap-2 text-sm text-base-content/60" aria-label="{{ 'templates.tag.breadcrumb' | t }}">
+        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ 'generic.home' | t }}</a>
         <span aria-hidden="true">/</span>
-        <span>Tag</span>
+        <span>{{ 'generic.tag' | t }}</span>
         <span aria-hidden="true">/</span>
         <span class="text-base-content">{{ tag.name }}</span>
       </nav>
@@ -31,7 +31,7 @@
             {%- endif -%}
           {% else %}
             <p class="empty-state col-span-full p-10 text-center text-base-content/60">
-              Nothing tagged yet.
+              {{ 'templates.tag.empty' | t }}
             </p>
           {% endfor %}
         </div>

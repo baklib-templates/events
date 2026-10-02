@@ -11,7 +11,8 @@
         <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-error/15 text-error">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true"><path d="M12 8v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
         </span>
-        <span class="font-semibold">{{ errors | default: 'Submission failed. Please try again.' }}</span>
+        {%- assign error_fallback = 'templates.feedback_error.toast' | t -%}
+        <span class="font-semibold">{{ errors | default: error_fallback }}</span>
       </div>
     </div>
   </template>

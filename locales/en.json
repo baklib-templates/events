@@ -1,0 +1,113 @@
+{
+  "generic": {
+    "events": "Events",
+    "home": "Home",
+    "search": "Search",
+    "menu": "Menu",
+    "featured": "Featured",
+    "tba": "TBA",
+    "all": "All",
+    "tag": "Tag",
+    "back_home": "Back to home"
+  },
+  "header": {
+    "home": "Home",
+    "primary": "Primary",
+    "mobile": "Mobile"
+  },
+  "footer": {
+    "tagline": "Event hub for conferences, webinars, training programs, and meetup resources.",
+    "explore": "Explore",
+    "resources": "Resources",
+    "rights": "All rights reserved."
+  },
+  "sidebar": {
+    "events": "Events",
+    "tags": "Tags",
+    "latest_articles": "Latest articles"
+  },
+  "paginate": {
+    "showing": "Showing",
+    "range_separator": "to",
+    "records": "records",
+    "total": "Total",
+    "previous": "Previous page",
+    "next": "Next page"
+  },
+  "snippets": {
+    "channel_card": {
+      "event": "Event",
+      "date_tba": "Date TBA"
+    },
+    "asset_card": {
+      "details": "Details",
+      "download": "Download"
+    }
+  },
+  "templates": {
+    "index": {
+      "featured_event": "Featured event",
+      "view_details": "View details",
+      "upcoming": "Upcoming events",
+      "upcoming_empty": "No upcoming events yet.",
+      "recent": "Recent events",
+      "recent_empty": "No recent events yet.",
+      "past": "Past events",
+      "past_empty": "No past events yet.",
+      "speakers": "Speakers",
+      "speakers_empty": "No speakers published yet.",
+      "assets": "Assets",
+      "assets_empty": "No assets published yet."
+    },
+    "channel": {
+      "kicker": "Event",
+      "register": "Register now",
+      "download_asset": "Download asset",
+      "start": "Start",
+      "end": "End",
+      "event_type": "Event type",
+      "event_type_fallback": "General",
+      "address": "Address",
+      "address_fallback": "Online",
+      "key_points": "Key points",
+      "overview": "Overview",
+      "video": "Video",
+      "news": "News",
+      "speakers": "Speakers",
+      "assets": "Assets"
+    },
+    "article": {
+      "speaker": "Speaker"
+    },
+    "asset": {
+      "crumb": "Asset",
+      "open": "Open resource",
+      "empty": "No DAM resource configured yet."
+    },
+    "person": {
+      "crumb": "Speaker",
+      "contact": "Contact"
+    },
+    "search": {
+      "title": "Search",
+      "hint": "Find webinars, replays, speakers, and articles.",
+      "placeholder": "Search webinars, speakers, articles…",
+      "empty": "No results.",
+      "prompt": "Enter a keyword to start searching."
+    },
+    "tag": {
+      "empty": "Nothing tagged yet.",
+      "breadcrumb": "Breadcrumb"
+    },
+    "feedback_success": {
+      "title": "You're registered",
+      "message": "Thanks! We will email you the join link before the webinar.",
+      "toast": "Registered. Check your inbox."
+    },
+    "feedback_error": {
+      "title": "Something went wrong",
+      "message": "Please try again in a moment.",
+      "toast": "Submission failed. Please try again."
+    }
+  }
+}

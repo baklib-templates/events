@@ -32,7 +32,7 @@
       {%- if featured -%}
         <div class="grid items-center gap-10 lg:grid-cols-2">
           <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Featured event</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">{{ 'templates.index.featured_event' | t }}</p>
             <h1 class="mt-3 text-4xl font-semibold tracking-tight text-accent lg:text-5xl">
               {% render 'page_title', item: featured %}
             </h1>
@@ -45,7 +45,7 @@
                 class="btn btn-primary btn-lg"
                 data-turbo-frame="main-content-frame"
                 data-turbo-action="advance"
-              >View details</a>
+              >{{ 'templates.index.view_details' | t }}</a>
             </div>
           </div>
           <a
@@ -85,7 +85,7 @@
 
   <section class="page-container py-12">
     <div class="mb-6 flex items-center justify-between gap-3">
-      <h2 class="section-heading">Upcoming events</h2>
+      <h2 class="section-heading">{{ 'templates.index.upcoming' | t }}</h2>
     </div>
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
       {%- for ch in upcoming_q -%}
@@ -94,7 +94,7 @@
     </div>
     {%- assign upcoming_count = upcoming_q | size -%}
     {%- if upcoming_count == 0 -%}
-      <p class="empty-state">No upcoming events yet.</p>
+      <p class="empty-state">{{ 'templates.index.upcoming_empty' | t }}</p>
     {%- endif -%}
   </section>
 
@@ -109,7 +109,7 @@
   {% endquery %}
 
   <section class="page-container pb-12">
-    <h2 class="section-heading">Recent events</h2>
+    <h2 class="section-heading">{{ 'templates.index.recent' | t }}</h2>
     <div class="surface-panel mt-6">
       {%- assign recent_count = 0 -%}
       {%- for ch in recent_q -%}
@@ -126,7 +126,7 @@
         {%- endif -%}
       {%- endfor -%}
       {%- if recent_count == 0 -%}
-        <p class="px-5 py-6 text-sm text-base-content/70">No recent events yet.</p>
+        <p class="px-5 py-6 text-sm text-base-content/70">{{ 'templates.index.recent_empty' | t }}</p>
       {%- endif -%}
     </div>
   </section>
@@ -141,7 +141,7 @@
   }
   {% endquery %}
   <section class="page-container pb-12">
-    <h2 class="section-heading">Past events</h2>
+    <h2 class="section-heading">{{ 'templates.index.past' | t }}</h2>
     <div class="surface-panel mt-6">
       {%- assign past_count = 0 -%}
       {%- for ch in past_q -%}
@@ -158,7 +158,7 @@
         {%- endif -%}
       {%- endfor -%}
       {%- if past_count == 0 -%}
-        <p class="px-5 py-6 text-sm text-base-content/70">No past events yet.</p>
+        <p class="px-5 py-6 text-sm text-base-content/70">{{ 'templates.index.past_empty' | t }}</p>
       {%- endif -%}
     </div>
   </section>
@@ -174,7 +174,7 @@
   {% endquery %}
 
   <section class="page-container pb-12">
-    <h2 class="section-heading">Speakers</h2>
+    <h2 class="section-heading">{{ 'templates.index.speakers' | t }}</h2>
     <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {%- for person in speaker_q -%}
         {% render 'speaker_card', speaker: person %}
@@ -182,7 +182,7 @@
     </div>
     {%- assign speaker_count = speaker_q | size -%}
     {%- if speaker_count == 0 -%}
-      <p class="empty-state">No speakers published yet.</p>
+      <p class="empty-state">{{ 'templates.index.speakers_empty' | t }}</p>
     {%- endif -%}
   </section>
 
@@ -196,7 +196,7 @@
   }
   {% endquery %}
   <section class="page-container pb-14">
-    <h2 class="section-heading">Assets</h2>
+    <h2 class="section-heading">{{ 'templates.index.assets' | t }}</h2>
     <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
       {%- for item in asset_q -%}
         {% render 'asset_card', item: item %}
@@ -204,15 +204,15 @@
     </div>
     {%- assign asset_count = asset_q | size -%}
     {%- if asset_count == 0 -%}
-      <p class="empty-state">No assets published yet.</p>
+      <p class="empty-state">{{ 'templates.index.assets_empty' | t }}</p>
     {%- endif -%}
   </section>
 </main>
 
 {% schema %}
   {
-    "name": "Events Home",
-    "description": "Homepage for featured events, event lists, speakers, and assets.",
+    "name": "t:schema.templates.index.name",
+    "description": "t:schema.templates.index.description",
     "thumb_url": "images/theme/${lang}/index.png",
     "preview_image_urls": ["images/theme/${lang}/index.png"],
     "sub_page_templates": ["channel"]

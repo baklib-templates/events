@@ -1,0 +1,83 @@
+{
+  "theme_label": "Events",
+  "theme_description": "A CMS theme for enterprise events, conferences, webinars, and campaign resources.",
+  "site_settings": {
+    "name": "Site Settings",
+    "settings": {
+      "logo_url": {
+        "label": "Header logo URL",
+        "info": "If empty, the header uses site.favicon_url and site.name."
+      },
+      "event_type": {
+        "label": "Event type options (one line per option)"
+      },
+      "event_status_options": {
+        "label": "Event status options (one line per option)"
+      }
+    }
+  },
+  "custom_html": {
+    "name": "Custom HTML",
+    "settings": {
+      "head_html": { "label": "Head HTML" },
+      "header_html": { "label": "Header HTML" },
+      "footer_html": { "label": "Footer HTML" }
+    }
+  },
+  "templates": {
+    "index": {
+      "name": "Events Home",
+      "description": "Homepage for featured events, event lists, speakers, and assets."
+    },
+    "channel": {
+      "name": "Event Page",
+      "description": "Landing page for one conference or webinar with event information, speakers, and assets.",
+      "settings": {
+        "description": { "label": "Introduction" },
+        "tags": { "label": "Tags" },
+        "content": { "label": "Content" },
+        "key_points": { "label": "Key points" },
+        "thumb_image_url": { "label": "Thumbnail image" },
+        "hero_image_url": { "label": "Hero image" },
+        "video_url": { "label": "Video" },
+        "asset_url": { "label": "Asset URL (DAM)" },
+        "start_datetime": { "label": "Start date" },
+        "end_datetime": { "label": "End date" },
+        "event_type": { "label": "Event type" },
+        "address": { "label": "Address" },
+        "registration_url": { "label": "Registration URL" },
+        "featured": { "label": "Feature this event on homepage" }
+      }
+    },
+    "article": {
+      "name": "Article Page",
+      "description": "News report or event article detail page.",
+      "settings": {
+        "subtitle": { "label": "Subtitle" },
+        "thumb_image": { "label": "Cover image" },
+        "description": { "label": "Summary" },
+        "content": { "label": "Content" }
+      }
+    },
+    "asset": {
+      "name": "Asset Page",
+      "description": "Event asset detail page for keynote deck, gallery, or downloadable material.",
+      "settings": {
+        "asset_url": { "label": "Asset URL" },
+        "description": { "label": "Description" },
+        "content": { "label": "Details" }
+      }
+    },
+    "person": {
+      "name": "Speaker Page",
+      "description": "Speaker profile under one event channel.",
+      "settings": {
+        "organization": { "label": "Organization" },
+        "contact": { "label": "Contact" },
+        "avatar_url": { "label": "Avatar" },
+        "description": { "label": "One-line introduction" },
+        "content": { "label": "Bio" }
+      }
+    }
+  }
+}

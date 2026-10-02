@@ -6,13 +6,13 @@
   <section class="border-b border-base-300/50 bg-gradient-to-br from-base-100 to-base-200/70">
     <div class="page-container py-10">
       <nav class="mb-4 flex items-center gap-2 text-sm text-base-content/60">
-        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">Events</a>
+        <a href="{{ site.index_path }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ 'generic.events' | t }}</a>
         {%- if channel -%}
           <span>/</span>
           <a href="{{ channel.path | default: channel.url }}" class="breadcrumb-link" data-turbo-frame="main-content-frame" data-turbo-action="advance">{% render 'page_title', item: channel %}</a>
         {%- endif -%}
         <span>/</span>
-        <span class="text-base-content">Asset</span>
+        <span class="text-base-content">{{ 'templates.asset.crumb' | t }}</span>
       </nav>
       <h1 class="text-4xl font-semibold tracking-tight text-accent lg:text-5xl">{% render 'page_title', item: page %}</h1>
       {%- if description -%}
@@ -26,10 +26,10 @@
       {%- if asset_url -%}
         <a href="{{ asset_url }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
           <i data-lucide="download" class="h-4 w-4"></i>
-          Open resource
+          {{ 'templates.asset.open' | t }}
         </a>
       {%- else -%}
-        <p class="text-sm text-base-content/70">No DAM resource configured yet.</p>
+        <p class="text-sm text-base-content/70">{{ 'templates.asset.empty' | t }}</p>
       {%- endif -%}
     </div>
 
@@ -43,15 +43,15 @@
 
 {% schema %}
   {
-    "name": "Asset Page",
-    "description": "Event asset detail page for keynote deck, gallery, or downloadable material.",
+    "name": "t:schema.templates.asset.name",
+    "description": "t:schema.templates.asset.description",
     "thumb_url": "images/theme/${lang}/page.asset.png",
     "preview_image_urls": ["images/theme/${lang}/page.asset.png"],
     "sub_page_templates": [],
     "settings": [
-      { "id": "asset_url", "type": "dam_picker", "label": "Asset URL" },
-      { "id": "description", "type": "textarea", "label": "Description", "rows": 3, "to_markdown": true },
-      { "id": "content", "type": "richtext", "label": "Details", "to_markdown": true }
+      { "id": "asset_url", "type": "dam_picker", "label": "t:schema.templates.asset.settings.asset_url.label" },
+      { "id": "description", "type": "textarea", "label": "t:schema.templates.asset.settings.description.label", "rows": 3, "to_markdown": true },
+      { "id": "content", "type": "richtext", "label": "t:schema.templates.asset.settings.content.label", "to_markdown": true }
     ]
   }
 {% endschema %}

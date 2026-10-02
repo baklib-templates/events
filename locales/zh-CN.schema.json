@@ -1,0 +1,83 @@
+{
+  "theme_label": "活动",
+  "theme_description": "面向企业活动、会议、直播和活动资料的站点模板。",
+  "site_settings": {
+    "name": "站点设置",
+    "settings": {
+      "logo_url": {
+        "label": "页头标志",
+        "info": "留空时，页头使用站点图标和站点名称。"
+      },
+      "event_type": {
+        "label": "活动类型选项（每行一个）"
+      },
+      "event_status_options": {
+        "label": "活动状态选项（每行一个）"
+      }
+    }
+  },
+  "custom_html": {
+    "name": "自定义 HTML",
+    "settings": {
+      "head_html": { "label": "页头 HTML" },
+      "header_html": { "label": "导航 HTML" },
+      "footer_html": { "label": "页脚 HTML" }
+    }
+  },
+  "templates": {
+    "index": {
+      "name": "活动首页",
+      "description": "展示精选活动、活动列表、嘉宾和资料。"
+    },
+    "channel": {
+      "name": "活动页",
+      "description": "单场会议或直播的落地页，包含活动信息、嘉宾和资料。",
+      "settings": {
+        "description": { "label": "简介" },
+        "tags": { "label": "标签" },
+        "content": { "label": "正文" },
+        "key_points": { "label": "要点" },
+        "thumb_image_url": { "label": "缩略图" },
+        "hero_image_url": { "label": "头图" },
+        "video_url": { "label": "视频" },
+        "asset_url": { "label": "资料文件" },
+        "start_datetime": { "label": "开始日期" },
+        "end_datetime": { "label": "结束日期" },
+        "event_type": { "label": "活动类型" },
+        "address": { "label": "地点" },
+        "registration_url": { "label": "报名链接" },
+        "featured": { "label": "在首页展示为精选" }
+      }
+    },
+    "article": {
+      "name": "文章页",
+      "description": "新闻或活动文章详情。",
+      "settings": {
+        "subtitle": { "label": "副标题" },
+        "thumb_image": { "label": "封面图" },
+        "description": { "label": "摘要" },
+        "content": { "label": "正文" }
+      }
+    },
+    "asset": {
+      "name": "资料页",
+      "description": "演讲资料、图集或可下载文件的详情页。",
+      "settings": {
+        "asset_url": { "label": "资料文件" },
+        "description": { "label": "说明" },
+        "content": { "label": "详情" }
+      }
+    },
+    "person": {
+      "name": "嘉宾页",
+      "description": "挂在某场活动下的嘉宾介绍。",
+      "settings": {
+        "organization": { "label": "机构" },
+        "contact": { "label": "联系方式" },
+        "avatar_url": { "label": "头像" },
+        "description": { "label": "一句话介绍" },
+        "content": { "label": "简介" }
+      }
+    }
+  }
+}

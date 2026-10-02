@@ -10,7 +10,7 @@
     <a
       href="{{ site.index_path }}"
       class="flex min-w-0 items-center gap-3"
-      aria-label="Home"
+      aria-label="{{ 'header.home' | t }}"
       data-turbo-frame="main-content-frame"
       data-turbo-action="advance"
     >
@@ -26,7 +26,7 @@
       {%- endif -%}
     </a>
 
-    <nav class="hidden items-center gap-6 text-sm font-medium text-base-content/80 lg:flex" aria-label="Primary">
+    <nav class="hidden items-center gap-6 text-sm font-medium text-base-content/80 lg:flex" aria-label="{{ 'header.primary' | t }}">
       {%- if header_html -%}
         {{ header_html }}
       {%- endif -%}
@@ -37,12 +37,12 @@
         <a
           href="{{ site.search_path }}"
           class="btn btn-ghost px-3"
-          aria-label="Search"
+          aria-label="{{ 'generic.search' | t }}"
           data-turbo-frame="main-content-frame"
           data-turbo-action="advance"
         >
           <i data-lucide="search" class="h-4 w-4"></i>
-          Search
+          {{ 'generic.search' | t }}
         </a>
       {%- endif -%}
     </div>
@@ -52,7 +52,7 @@
       class="inline-flex h-9 w-9 items-center justify-center rounded-field text-base-content/70 hover:bg-base-content/5 hover:text-base-content lg:hidden"
       @click="open = !open"
       :aria-expanded="open"
-      aria-label="Menu"
+      aria-label="{{ 'generic.menu' | t }}"
     >
       <i x-show="!open" data-lucide="menu" class="h-5 w-5"></i>
       <i x-show="open" x-cloak data-lucide="x" class="h-5 w-5"></i>
@@ -60,7 +60,7 @@
   </div>
 
   <div class="border-t border-base-300/50 bg-base-100 lg:hidden" x-show="open" x-cloak style="display: none;">
-    <nav class="space-y-1 px-4 py-3 text-sm" aria-label="Mobile">
+    <nav class="space-y-1 px-4 py-3 text-sm" aria-label="{{ 'header.mobile' | t }}">
       {%- if site.search_path -%}
         <a
           href="{{ site.search_path }}"
@@ -68,7 +68,7 @@
           data-turbo-frame="main-content-frame"
           data-turbo-action="advance"
           @click="open = false"
-        >Search</a>
+        >{{ 'generic.search' | t }}</a>
       {%- endif -%}
       {%- if header_html -%}
         <div class="pt-2 text-sm">{{ header_html }}</div>

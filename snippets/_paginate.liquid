@@ -16,7 +16,7 @@
         {% comment %} 上一页 {% endcomment %}
         <a data-turbo-action="advance" {% if paginate.prev_page %}href="{{ paginate.url_for[paginate.prev_page] }}"{% else %}disabled{% endif %} class="btn btn-soft btn-circle shadow">
           <i class="ri-arrow-left-s-line"></i>
-          <span class="sr-only">{{ "paginate.previous" | t: '上一页'  }}</span>
+          <span class="sr-only">{{ "paginate.previous" | t }}</span>
         </a>
         {% comment %} 页码 {% endcomment %}
         {% for i in paginate.series %}
@@ -35,24 +35,24 @@
         {% comment %} 下一页 {% endcomment %}
         <a data-turbo-action="advance" {% if paginate.next_page %}href="{{ paginate.url_for[paginate.next_page] }}"{% else %}disabled{% endif %} class="btn btn-soft btn-circle shadow">
           <i class="ri-arrow-right-s-line"></i>
-          <span class="sr-only">{{ "paginate.next" | t: '下一页'  }}</span>
+          <span class="sr-only">{{ "paginate.next" | t }}</span>
         </a>
       </div>
       <div class="text-center text-base-content/50 mt-4">
-        {{ "paginate.showing" | t: "当前显示第" }}
+        {{ "paginate.showing" | t }}
         <span class="font-medium">{{paginate.from}}</span>
-        ~
+        {{ "paginate.range_separator" | t }}
         <span class="font-medium">{{paginate.to}}</span>
-        {{ "paginate.records" | t: "条记录" }},
-        {{ "paginate.records" | t: "总共" }}
+        {{ "paginate.records" | t }},
+        {{ "paginate.total" | t }}
         <span class="font-medium">{{paginate.total_count}}</span>
-        {{ "paginate.records" | t: "条记录" }}
+        {{ "paginate.records" | t }}
       </div>
     {% else %}
       <div class="text-center text-base-content/50 mt-4">
-        {{ "paginate.records" | t: "总共" }}
+        {{ "paginate.total" | t }}
           <span class="bkt-font-medium">{{paginate.total_count}}</span>
-        {{ "paginate.records" | t: "条记录" }}
+        {{ "paginate.records" | t }}
       </div>
     {% endif %}
   </div>

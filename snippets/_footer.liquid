@@ -31,11 +31,11 @@
           {%- endif -%}
           <span class="font-semibold text-base-content">{{ brand_name }}</span>
         </div>
-        <p class="mt-3 text-sm text-base-content/70">Event hub for conferences, webinars, training programs, and meetup resources.</p>
+        <p class="mt-3 text-sm text-base-content/70">{{ 'footer.tagline' | t }}</p>
       </div>
 
       <div>
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Explore</h3>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">{{ 'footer.explore' | t }}</h3>
         <ul class="mt-4 space-y-3">
           {%- for item in footer_nav_q -%}
             {%- if item.parent_id == root_id -%}
@@ -53,10 +53,10 @@
       </div>
 
       <div>
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Resources</h3>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-base-content/60">{{ 'footer.resources' | t }}</h3>
         <ul class="mt-4 space-y-3">
           {%- if site.search_path -%}
-            <li><a class="text-sm text-base-content/80 hover:text-primary" href="{{ site.search_path }}" data-turbo-frame="main-content-frame" data-turbo-action="advance">Search</a></li>
+            <li><a class="text-sm text-base-content/80 hover:text-primary" href="{{ site.search_path }}" data-turbo-frame="main-content-frame" data-turbo-action="advance">{{ 'generic.search' | t }}</a></li>
           {%- endif -%}
           {%- if footer_html -%}
             <li class="text-sm text-base-content/80">{{ footer_html }}</li>
@@ -65,6 +65,6 @@
       </div>
     </div>
 
-    <div class="mt-8 border-t border-base-300/50 pt-5 text-xs text-base-content/60">© {{ 'now' | date: '%Y' }} {{ brand_name }}. All rights reserved.</div>
+    <div class="mt-8 border-t border-base-300/50 pt-5 text-xs text-base-content/60">© {{ 'now' | date: '%Y' }} {{ brand_name }}. {{ 'footer.rights' | t }}</div>
   </div>
 </footer>
